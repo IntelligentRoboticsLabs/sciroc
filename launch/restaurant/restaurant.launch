@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find gb_navigation)/launch/navigation.launch">
+    <arg name="initial_pose_x" value="0.0"/>
+    <arg name="initial_pose_y" value="0.0"/>
+    <arg name="initial_pose_a" value="0.0"/>
+  </include>
+</launch>
