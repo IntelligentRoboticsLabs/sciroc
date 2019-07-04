@@ -1,0 +1,40 @@
+<launch>
+  <!--<include file="$(find gb_navigation)/launch/navigation.launch">
+    <arg name="map_file" value="$(find gb_robots)/maps/restaurant/map.yaml"/>
+    <arg name="initial_pose_x" value="10.83"/>
+    <arg name="initial_pose_y" value="16.40"/>
+    <arg name="initial_pose_a" value="0.0"/>
+  </include>-->
+
+  <arg name = "initial_pose_x" default = "0.0"/>
+	<arg name = "initial_pose_y" default = "0.0"/>
+	<arg name = "initial_pose_a" default = "0.0"/>
+  <arg name = "pddl_domain_file" default = "/home/jgines/tmp/test.pddl" />
+  <arg name = "pddl_domain" default = "test" />
+  <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/topological_map.yaml" />
+  <arg name = "pddl_packages" default = "
+    ['topological_navigation']"/>
+  <arg name = "map" default = "$(find gb_robots)/maps/restaurant/map.yaml" />
+
+  <!-- External requirements -->
+  <node name="pddl_builder" pkg="bica_planning" type="pddl_builder.py" respawn="false" output="screen">
+    <rosparam param="pddl_packages" subst_value="True">$(arg pddl_packages)</rosparam>
+    <param name="pddl_domain_file" value="$(arg pddl_domain_file)" />
+    <param name="pddl_domain" value="$(arg pddl_domain)" />
+  </node>
+
+  <include file="$(find bica_planning)/launch/planning_system.launch" >
+    <arg name="data_path" value="/home/jgines/tmp/" />
+    <arg name="domain_path"  value="$(arg pddl_domain_file)" />
+  </include>
+
+  <include file="$(find topological_navigation)/launch/topological_navigation.launch" >
+    <arg name="robot" value="kobuki" />
+    <arg name="topological_map"  value="$(arg topological_map)" />
+    <arg name="map" value="$(arg map)"/>
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+
+</launch>
