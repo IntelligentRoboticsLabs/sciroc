@@ -6,10 +6,10 @@
     <arg name="initial_pose_a" value="0.0"/>
   </include>-->
 
-  <arg name = "initial_pose_x" default = "0.0"/>
-	<arg name = "initial_pose_y" default = "0.0"/>
-	<arg name = "initial_pose_a" default = "0.0"/>
-  <arg name = "pddl_domain_file" default = "/home/jgines/tmp/test.pddl" />
+  <arg name="initial_pose_x" value="10.83"/>
+  <arg name="initial_pose_y" value="16.40"/>
+  <arg name="initial_pose_a" value="0.0"/>
+  <arg name = "pddl_domain_file" default = "$(env HOME)/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
   <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/topological_map.yaml" />
   <arg name = "pddl_packages" default = "
@@ -27,7 +27,7 @@
   </node>
 
   <include file="$(find bica_planning)/launch/planning_system.launch" >
-    <arg name="data_path" value="/home/jgines/tmp/" />
+    <arg name="data_path" value="$(env HOME)/tmp/" />
     <arg name="domain_path"  value="$(arg pddl_domain_file)" />
   </include>
 
@@ -52,4 +52,5 @@
     <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
     <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>
   </include>
+
 </launch>
