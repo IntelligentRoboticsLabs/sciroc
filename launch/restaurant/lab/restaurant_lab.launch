@@ -13,7 +13,10 @@
   <arg name = "pddl_domain" default = "test" />
   <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/topological_map.yaml" />
   <arg name = "pddl_packages" default = "
-    ['topological_navigation']"/>
+    [
+    'topological_navigation',
+    'sciroc'
+    ]"/>
   <arg name = "map" default = "$(find gb_robots)/maps/restaurant/map.yaml" />
 
   <!-- External requirements -->
@@ -29,6 +32,7 @@
   </include>
 
   <include file="$(find topological_navigation)/launch/topological_navigation.launch" >
+    <arg name="scan_topic" value="scan_multi"/>
     <arg name="robot" value="kobuki" />
     <arg name="topological_map"  value="$(arg topological_map)" />
     <arg name="map" value="$(arg map)"/>
@@ -37,4 +41,15 @@
     <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
   </include>
 
+  <include file="$(find sciroc)/launch/restaurant/restaurant_actions.launch" />
+
+  <node pkg="zbar_ros" type="barcode_reader_node" name="barcode_reader">
+    <param name="throttle_repeated_barcodes" type="double" value="2.0"/>
+    <param name="camera_topic" type="string" value="/camera/rgb/image_raw"/>
+  </node>
+
+  <include file="$(find gb_dialog)/launch/gb_dialog_services_soundplay.launch" >
+    <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
+    <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>
+  </include>
 </launch>
