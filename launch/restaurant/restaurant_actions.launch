@@ -14,4 +14,49 @@
     <param name="action_feedback_topic" value="$(arg action_feedback_topic)" />
   </node>
 
+  <node name="rosplan_interface_get_order" pkg="sciroc" type="rp_get_order" respawn="false" output="screen">
+    <param name="pddl_action_name" value="get_order" />
+    <param name="knowledge_base"		value="$(arg knowledge_base)" />
+    <param name="action_duration"		value="$(arg action_duration)" />
+    <param name="action_probability"	value="$(arg action_probability)" />
+    <param name="action_dispatch_topic" value="$(arg action_dispatch_topic)"/>
+    <param name="action_feedback_topic" value="$(arg action_feedback_topic)" />
+  </node>
+
+  <node name="rosplan_interface_set_order" pkg="sciroc" type="rp_set_order" respawn="false" output="screen">
+    <param name="pddl_action_name" value="set_order" />
+    <param name="knowledge_base"		value="$(arg knowledge_base)" />
+    <param name="action_duration"		value="$(arg action_duration)" />
+    <param name="action_probability"	value="$(arg action_probability)" />
+    <param name="action_dispatch_topic" value="$(arg action_dispatch_topic)"/>
+    <param name="action_feedback_topic" value="$(arg action_feedback_topic)" />
+  </node>
+
+  <node name="rosplan_interface_check_order" pkg="sciroc" type="rp_check_order" respawn="false" output="screen">
+    <param name="pddl_action_name" value="check_order" />
+    <param name="knowledge_base"		value="$(arg knowledge_base)" />
+    <param name="action_duration"		value="$(arg action_duration)" />
+    <param name="action_probability"	value="$(arg action_probability)" />
+    <param name="action_dispatch_topic" value="$(arg action_dispatch_topic)"/>
+    <param name="action_feedback_topic" value="$(arg action_feedback_topic)" />
+  </node>
+
+  <node name="rosplan_interface_fix_order" pkg="sciroc" type="rp_fix_order" respawn="false" output="screen">
+    <param name="pddl_action_name" value="fix_order" />
+    <param name="knowledge_base"		value="$(arg knowledge_base)" />
+    <param name="action_duration"		value="$(arg action_duration)" />
+    <param name="action_probability"	value="$(arg action_probability)" />
+    <param name="action_dispatch_topic" value="$(arg action_dispatch_topic)"/>
+    <param name="action_feedback_topic" value="$(arg action_feedback_topic)" />
+  </node>
+
+  <node name="rosplan_interface_deliver_order" pkg="sciroc" type="rp_deliver_order" respawn="false" output="screen">
+    <param name="pddl_action_name" value="deliver_order" />
+    <param name="knowledge_base"		value="$(arg knowledge_base)" />
+    <param name="action_duration"		value="$(arg action_duration)" />
+    <param name="action_probability"	value="$(arg action_probability)" />
+    <param name="action_dispatch_topic" value="$(arg action_dispatch_topic)"/>
+    <param name="action_feedback_topic" value="$(arg action_feedback_topic)" />
+  </node>
+
 </launch>

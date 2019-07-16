@@ -11,8 +11,8 @@
 #include <std_msgs/String.h>
 #include "yaml-cpp/yaml.h"
 
-#ifndef KCL_check_table_status
-#define KCL_check_table_status
+#ifndef KCL_get_order
+#define KCL_get_order
 
 /**
 * This file defines the ***** class.
@@ -20,11 +20,11 @@
 * PDDL "*****" actions become "*****" actions.
 */
 
-class RP_check_table_status: public bica_planning::Action
+class RP_get_order: public bica_planning::Action
 {
 public:
     /* constructor */
-    RP_check_table_status(ros::NodeHandle &nh);
+    RP_get_order(ros::NodeHandle &nh);
 
 protected:
     /* listen to and process action_dispatch topic */
@@ -35,7 +35,7 @@ private:
     ros::NodeHandle nh_;
     ros::Subscriber qr_sub_;
     bica_graph::GraphClient graph_;
-    std::string wp_id, robot_id, table_status_, num_customers_;
+    std::string wp_id, robot_id;
 };
 
 #endif

@@ -1,2 +1,3 @@
 robot
 waypoint
+person

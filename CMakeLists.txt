@@ -3,14 +3,20 @@ project(sciroc)
 
 add_compile_options(-std=c++11)
 
-
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
   bica_planning
+  bica_graph
   bica
 )
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(YAMLCPP yaml-cpp REQUIRED)
+if(YAMLCPP_VERSION VERSION_GREATER "0.5.0")
+    add_definitions(-DHAVE_YAMLCPP_GT_0_5_0)
+endif()
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -21,9 +27,45 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${YAMLCPP_INCLUDE_DIRS}
 )
 
 # Actions
 add_executable(rp_check_table_status src/actions/RP_check_table_status.cpp)
 add_dependencies(rp_check_table_status ${catkin_EXPORTED_TARGETS})
-target_link_libraries(rp_check_table_status ${catkin_LIBRARIES} )
+target_link_libraries(rp_check_table_status ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(rp_get_order src/actions/RP_get_order.cpp)
+add_dependencies(rp_get_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_get_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(rp_set_order src/actions/RP_set_order.cpp)
+add_dependencies(rp_set_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_set_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(rp_check_order src/actions/RP_check_order.cpp)
+add_dependencies(rp_check_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_check_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(rp_fix_order src/actions/RP_fix_order.cpp)
+add_dependencies(rp_fix_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_fix_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(rp_deliver_order src/actions/RP_deliver_order.cpp)
+add_dependencies(rp_deliver_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_deliver_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+# HFSM
+
+add_executable(restaurant_executor_node
+  src/restaurant/restaurant_executor_node.cpp
+  src/restaurant/restaurant_executor.cpp
+  src/restaurant/restaurant_hfsm.cpp
+)
+add_dependencies(restaurant_executor_node
+  ${restaurant_executor_node_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(restaurant_executor_node
+  ${catkin_LIBRARIES}
+)

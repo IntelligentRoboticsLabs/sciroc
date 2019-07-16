@@ -1,6 +1,6 @@
 <launch>
-  <arg name="initial_pose_x" value="10.83"/>
-  <arg name="initial_pose_y" value="16.40"/>
+  <arg name="initial_pose_x" value="0.0"/>
+  <arg name="initial_pose_y" value="0.0"/>
   <arg name="initial_pose_a" value="0.0"/>
   <arg name = "pddl_domain_file" default = "$(env HOME)/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
@@ -8,9 +8,12 @@
   <arg name = "pddl_packages" default = "
     [
     'topological_navigation',
+    'person_navigation',
     'sciroc'
     ]"/>
   <arg name = "map" default = "$(find gb_robots)/maps/restaurant/map.yaml" />
+
+  <include file="$(find bica_graph)/launch/bica_graph_master.launch"/>
 
   <!-- External requirements -->
   <node name="pddl_builder" pkg="bica_planning" type="pddl_builder.py" respawn="false" output="screen">
@@ -24,8 +27,9 @@
     <arg name="domain_path"  value="$(arg pddl_domain_file)" />
   </include>
 
-  <include file="$(find topological_navigation)/launch/topological_navigation.launch" >
-    <arg name="scan_topic" value="scan_multi"/>
+  <include file="$(find person_navigation)/launch/person_navigation_only_guide.launch" >
+    <arg name="sonar_topic" value="sonar"/>
+    <arg name="scan_topic" value="scan_filtered"/>
     <arg name="robot" value="kobuki" />
     <arg name="topological_map"  value="$(arg topological_map)" />
     <arg name="map" value="$(arg map)"/>
@@ -35,12 +39,12 @@
   </include>
 
   <include file="$(find sciroc)/launch/restaurant/restaurant_actions.launch" />
-
-  <node pkg="zbar_ros" type="barcode_reader_node" name="barcode_reader">
+  <node name="restaurant_executor_node" pkg="sciroc" type="restaurant_executor_node" respawn="false" output="screen" required="true"/>
+  <node pkg="zbar_ros" type="barcode_reader_node" name="barcode_reader" output="screen">
     <param name="camera_topic" type="string" value="/camera/rgb/image_raw"/>
   </node>
 
-  <include file="$(find gb_dialog)/launch/gb_dialog_services_soundplay.launch" >
+  <include file="$(find graph_dialog_extractor)/launch/graph_dialog_extractor.launch" >
     <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
     <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>
   </include>

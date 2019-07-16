@@ -1,0 +1,22 @@
+<component id="restaurant_hfsm">
+ <state id="deliverOrder" y="-39" x="-614" initial="false"/>
+ <state id="fixOrder" y="-332" x="-620" initial="false"/>
+ <state id="grettingNewCustomer" y="114" x="-943" initial="false"/>
+ <state id="idle" y="-37" x="-945" initial="false"/>
+ <state id="setOrder" y="-194" x="-780" initial="false"/>
+ <state id="checkOrder" y="-193" x="-621" initial="false"/>
+ <state id="getOrder" y="-193" x="-941" initial="false"/>
+ <state id="Init" y="-38" x="-1228" initial="true"/>
+ <state id="checkTableStatus" y="-37" x="-1079" initial="false"/>
+ <transition dst="checkOrder" src="fixOrder"/>
+ <transition dst="grettingNewCustomer" src="idle"/>
+ <transition dst="deliverOrder" src="checkOrder"/>
+ <transition dst="getOrder" src="idle"/>
+ <transition dst="idle" src="checkTableStatus"/>
+ <transition dst="fixOrder" src="checkOrder"/>
+ <transition dst="idle" src="deliverOrder"/>
+ <transition dst="setOrder" src="getOrder"/>
+ <transition dst="checkTableStatus" src="Init"/>
+ <transition dst="checkOrder" src="setOrder"/>
+ <transition dst="idle" src="grettingNewCustomer"/>
+</component>
