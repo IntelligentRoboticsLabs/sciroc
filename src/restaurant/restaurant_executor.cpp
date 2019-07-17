@@ -41,7 +41,6 @@
 RestaurantExecutor::RestaurantExecutor(): current_goal_()
 {
   init_knowledge();
-  start_time_ = ros::Time::now();
   order_ready_asked = false;
   order_delivered = false;
 }
@@ -88,7 +87,7 @@ void RestaurantExecutor::Init_code_iterative()
 
 void RestaurantExecutor::Init_code_once()
 {
-
+  graph_.add_edge(robot_id, "ask: bar_start.action", robot_id);
 }
 
 std::vector<std::string> RestaurantExecutor::splitSpaces(std::string raw_str)
@@ -144,7 +143,6 @@ void RestaurantExecutor::getOrder_code_iterative()
 {
   remove_current_goal();
   add_goal(current_goal_);
-  // step();
 }
 
 void RestaurantExecutor::setOrder_code_iterative()
@@ -152,7 +150,6 @@ void RestaurantExecutor::setOrder_code_iterative()
   remove_current_goal();
   current_goal_ = "order_to_barman " + robot_id;
   add_goal(current_goal_);
-  // step();
 }
 
 void RestaurantExecutor::checkOrder_code_iterative()
@@ -160,7 +157,6 @@ void RestaurantExecutor::checkOrder_code_iterative()
   remove_current_goal();
   current_goal_ = "order_checked " + robot_id;
   add_goal(current_goal_);
-  // step();
 }
 
 void RestaurantExecutor::fixOrder_code_iterative()
@@ -169,7 +165,6 @@ void RestaurantExecutor::fixOrder_code_iterative()
   remove_predicate("order_needs_fix " + robot_id);
   current_goal_ = "order_fixed " + robot_id;
   add_goal(current_goal_);
-  // step();
 }
 
 void RestaurantExecutor::deliverOrder_code_iterative()
@@ -177,7 +172,6 @@ void RestaurantExecutor::deliverOrder_code_iterative()
   remove_current_goal();
   current_goal_ = "order_delivered " + needs_serving_table_;
   add_goal(current_goal_);
-  // step();
 }
 
 void RestaurantExecutor::idle_code_iterative()
@@ -187,7 +181,6 @@ void RestaurantExecutor::idle_code_iterative()
     remove_current_goal();
     current_goal_ = "robot_at " + robot_id + " wp_entry";
     add_goal(current_goal_);
-    // step();
   }
 }
 
@@ -196,12 +189,20 @@ void RestaurantExecutor::grettingNewCustomer_code_iterative()
   remove_current_goal();
   current_goal_ = "person_guided new_customer " + ready_table_;
   add_goal(current_goal_);
-  // step();
 }
 
 bool RestaurantExecutor::Init_2_checkTableStatus()
 {
-  return (ros::Time::now() > start_time_ + ros::Duration(5));
+  std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
+  for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+  {
+    if (it->get_source() == robot_id && it->get_target() == robot_id && it->get().find("response: ") != std::string::npos)
+    {
+      graph_.remove_edge(*it);
+      return true;
+    }
+  }
+  return false;
 }
 
 bool RestaurantExecutor::checkTableStatus_2_idle()

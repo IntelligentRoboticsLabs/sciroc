@@ -86,7 +86,6 @@ public:
   bool grettingNewCustomer_2_idle();
 private:
   ros::NodeHandle nh_;
-  ros::Time start_time_;
   std::vector<std::string> table_list_;
   std::string robot_id, current_goal_, needs_serving_table_, ready_table_;
   std::vector<std::string> splitSpaces(std::string raw_str);
