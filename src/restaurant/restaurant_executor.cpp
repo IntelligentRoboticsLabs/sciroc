@@ -114,7 +114,7 @@ void RestaurantExecutor::checkTableStatus_code_iterative()
     add_goal(current_goal_);
     step();
     cont++;
-    if (cont == 2)
+    if (cont == 1)
       break;
   }
 }
@@ -144,7 +144,7 @@ void RestaurantExecutor::getOrder_code_iterative()
 {
   remove_current_goal();
   add_goal(current_goal_);
-  step();
+  // step();
 }
 
 void RestaurantExecutor::setOrder_code_iterative()
@@ -152,7 +152,7 @@ void RestaurantExecutor::setOrder_code_iterative()
   remove_current_goal();
   current_goal_ = "order_to_barman " + robot_id;
   add_goal(current_goal_);
-  step();
+  // step();
 }
 
 void RestaurantExecutor::checkOrder_code_iterative()
@@ -160,7 +160,7 @@ void RestaurantExecutor::checkOrder_code_iterative()
   remove_current_goal();
   current_goal_ = "order_checked " + robot_id;
   add_goal(current_goal_);
-  step();
+  // step();
 }
 
 void RestaurantExecutor::fixOrder_code_iterative()
@@ -169,7 +169,7 @@ void RestaurantExecutor::fixOrder_code_iterative()
   remove_predicate("order_needs_fix " + robot_id);
   current_goal_ = "order_fixed " + robot_id;
   add_goal(current_goal_);
-  step();
+  // step();
 }
 
 void RestaurantExecutor::deliverOrder_code_iterative()
@@ -177,7 +177,7 @@ void RestaurantExecutor::deliverOrder_code_iterative()
   remove_current_goal();
   current_goal_ = "order_delivered " + needs_serving_table_;
   add_goal(current_goal_);
-  step();
+  // step();
 }
 
 void RestaurantExecutor::idle_code_iterative()
@@ -187,7 +187,7 @@ void RestaurantExecutor::idle_code_iterative()
     remove_current_goal();
     current_goal_ = "robot_at " + robot_id + " wp_entry";
     add_goal(current_goal_);
-    step();
+    // step();
   }
 }
 
@@ -196,7 +196,7 @@ void RestaurantExecutor::grettingNewCustomer_code_iterative()
   remove_current_goal();
   current_goal_ = "person_guided new_customer " + ready_table_;
   add_goal(current_goal_);
-  step();
+  // step();
 }
 
 bool RestaurantExecutor::Init_2_checkTableStatus()
@@ -208,12 +208,12 @@ bool RestaurantExecutor::checkTableStatus_2_idle()
 {
   std::regex regex_tables("(table_checked wp_mesa_[[:alnum:]_]*)");
   std::vector<std::string> tables_checked = search_predicates_regex(regex_tables);
-  if (tables_checked.size() == table_list_.size() - 4 && tables_checked.size() != 0)
+  if (tables_checked.size() == table_list_.size() - 5 && tables_checked.size() != 0)
   {
     remove_current_goal();
     current_goal_ = "robot_at " + robot_id + " wp_entry";
     add_goal(current_goal_);
-    step();
+    // step();
     return true;
   }
   return false;
@@ -287,6 +287,7 @@ bool RestaurantExecutor::fixOrder_2_checkOrder()
       {
         graph_.remove_edge(*it);
         order_ready_asked = false;
+        remove_predicate("order_checked " + robot_id);
         return true;
       }
       else if (!order_ready_asked)

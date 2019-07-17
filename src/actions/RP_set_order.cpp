@@ -27,7 +27,6 @@ void RP_set_order::activateCode()
     if (edge.find("wants") != std::string::npos)
     {
       table_id = it->get_source();
-      ROS_INFO("------------ Wants %s", it->get_target().c_str());
       order.push_back(it->get_target());
     }
   }

@@ -29,6 +29,14 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
 {
   if (isActive())
   {
+    std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
+    for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+    {
+      std::string edge = it->get();
+      if (edge.find("has") != std::string::npos && it->get_source() == robot_id)
+        graph_.remove_edge(*it);
+    }
+
     YAML::Node root = YAML::Load(qr->data);
     for (YAML::const_iterator it = root.begin(); it != root.end(); ++it)
     {
@@ -36,7 +44,7 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
       graph_.add_edge(robot_id, "has", it->as<std::string>());
     }
 
-    std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
+    edges_list =  graph_.get_string_edges();
     for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
     {
       std::string edge = it->get();
@@ -45,9 +53,16 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
       else if(edge.find("has") != std::string::npos)
         order_in_robot.push_back(it->get_target());
     }
-
     if (order == order_in_robot)
-      setSuccess();
+    {
+      for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+      {
+        std::string edge = it->get();
+        if (edge.find("needs") != std::string::npos && graph_.get_node(it->get_target()).get_type() == "order")
+          graph_.remove_edge(*it);
+      }
+      graph_.add_edge(robot_id, "say: Thank you! I will deliver the order.", "barman");
+    }
     else
     {
       for (std::vector<std::string>::iterator it = order.begin(); it != order.end(); ++it)
@@ -56,10 +71,10 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
           graph_.add_edge(robot_id, "needs", *it);
       }
       add_predicate("order_needs_fix leia");
-      setFail();
     }
-
     setSuccess();
+    order.clear();
+    order_in_robot.clear();
   }
 }
 
