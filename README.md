@@ -19,6 +19,6 @@ Remember: Load the branch ```simulator``` of gb_robots.
 roslaunch gb_robots sim_restaurant.launch
 roslaunch openni2_launch openni2.launch
 roslaunch sciroc restaurant_sim.launch
-
+rosrun rviz rviz
 ```
 The QR codes are in https://github.com/IntelligentRoboticsLabs/gb_perception
