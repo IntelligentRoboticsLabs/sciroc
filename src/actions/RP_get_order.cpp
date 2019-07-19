@@ -13,8 +13,6 @@ RP_get_order::RP_get_order(ros::NodeHandle &nh)
 
 void RP_get_order::activateCode()
 {
-  qr_sub_ = nh_.subscribe("/barcode", 1, &RP_get_order::qrCallback, this);
-
   for (size_t i = 0; i < last_msg_.parameters.size(); i++)
   {
     ROS_INFO("Param %s = %s", last_msg_.parameters[i].key.c_str(), last_msg_.parameters[i].value.c_str());
@@ -23,23 +21,47 @@ void RP_get_order::activateCode()
     else if (0 == last_msg_.parameters[i].key.compare("r"))
       robot_id = last_msg_.parameters[i].value;
   }
-  graph_.add_edge(robot_id, "say: Hi, What do you want to drink?", robot_id);
+  graph_.add_edge(robot_id, "ask: bar_order.ask", robot_id);
+
 }
 
 void RP_get_order::deActivateCode(){}
 
-void RP_get_order::qrCallback(const std_msgs::String::ConstPtr& qr)
+std::vector<std::string> RP_get_order::splitSpaces(std::string raw_str)
 {
-  if (isActive())
+  std::vector<std::string> output;
+  std::istringstream iss(raw_str);
+  std::string s;
+  while (getline(iss, s, ' '))
   {
-    YAML::Node root = YAML::Load(qr->data);
-    for (YAML::const_iterator it = root.begin(); it != root.end(); ++it)
+    output.push_back(s);
+  }
+  return output;
+}
+
+void RP_get_order::step()
+{
+  if (!isActive())
+    return;
+
+  std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
+  for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+  {
+    std::string edge = it->get();
+    if (edge.find("response") != std::string::npos)
     {
-      graph_.add_node(it->as<std::string>(), "order");
-      graph_.add_edge(wp_id, "wants", it->as<std::string>());
+      graph_.remove_edge(*it);
+      std::string response_raw = edge;
+      std::string delimiter = "response: ";
+      response_raw.erase(0, response_raw.find(delimiter) + delimiter.length());
+      std::vector<std::string> food = splitSpaces(response_raw);
+      for (auto it_food = food.begin(); it_food != food.end(); ++it_food)
+      {
+        graph_.add_node(*it_food, "order");
+        graph_.add_edge(wp_id, "wants", *it_food);
+      }
+      setSuccess();
     }
-    graph_.add_edge(robot_id, "say: Your order it's comming!", robot_id);
-    setSuccess();
   }
 }
 

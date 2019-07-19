@@ -28,14 +28,17 @@ public:
 
 protected:
     /* listen to and process action_dispatch topic */
-    void qrCallback(const std_msgs::String::ConstPtr& qr);
     void activateCode();
     void deActivateCode();
+    void step();
+
 private:
     ros::NodeHandle nh_;
-    ros::Subscriber qr_sub_;
     bica_graph::GraphClient graph_;
     std::string wp_id, robot_id;
+
+    std::vector<std::string> splitSpaces(std::string raw_str);
+
 };
 
 #endif
