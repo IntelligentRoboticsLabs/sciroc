@@ -104,6 +104,7 @@ std::vector<std::string> RestaurantExecutor::splitSpaces(std::string raw_str)
 
 void RestaurantExecutor::checkTableStatus_code_iterative()
 {
+  int cont = 0;
   ROS_INFO("[checkTableStatus_code_iterative]");
   for (std::vector<std::string>::iterator it = table_list_.begin(); it != table_list_.end(); ++it)
   {
@@ -111,6 +112,9 @@ void RestaurantExecutor::checkTableStatus_code_iterative()
     current_goal_ = "table_checked " + *it;
     add_goal(current_goal_);
     step();
+    cont++;
+    if (cont == 1)
+      break;
   }
 }
 
@@ -205,7 +209,7 @@ bool RestaurantExecutor::checkTableStatus_2_idle()
 {
   std::regex regex_tables("(table_checked wp_mesa_[[:alnum:]_]*)");
   std::vector<std::string> tables_checked = search_predicates_regex(regex_tables);
-  if (tables_checked.size() == table_list_.size() && tables_checked.size() != 0)
+  if (tables_checked.size() == table_list_.size() - 5 && tables_checked.size() != 0)
   {
     remove_current_goal();
     current_goal_ = "robot_at " + robot_id + " wp_entry";
