@@ -38,11 +38,12 @@
 
 #include "restaurant_executor.h"
 
-RestaurantExecutor::RestaurantExecutor(): current_goal_()
+RestaurantExecutor::RestaurantExecutor(): current_goal_(), nh_()
 {
   init_knowledge();
   order_ready_asked = false;
   order_delivered = false;
+  total_tables_ = 6;
 }
 
 void RestaurantExecutor::init_knowledge() {
@@ -67,6 +68,7 @@ void RestaurantExecutor::init_knowledge() {
   graph_.add_node(robot_id, "robot");
   graph_.add_node("barman", "person");
 
+  nh_.param<int>("/restaurant_executor_node/num_tables_to_check", num_tables_to_check_, 6);
 }
 
 bool RestaurantExecutor::update() {
@@ -113,7 +115,7 @@ void RestaurantExecutor::checkTableStatus_code_iterative()
     add_goal(current_goal_);
     step();
     cont++;
-    if (cont == 1)
+    if (cont == num_tables_to_check_)
       break;
   }
 }
@@ -209,7 +211,7 @@ bool RestaurantExecutor::checkTableStatus_2_idle()
 {
   std::regex regex_tables("(table_checked wp_mesa_[[:alnum:]_]*)");
   std::vector<std::string> tables_checked = search_predicates_regex(regex_tables);
-  if (tables_checked.size() == table_list_.size() - 5 && tables_checked.size() != 0)
+  if (tables_checked.size() == table_list_.size() - (total_tables_ - num_tables_to_check_) && tables_checked.size() != 0)
   {
     remove_current_goal();
     current_goal_ = "robot_at " + robot_id + " wp_entry";

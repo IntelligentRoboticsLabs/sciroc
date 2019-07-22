@@ -50,7 +50,6 @@ void RP_check_table_status::qrCallback(const std_msgs::String::ConstPtr& qr)
       "say: The table status is " + table_status_ + " and have " + num_customers_ + " customers",
       robot_id);
     setSuccess();
-    deActivateCode();
   }
 }
 

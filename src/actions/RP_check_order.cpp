@@ -53,6 +53,8 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
       else if(edge.find("has") != std::string::npos)
         order_in_robot.push_back(it->get_target());
     }
+    std::sort(order.begin(), order.end());
+    std::sort(order_in_robot.begin(), order_in_robot.end());
     if (order == order_in_robot)
     {
       for (auto it = edges_list.begin(); it != edges_list.end(); ++it)

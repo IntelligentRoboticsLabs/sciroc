@@ -39,7 +39,9 @@
   </include>
 
   <include file="$(find sciroc)/launch/restaurant/restaurant_actions.launch" />
-  <node name="restaurant_executor_node" pkg="sciroc" type="restaurant_executor_node" respawn="false" output="screen" required="true"/>
+  <node name="restaurant_executor_node" pkg="sciroc" type="restaurant_executor_node" respawn="false" output="screen" required="true">
+    <param name="num_tables_to_check" value="1"/>
+  </node>
   <node pkg="zbar_ros" type="barcode_reader_node" name="barcode_reader" output="screen">
     <param name="camera_topic" type="string" value="/camera/rgb/image_raw"/>
   </node>

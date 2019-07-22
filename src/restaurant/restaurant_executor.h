@@ -88,6 +88,7 @@ private:
   ros::NodeHandle nh_;
   std::vector<std::string> table_list_;
   std::string robot_id, current_goal_, needs_serving_table_, ready_table_;
+  int num_tables_to_check_, total_tables_;
   std::vector<std::string> splitSpaces(std::string raw_str);
   bica_graph::GraphClient graph_;
   bool order_ready_asked, order_delivered;
