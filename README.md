@@ -2,7 +2,7 @@
 Maps, configurations and benchmarks for SciRoc Competition.
 
 ## Restaurant
- [Rulebook] (https://docs.google.com/document/d/122AS7SgOQe__Aj0V3fhoXb-766LgDYz9gZfcrGY7jMM/edit#heading=h.gjdgxs)
+ [Rulebook](https://docs.google.com/document/d/122AS7SgOQe__Aj0V3fhoXb-766LgDYz9gZfcrGY7jMM/edit#heading=h.gjdgxs)
  
 ### Dependencies
   - **Internals:**
