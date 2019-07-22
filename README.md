@@ -45,9 +45,9 @@ roslaunch sciroc restaurant_lab.launch
 ```
 #### Expected Robot Behavior 
 1. The robot must say that's it's ready and wait for a "Start the task" voice command.
-2. The robot will navigates to every table to check it's status.
-  2.1. When the robot reach a table, by default, wait for a QR with the table status - **PDDL Action RP_check_table_status.** 
-  2.2. A new node with this info will be created in the graph. [Fig] ()
+2. The robot will navigates to every table to check it's status.  
+2.1. When the robot reach a table, by default, wait for a QR with the table status - **PDDL Action RP_check_table_status.**   
+2.2. A new node with this info will be created in the graph. [Fig] ()
 3. It will returns to the init wp and then it will go the get a order. The robot will navigates to a **need_serving** table.
 4. It will gets the order by voice, for example: "We want beer, coke and water" and this will be represented in the graph. [Fig] ()
 5. The robot will goes to the barman. When the robot reaches, it will say the table and the order and wait for "The order it's ready". 
