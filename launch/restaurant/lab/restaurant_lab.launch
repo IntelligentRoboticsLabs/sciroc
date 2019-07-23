@@ -1,5 +1,5 @@
 <launch>
-  <arg name = "pddl_domain_file" default = "$(env HOME)/tmp/test.pddl" />
+  <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
   <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/topological_map.yaml" />
   <arg name = "pddl_packages" default = "
@@ -41,7 +41,7 @@
     <param name="camera_topic" type="string" value="/xtion/rgb/image_raw"/>
   </node>
 
-  <include file="$(find gb_dialog)/launch/gb_dialog_services_soundplay.launch" >
+  <include file="$(find graph_dialog_extractor)/launch/graph_dialog_extractor.launch" >
     <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
     <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>
   </include>

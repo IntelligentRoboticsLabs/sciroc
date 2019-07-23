@@ -2,7 +2,7 @@
   <arg name="initial_pose_x" value="0.0"/>
   <arg name="initial_pose_y" value="0.0"/>
   <arg name="initial_pose_a" value="0.0"/>
-  <arg name = "pddl_domain_file" default = "$(env HOME)/tmp/test.pddl" />
+  <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
   <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/topological_map.yaml" />
   <arg name = "pddl_packages" default = "
