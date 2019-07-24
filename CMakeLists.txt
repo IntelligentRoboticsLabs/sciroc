@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   bica_planning
   bica_graph
   bica
+  dialogflow_ros_msgs
 )
 
 find_package(PkgConfig REQUIRED)
@@ -29,6 +30,11 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${YAMLCPP_INCLUDE_DIRS}
 )
+
+# Utils
+add_executable(df_simulator_restaurant_node src/utils/df_simulator_restaurant_node.cpp)
+add_dependencies(df_simulator_restaurant_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(df_simulator_restaurant_node ${catkin_LIBRARIES})
 
 # Actions
 add_executable(rp_check_table_status src/actions/RP_check_table_status.cpp)
