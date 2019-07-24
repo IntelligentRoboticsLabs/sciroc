@@ -1,4 +1,11 @@
 <launch>
+  <arg name="robot" value="tiago" />
+  <arg name = "scan_topic" value = "/scan" />
+  <arg name = "sonar_topic" value = "/sonar_base" />
+  <arg name = "sonar_frame_id" value = "/base_sonar_02_link" />
+  <arg name = "camera_topic" value = "/xtion/rgb/image_raw" />
+  <arg name = "num_tables_to_check" value = "1" /> <!-- Param to simplify the execution of the task -->
+
   <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
   <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/topological_map.yaml" />
@@ -20,25 +27,26 @@
   </node>
 
   <include file="$(find bica_planning)/launch/planning_system.launch" >
-    <arg name="data_path" value="$(env HOME)/tmp/" />
+    <arg name="data_path" value="/tmp/" />
     <arg name="domain_path"  value="$(arg pddl_domain_file)" />
   </include>
 
   <include file="$(find person_navigation)/launch/person_navigation_only_guide.launch" >
-    <arg name="sonar_topic" value="/sonar_base"/>
-    <arg name="frame_id" value="/base_sonar_02_link"/>
-    <arg name="robot" value="tiago" />
+    <arg name="robot" value="$(arg robot)"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="sonar_topic" value="$(arg sonar_topic)"/>
+    <arg name="sonar_frame_id" value="$(arg sonar_frame_id)"/>
     <arg name="topological_map"  value="$(arg topological_map)" />
     <arg name="map" value="$(arg map)"/>
   </include>
 
   <include file="$(find sciroc)/launch/restaurant/restaurant_actions.launch" />
   <node name="restaurant_executor_node" pkg="sciroc" type="restaurant_executor_node" respawn="false" output="screen" required="true">
-    <param name="num_tables_to_check" value="1"/>
+    <param name="num_tables_to_check" value="$(arg num_tables_to_check)"/>
   </node>
 
   <node pkg="zbar_ros" type="barcode_reader_node" name="barcode_reader">
-    <param name="camera_topic" type="string" value="/xtion/rgb/image_raw"/>
+    <param name="camera_topic" type="string" value="$(arg camera_topic)"/>
   </node>
 
   <include file="$(find graph_dialog_extractor)/launch/graph_dialog_extractor.launch" >
