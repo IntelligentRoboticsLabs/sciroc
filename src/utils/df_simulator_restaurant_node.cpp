@@ -74,9 +74,10 @@ public:
         for (auto it = orders_.begin(); it != orders_.end(); ++it)
         {
           values.push_back(*it);
+          parameter.value = values;
+          parameter_vector.push_back(parameter);
+          values.clear();
         }
-        parameter.value = values;
-        parameter_vector.push_back(parameter);
         df_msg.parameters = parameter_vector;
         break;
       case 3:

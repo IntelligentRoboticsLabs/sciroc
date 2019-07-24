@@ -25,7 +25,7 @@
   </include>
 
   <include file="$(find person_navigation)/launch/person_navigation_only_guide.launch" >
-    <arg name="sonar_topic" value="sonar_base"/>
+    <arg name="sonar_topic" value="/sonar_base"/>
     <arg name="frame_id" value="/base_sonar_02_link"/>
     <arg name="robot" value="tiago" />
     <arg name="topological_map"  value="$(arg topological_map)" />
