@@ -2,13 +2,14 @@
 
 /* The implementation of RP_check_table_status.h */
 
+#include <string>
+
 /* constructor */
-RP_check_table_status::RP_check_table_status(ros::NodeHandle &nh)
+RP_check_table_status::RP_check_table_status(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("check_table_status"),
   wp_id_()
 {
-
 }
 
 void RP_check_table_status::activateCode()
@@ -28,7 +29,9 @@ void RP_check_table_status::activateCode()
   graph_.add_edge(robot_id_, "say: Checking table status", robot_id_);
 }
 
-void RP_check_table_status::deActivateCode(){}
+void RP_check_table_status::deActivateCode()
+{
+}
 
 void RP_check_table_status::qrCallback(const std_msgs::String::ConstPtr& qr)
 {
@@ -57,8 +60,8 @@ void RP_check_table_status::qrCallback(const std_msgs::String::ConstPtr& qr)
 /* Main method */
 /*-------------*/
 
-int main(int argc, char **argv) {
-
+int main(int argc, char **argv)
+{
     ros::init(argc, argv, "rosplan_interface_check_table_status");
     ros::NodeHandle nh("~");
 
@@ -66,7 +69,10 @@ int main(int argc, char **argv) {
     RP_check_table_status rpmb(nh);
 
     // listen for action dispatch
-    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000, &KCL_rosplan::RPActionInterface::dispatchCallback, dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,
+      &KCL_rosplan::RPActionInterface::dispatchCallback,
+      dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+
     rpmb.runActionInterface();
 
     return 0;

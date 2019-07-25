@@ -1,8 +1,4 @@
 #include <ros/ros.h>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <boost/foreach.hpp>
 
 #include "rosplan_action_interface/RPActionInterface.h"
 #include <bica_planning/Action.h>
@@ -11,20 +7,20 @@
 #include <std_msgs/String.h>
 #include "yaml-cpp/yaml.h"
 
-#ifndef KCL_check_order
-#define KCL_check_order
+#include <string>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <boost/foreach.hpp>
 
-/**
-* This file defines the ***** class.
-* ***** is used to connect ROSPlan ***************.
-* PDDL "*****" actions become "*****" actions.
-*/
+#ifndef SRC_ACTIONS_RP_CHECK_ORDER_H
+#define SRC_ACTIONS_RP_CHECK_ORDER_H
 
 class RP_check_order: public bica_planning::Action
 {
 public:
     /* constructor */
-    RP_check_order(ros::NodeHandle &nh);
+    explicit RP_check_order(const ros::NodeHandle& nh);
 
 protected:
     /* listen to and process action_dispatch topic */
@@ -39,4 +35,4 @@ private:
     std::vector<std::string> order, order_in_robot;
 };
 
-#endif
+#endif  // SRC_ACTIONS_RP_CHECK_ORDER_H

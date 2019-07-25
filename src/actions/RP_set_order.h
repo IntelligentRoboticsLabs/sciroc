@@ -1,8 +1,4 @@
 #include <ros/ros.h>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <boost/foreach.hpp>
 
 #include "rosplan_action_interface/RPActionInterface.h"
 #include <bica_planning/Action.h>
@@ -10,8 +6,14 @@
 #include <bica_graph/graph_client.h>
 #include <std_msgs/String.h>
 
-#ifndef KCL_set_order
-#define KCL_set_order
+#include <string>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <boost/foreach.hpp>
+
+#ifndef SRC_ACTIONS_RP_SET_ORDER_H
+#define SRC_ACTIONS_RP_SET_ORDER_H
 
 /**
 * This file defines the ***** class.
@@ -23,7 +25,7 @@ class RP_set_order: public bica_planning::Action
 {
 public:
     /* constructor */
-    RP_set_order(ros::NodeHandle &nh);
+    explicit RP_set_order(const ros::NodeHandle& nh);
 protected:
     /* listen to and process action_dispatch topic */
     void activateCode();
@@ -34,4 +36,4 @@ private:
     std::string robot_id, person_id, table_id;
 };
 
-#endif
+#endif  // SRC_ACTIONS_RP_SET_ORDER_H

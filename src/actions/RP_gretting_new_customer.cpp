@@ -3,12 +3,11 @@
 /* The implementation of RP_gretting_new_customer.h */
 
 /* constructor */
-RP_gretting_new_customer::RP_gretting_new_customer(ros::NodeHandle &nh)
+RP_gretting_new_customer::RP_gretting_new_customer(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("gretting_new_customer"),
   robot_id()
 {
-
 }
 
 void RP_gretting_new_customer::activateCode()
@@ -25,14 +24,16 @@ void RP_gretting_new_customer::activateCode()
   setSuccess();
 }
 
-void RP_gretting_new_customer::deActivateCode(){}
+void RP_gretting_new_customer::deActivateCode()
+{
+}
 
 /*-------------*/
 /* Main method */
 /*-------------*/
 
-int main(int argc, char **argv) {
-
+int main(int argc, char **argv)
+{
     ros::init(argc, argv, "rosplan_interface_gretting_new_customer");
     ros::NodeHandle nh("~");
 
@@ -40,7 +41,10 @@ int main(int argc, char **argv) {
     RP_gretting_new_customer rpmb(nh);
 
     // listen for action dispatch
-    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000, &KCL_rosplan::RPActionInterface::dispatchCallback, dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,
+      &KCL_rosplan::RPActionInterface::dispatchCallback,
+      dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+
     rpmb.runActionInterface();
 
     return 0;
