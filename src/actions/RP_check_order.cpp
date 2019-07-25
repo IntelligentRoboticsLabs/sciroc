@@ -72,6 +72,12 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
         if (std::find(order_in_robot.begin(), order_in_robot.end(), *it) == order_in_robot.end())
           graph_.add_edge(robot_id, "needs", *it);
       }
+
+      for (std::vector<std::string>::iterator it = order_in_robot.begin(); it != order_in_robot.end(); ++it)
+      {
+        if (std::find(order.begin(), order.end(), *it) == order.end())
+          graph_.add_edge(robot_id, "not needs", *it);
+      }
       add_predicate("order_needs_fix leia");
     }
     setSuccess();

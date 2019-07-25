@@ -43,6 +43,7 @@ RestaurantExecutor::RestaurantExecutor(): current_goal_(), nh_()
   init_knowledge();
   order_ready_asked = false;
   order_delivered = false;
+  new_customer = false;
   total_tables_ = 6;
 }
 
@@ -75,23 +76,6 @@ bool RestaurantExecutor::update() {
   return ok();
 }
 
-void RestaurantExecutor::step()
-{
-  ROS_INFO("[RestaurantExecutor] step");
-  ros::spinOnce();
-  call_planner();
-}
-
-void RestaurantExecutor::Init_code_iterative()
-{
-
-}
-
-void RestaurantExecutor::Init_code_once()
-{
-  graph_.add_edge(robot_id, "ask: bar_start.action", robot_id);
-}
-
 std::vector<std::string> RestaurantExecutor::splitSpaces(std::string raw_str)
 {
   std::vector<std::string> output;
@@ -104,22 +88,22 @@ std::vector<std::string> RestaurantExecutor::splitSpaces(std::string raw_str)
   return output;
 }
 
-void RestaurantExecutor::checkTableStatus_code_iterative()
+void RestaurantExecutor::setNewGoal(std::string goal)
 {
-  int cont = 0;
-  ROS_INFO("[checkTableStatus_code_iterative]");
-  for (std::vector<std::string>::iterator it = table_list_.begin(); it != table_list_.end(); ++it)
-  {
-    remove_current_goal();
-    current_goal_ = "table_checked " + *it;
-    add_goal(current_goal_);
-    step();
-    cont++;
-    if (cont == num_tables_to_check_)
-      break;
-  }
+  remove_current_goal();
+  current_goal_ = goal;
+  add_goal(current_goal_);
+  call_planner();
+}
 
-  //  whilde
+void RestaurantExecutor::Init_code_once()
+{
+  graph_.add_edge(robot_id, "ask: bar_start.action", robot_id);
+}
+
+void RestaurantExecutor::Init_code_iterative()
+{
+  call_planner();
 }
 
 void RestaurantExecutor::checkTableStatus_code_once()
@@ -133,9 +117,23 @@ void RestaurantExecutor::checkTableStatus_code_once()
   graph_.add_edge(robot_id, "say: I will check the table status.", robot_id);
 }
 
-void RestaurantExecutor::idle_code_once()
+void RestaurantExecutor::checkTableStatus_code_iterative()
 {
+  int cont = 0;
+  ROS_INFO("[checkTableStatus_code_iterative]");
+  for (std::vector<std::string>::iterator it = table_list_.begin(); it != table_list_.end(); ++it)
+  {
+    setNewGoal("table_checked " + *it);
+    cont++;
+    if (cont == num_tables_to_check_)
+      break;
+  }
+}
 
+void RestaurantExecutor::idle_code_iterative()
+{
+  if (order_delivered)
+    setNewGoal("robot_at " + robot_id + " wp_entry");
 }
 
 void RestaurantExecutor::getOrder_code_once()
@@ -145,54 +143,38 @@ void RestaurantExecutor::getOrder_code_once()
 
 void RestaurantExecutor::getOrder_code_iterative()
 {
-  remove_current_goal();
-  add_goal(current_goal_);
+  setNewGoal(current_goal_);
 }
 
 void RestaurantExecutor::setOrder_code_iterative()
 {
-  remove_current_goal();
-  current_goal_ = "order_to_barman " + robot_id;
-  add_goal(current_goal_);
+  setNewGoal("order_to_barman " + robot_id);
 }
 
 void RestaurantExecutor::checkOrder_code_iterative()
 {
-  remove_current_goal();
-  current_goal_ = "order_checked " + robot_id;
-  add_goal(current_goal_);
+  setNewGoal("order_checked " + robot_id);
 }
 
 void RestaurantExecutor::fixOrder_code_iterative()
 {
-  remove_current_goal();
   remove_predicate("order_needs_fix " + robot_id);
-  current_goal_ = "order_fixed " + robot_id;
-  add_goal(current_goal_);
+  setNewGoal("order_fixed " + robot_id);
 }
 
 void RestaurantExecutor::deliverOrder_code_iterative()
 {
-  remove_current_goal();
-  current_goal_ = "order_delivered " + needs_serving_table_;
-  add_goal(current_goal_);
+  setNewGoal("order_delivered " + needs_serving_table_);
 }
 
-void RestaurantExecutor::idle_code_iterative()
+void RestaurantExecutor::grettingNewCustomer_code_once()
 {
-  if (order_delivered)
-  {
-    remove_current_goal();
-    current_goal_ = "robot_at " + robot_id + " wp_entry";
-    add_goal(current_goal_);
-  }
+  graph_.add_edge(robot_id, "say: Hi! Welcome to the restaurant, I will guide you to a table. Follow me", robot_id);
 }
 
 void RestaurantExecutor::grettingNewCustomer_code_iterative()
 {
-  remove_current_goal();
-  current_goal_ = "person_guided new_customer " + ready_table_;
-  add_goal(current_goal_);
+  setNewGoal("person_guided new_customer " + ready_table_);
 }
 
 bool RestaurantExecutor::Init_2_checkTableStatus()
@@ -215,10 +197,7 @@ bool RestaurantExecutor::checkTableStatus_2_idle()
   std::vector<std::string> tables_checked = search_predicates_regex(regex_tables);
   if (tables_checked.size() == table_list_.size() - (total_tables_ - num_tables_to_check_) && tables_checked.size() != 0)
   {
-    remove_current_goal();
-    current_goal_ = "robot_at " + robot_id + " wp_entry";
-    add_goal(current_goal_);
-    // step();
+    setNewGoal("robot_at " + robot_id + " wp_entry");
     return true;
   }
   return false;
@@ -338,8 +317,10 @@ bool RestaurantExecutor::idle_2_grettingNewCustomer()
     std::string edge = it->get();
     if (std::find(table_list_.begin(), table_list_.end(), source) != table_list_.end() &&
         edge.find("ready") != std::string::npos &&
-        order_delivered)
+        order_delivered &&
+        !new_customer)
     {
+      new_customer = true;
       ready_table_ = source;
       return true;
     }
@@ -349,5 +330,10 @@ bool RestaurantExecutor::idle_2_grettingNewCustomer()
 
 bool RestaurantExecutor::grettingNewCustomer_2_idle()
 {
-  return (!(search_predicates_regex(std::regex(current_goal_))).empty());
+  if (!(search_predicates_regex(std::regex(current_goal_))).empty())
+  {
+    graph_.add_edge(robot_id, "say: Here's your table.", robot_id);
+    return true;
+  }
+  return false;
 }

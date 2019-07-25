@@ -8,7 +8,7 @@ RP_fix_order::RP_fix_order(ros::NodeHandle &nh)
   Action("fix_order"),
   robot_id()
 {
-
+  wrong_object = "";
 }
 
 void RP_fix_order::activateCode()
@@ -26,13 +26,25 @@ void RP_fix_order::activateCode()
   for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
   {
     std::string edge = it->get();
-    if (edge.find("needs") != std::string::npos)
+    if (edge == "needs")
       object_needed = it->get_target();
+    else if (edge == "not needs")
+      wrong_object = it->get_target();
   }
-  graph_.add_edge(
-    robot_id,
-    "say: Excuse me sir, I can't find the " + object_needed + ". Could you bring me it?",
-    "barman");
+
+  if (wrong_object == "")
+    graph_.add_edge(
+      robot_id,
+      "say: Excuse me sir, I need a " + object_needed + ". Could you bring me it?",
+      "barman");
+  else
+    graph_.add_edge(
+      robot_id,
+      "say: Excuse me sir, I need a " + object_needed + " and I don't need a " + \
+        wrong_object + ". Could you replace it?",
+      "barman");
+    
+  wrong_object = "";
   setSuccess();
 }
 

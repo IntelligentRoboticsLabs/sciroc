@@ -4,7 +4,7 @@
   <arg name = "sonar_topic" value = "/sonar_base" />
   <arg name = "sonar_frame_id" value = "/base_sonar_02_link" />
   <arg name = "camera_topic" value = "/xtion/rgb/image_raw" />
-  <arg name = "num_tables_to_check" value = "1" /> <!-- Param to simplify the execution of the task -->
+  <arg name = "num_tables_to_check" value = "2" /> <!-- Param to simplify the execution of the task -->
 
   <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />

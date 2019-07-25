@@ -50,18 +50,17 @@ public:
 	RestaurantExecutor();
 
   bool update();
-  void step();
   void init_knowledge();
-
+  void setNewGoal(std::string goal);
 
   void deliverOrder_code_iterative();
   //void deliverOrder_code_once();
   void fixOrder_code_iterative();
   //void fixOrder_code_once();
   void grettingNewCustomer_code_iterative();
-  //void grettingNewCustomer_code_once();
+  void grettingNewCustomer_code_once();
   void idle_code_iterative();
-  void idle_code_once();
+  //void idle_code_once();
   void setOrder_code_iterative();
   //void setOrder_code_once();
   void checkOrder_code_iterative();
@@ -91,7 +90,7 @@ private:
   int num_tables_to_check_, total_tables_;
   std::vector<std::string> splitSpaces(std::string raw_str);
   bica_graph::GraphClient graph_;
-  bool order_ready_asked, order_delivered;
+  bool order_ready_asked, order_delivered, new_customer;
 
 };
 
