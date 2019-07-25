@@ -31,7 +31,7 @@ void RP_set_order::activateCode()
     }
   }
   std::string table_id_raw = table_id;
-  std::string delimiter = "wp_mesa_";
+  std::string delimiter = "mesa_";
   table_id_raw.erase(0, table_id_raw.find(delimiter) + delimiter.length());
   order_str = "The table " + table_id_raw + " wants: ";
   for (std::vector<std::string>::iterator it = order.begin(); it != order.end(); ++it)

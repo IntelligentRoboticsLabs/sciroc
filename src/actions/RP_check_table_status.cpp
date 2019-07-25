@@ -6,7 +6,7 @@
 RP_check_table_status::RP_check_table_status(ros::NodeHandle &nh)
 : nh_(nh),
   Action("check_table_status"),
-  wp_id()
+  wp_id_()
 {
 
 }
@@ -19,11 +19,13 @@ void RP_check_table_status::activateCode()
   {
     ROS_INFO("Param %s = %s", last_msg_.parameters[i].key.c_str(), last_msg_.parameters[i].value.c_str());
     if (0 == last_msg_.parameters[i].key.compare("wp"))
-      wp_id = last_msg_.parameters[i].value;
+      wp_id_ = last_msg_.parameters[i].value;
+    if (0 == last_msg_.parameters[i].key.compare("t"))
+      table_id_ = last_msg_.parameters[i].value;
     else if (0 == last_msg_.parameters[i].key.compare("r"))
-      robot_id = last_msg_.parameters[i].value;
+      robot_id_ = last_msg_.parameters[i].value;
   }
-  graph_.add_edge(robot_id, "say: Checking table status", robot_id);
+  graph_.add_edge(robot_id_, "say: Checking table status", robot_id_);
 }
 
 void RP_check_table_status::deActivateCode(){}
@@ -32,13 +34,11 @@ void RP_check_table_status::qrCallback(const std_msgs::String::ConstPtr& qr)
 {
   if (isActive())
   {
-    graph_.add_node(wp_id, "table");
-    graph_.add_edge("world","waypoint", wp_id);
     YAML::Node root = YAML::Load(qr->data);
-    //YAML::Node root = YAML::Load("{status: needs_serving, num_customers: 2}");
+
     for (YAML::const_iterator it = root.begin(); it != root.end(); ++it)
     {
-      graph_.add_edge(wp_id,it->first.as<std::string>() + ": " + it->second.as<std::string>(), wp_id);
+      graph_.add_edge(table_id_, it->first.as<std::string>() + ": " + it->second.as<std::string>(), table_id_);
       if (it->first.as<std::string>() == "status")
         table_status_ = it->second.as<std::string>();
       else if (it->first.as<std::string>() == "num_customers")
@@ -46,9 +46,9 @@ void RP_check_table_status::qrCallback(const std_msgs::String::ConstPtr& qr)
     }
 
     graph_.add_edge(
-      robot_id,
+      robot_id_,
       "say: The table status is " + table_status_ + " and have " + num_customers_ + " customers",
-      robot_id);
+      robot_id_);
     setSuccess();
   }
 }
