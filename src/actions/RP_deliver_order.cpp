@@ -32,10 +32,10 @@ void RP_deliver_order::activateCode()
     }
     else if (edge.find("wants") != std::string::npos)
     {
-      graph_.add_edge(it->get_source(),"has",it->get_target());
+      graph_.add_edge(it->get_source(), "has", it->get_target());
       graph_.remove_edge(*it);
     }
-      object_needed = it->get_target();
+    object_needed = it->get_target();
   }
   setSuccess();
 }

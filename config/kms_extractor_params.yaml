@@ -1,0 +1,2 @@
+interested_types: ["robot", "waypoint", "person", "table", "room"]
+interested_predicates: ["robot_at", "person_at", "is_wp_near_table", "waypoint_at"]

@@ -6,7 +6,7 @@
 RP_get_order::RP_get_order(ros::NodeHandle &nh)
 : nh_(nh),
   Action("get_order"),
-  wp_id()
+  wp_id_()
 {
 
 }
@@ -17,11 +17,13 @@ void RP_get_order::activateCode()
   {
     ROS_INFO("Param %s = %s", last_msg_.parameters[i].key.c_str(), last_msg_.parameters[i].value.c_str());
     if (0 == last_msg_.parameters[i].key.compare("wp"))
-      wp_id = last_msg_.parameters[i].value;
+      wp_id_ = last_msg_.parameters[i].value;
+    if (0 == last_msg_.parameters[i].key.compare("t"))
+      table_id_ = last_msg_.parameters[i].value;
     else if (0 == last_msg_.parameters[i].key.compare("r"))
-      robot_id = last_msg_.parameters[i].value;
+      robot_id_ = last_msg_.parameters[i].value;
   }
-  graph_.add_edge(robot_id, "ask: bar_order.ask", robot_id);
+  graph_.add_edge(robot_id_, "ask: bar_order.ask", robot_id_);
 
 }
 
@@ -58,7 +60,7 @@ void RP_get_order::step()
       for (auto it_food = food.begin(); it_food != food.end(); ++it_food)
       {
         graph_.add_node(*it_food, "order");
-        graph_.add_edge(wp_id, "wants", *it_food);
+        graph_.add_edge(table_id_, "wants", *it_food);
       }
       setSuccess();
     }

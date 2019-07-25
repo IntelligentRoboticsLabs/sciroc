@@ -35,7 +35,7 @@ protected:
 private:
     ros::NodeHandle nh_;
     bica_graph::GraphClient graph_;
-    std::string wp_id, robot_id;
+    std::string wp_id_, robot_id_, table_id_;
 
     std::vector<std::string> splitSpaces(std::string raw_str);
 

@@ -35,7 +35,7 @@ private:
     ros::NodeHandle nh_;
     ros::Subscriber qr_sub_;
     bica_graph::GraphClient graph_;
-    std::string wp_id, robot_id, table_status_, num_customers_;
+    std::string wp_id_, robot_id_, table_id_, table_status_, num_customers_;
 };
 
 #endif

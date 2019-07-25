@@ -1,3 +1,4 @@
 robot
 waypoint
+table
 person

@@ -50,7 +50,6 @@ public:
 	RestaurantExecutor();
 
   bool update();
-  void step();
   void init_knowledge();
 
 
@@ -86,7 +85,9 @@ public:
   bool grettingNewCustomer_2_idle();
 private:
   ros::NodeHandle nh_;
-  std::vector<std::string> table_list_;
+
+	std::vector<std::string> table_list_;
+
   std::string robot_id, current_goal_, needs_serving_table_, ready_table_;
   int num_tables_to_check_, total_tables_;
   std::vector<std::string> splitSpaces(std::string raw_str);

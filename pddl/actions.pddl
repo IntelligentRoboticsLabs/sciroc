@@ -1,22 +1,24 @@
 (:durative-action check_table_status
-  :parameters (?r - robot ?wp - waypoint)
+  :parameters (?r - robot ?wp - waypoint ?t - table)
   :duration ( = ?duration 10)
   :condition (and
     (at start(robot_at ?r ?wp))
- )
+    (at start(is_wp_near_table ?wp ?t))
+)
   :effect (and
-    (at end(table_checked ?wp))
+    (at end(table_checked ?t))
   )
 )
 
 (:durative-action get_order
-  :parameters (?r - robot ?wp - waypoint)
+  :parameters (?r - robot ?wp - waypoint ?t - table)
   :duration ( = ?duration 10)
   :condition (and
     (at start(robot_at ?r ?wp))
+    (at start(is_wp_near_table ?wp ?t))
  )
   :effect (and
-    (at end(order_ready ?wp))
+    (at end(order_ready ?t))
   )
 )
 
@@ -58,12 +60,13 @@
 )
 
 (:durative-action deliver_order
-  :parameters (?r - robot ?wp - waypoint)
+  :parameters (?r - robot ?wp - waypoint ?t - table)
   :duration ( = ?duration 10)
   :condition (and
     (at start(robot_at ?r ?wp))
+    (at start(is_wp_near_table ?wp ?t))
  )
   :effect (and
-    (at end(order_delivered ?wp))
+    (at end(order_delivered ?t))
   )
 )
