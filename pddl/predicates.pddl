@@ -11,3 +11,4 @@
 (order_delivered ?t - table)
 (is_wp_near_table ?wp - waypoint ?t - table)
 (is_table_at ?t - table ?r - room)
+(new_customer_attended ?p - person ?t - table)

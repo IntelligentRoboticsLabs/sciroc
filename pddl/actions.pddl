@@ -70,3 +70,15 @@
     (at end(order_delivered ?t))
   )
 )
+
+(:durative-action gretting_new_customer
+  :parameters (?r - robot ?p - person ?wp - waypoint ?t - table)
+  :duration ( = ?duration 10)
+  :condition (and
+    (at start(person_guided ?p ?wp))
+    (at start(is_wp_near_table ?wp ?t))
+ )
+  :effect (and
+    (at end(new_customer_attended ?p ?t))
+  )
+)

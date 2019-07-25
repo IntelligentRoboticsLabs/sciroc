@@ -60,7 +60,12 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
       for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
       {
         std::string edge = it->get();
-        if (edge.find("needs") != std::string::npos && graph_.get_node(it->get_target()).get_type() == "order")
+        if (edge == "not needs" && graph_.get_node(it->get_target()).get_type() == "order")
+        {
+          graph_.remove_edge(*it);
+          graph_.remove_node(graph_.get_node(it->get_target()).get_id());
+        }
+        else if (edge == "needs" && graph_.get_node(it->get_target()).get_type() == "order")
           graph_.remove_edge(*it);
       }
       graph_.add_edge(robot_id, "say: Thank you! I will deliver the order.", "barman");

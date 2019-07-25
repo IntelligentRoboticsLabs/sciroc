@@ -59,4 +59,13 @@
     <param name="action_feedback_topic" value="$(arg action_feedback_topic)" />
   </node>
 
+  <node name="rosplan_interface_gretting_new_customer" pkg="sciroc" type="rp_gretting_new_customer" respawn="false" output="screen">
+    <param name="pddl_action_name" value="gretting_new_customer" />
+    <param name="knowledge_base"		value="$(arg knowledge_base)" />
+    <param name="action_duration"		value="$(arg action_duration)" />
+    <param name="action_probability"	value="$(arg action_probability)" />
+    <param name="action_dispatch_topic" value="$(arg action_dispatch_topic)"/>
+    <param name="action_feedback_topic" value="$(arg action_feedback_topic)" />
+  </node>
+
 </launch>

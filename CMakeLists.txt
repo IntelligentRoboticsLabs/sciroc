@@ -61,6 +61,10 @@ add_executable(rp_deliver_order src/actions/RP_deliver_order.cpp)
 add_dependencies(rp_deliver_order ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rp_deliver_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
 
+add_executable(rp_gretting_new_customer src/actions/RP_gretting_new_customer.cpp)
+add_dependencies(rp_gretting_new_customer ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_gretting_new_customer ${catkin_LIBRARIES})
+
 # HFSM
 
 add_executable(restaurant_executor_node

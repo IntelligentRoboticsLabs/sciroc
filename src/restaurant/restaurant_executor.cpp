@@ -121,7 +121,7 @@ void RestaurantExecutor::Init_code_once()
 
 void RestaurantExecutor::Init_code_iterative()
 {
-  
+
 }
 
 void RestaurantExecutor::checkTableStatus_code_once()
@@ -188,7 +188,7 @@ void RestaurantExecutor::grettingNewCustomer_code_once()
 
 void RestaurantExecutor::grettingNewCustomer_code_iterative()
 {
-  setNewGoal("person_guided new_customer " + ready_table_);
+  setNewGoal("new_customer_attended new_customer " + ready_table_);
 }
 
 bool RestaurantExecutor::Init_2_checkTableStatus()
@@ -344,10 +344,5 @@ bool RestaurantExecutor::idle_2_grettingNewCustomer()
 
 bool RestaurantExecutor::grettingNewCustomer_2_idle()
 {
-  if (!(search_predicates_regex(std::regex(current_goal_))).empty())
-  {
-    graph_.add_edge(robot_id, "say: Here's your table.", robot_id);
-    return true;
-  }
-  return false;
+  return (!(search_predicates_regex(std::regex(current_goal_))).empty());
 }
