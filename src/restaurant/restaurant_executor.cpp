@@ -57,15 +57,34 @@ void RestaurantExecutor::init_knowledge() {
   add_predicate("robot_at_room " + robot_id + " main_room");
 
   add_predicate("person_at new_customer wp_entry");
+  add_predicate("person_at barman wp_barman");
   add_predicate("person_at_room new_customer main_room");
 
   add_predicate("wp_bar_location wp_barman");
   add_predicate("wp_entry_location wp_entry");
   add_predicate("barman barman");
 
-  graph_.add_node("world", "world");
+  add_instance("table", "mesa_1");
+  add_instance("table", "mesa_2");
+  add_instance("table", "mesa_3");
+  add_instance("table", "mesa_4");
+  add_instance("table", "mesa_5");
+  add_instance("table", "mesa_6");
 
-  //  TODO: Esto tendrá que añadirlo el extractor de la knowledgebase
+  add_predicate("is_wp_near_table wp_mesa_1 mesa_1");
+  add_predicate("is_wp_near_table wp_mesa_2 mesa_2");
+  add_predicate("is_wp_near_table wp_mesa_3 mesa_3");
+  add_predicate("is_wp_near_table wp_mesa_4 mesa_4");
+  add_predicate("is_wp_near_table wp_mesa_5 mesa_5");
+  add_predicate("is_wp_near_table wp_mesa_6 mesa_6");
+
+  add_predicate("is_table_at mesa_1 main_room");
+  add_predicate("is_table_at mesa_2 main_room");
+  add_predicate("is_table_at mesa_3 main_room");
+  add_predicate("is_table_at mesa_4 main_room");
+  add_predicate("is_table_at mesa_5 main_room");
+  add_predicate("is_table_at mesa_6 main_room");
+
   graph_.add_node(robot_id, "robot");
   graph_.add_node("barman", "person");
 
@@ -75,7 +94,6 @@ void RestaurantExecutor::init_knowledge() {
 bool RestaurantExecutor::update() {
   return ok();
 }
-
 std::vector<std::string> RestaurantExecutor::splitSpaces(std::string raw_str)
 {
   std::vector<std::string> output;
@@ -103,16 +121,12 @@ void RestaurantExecutor::Init_code_once()
 
 void RestaurantExecutor::Init_code_iterative()
 {
-  call_planner();
+  
 }
 
 void RestaurantExecutor::checkTableStatus_code_once()
 {
-  std::vector<std::string> table_preds;
-  std::regex regex_tables("([[:alnum:]_]* wp_mesa_[[:alnum:]_]* [[:alnum:]_]*)");
-  table_preds = search_predicates_regex(regex_tables);
-  for (std::vector<std::string>::iterator it = table_preds.begin(); it != table_preds.end(); ++it)
-    table_list_.push_back(splitSpaces(*it)[1]);
+  table_list_ = get_instances("table");
 
   graph_.add_edge(robot_id, "say: I will check the table status.", robot_id);
 }
@@ -193,7 +207,7 @@ bool RestaurantExecutor::Init_2_checkTableStatus()
 
 bool RestaurantExecutor::checkTableStatus_2_idle()
 {
-  std::regex regex_tables("(table_checked wp_mesa_[[:alnum:]_]*)");
+  std::regex regex_tables("(table_checked mesa_[[:alnum:]_]*)");
   std::vector<std::string> tables_checked = search_predicates_regex(regex_tables);
   if (tables_checked.size() == table_list_.size() - (total_tables_ - num_tables_to_check_) && tables_checked.size() != 0)
   {

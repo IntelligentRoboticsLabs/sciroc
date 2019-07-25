@@ -29,6 +29,10 @@
     <param name="pddl_domain" value="$(arg pddl_domain)" />
   </node>
 
+  <node pkg="bica_graph" type="graph_kms_extractor_node" name="graph_kms_extractor_node" output="screen">
+    <rosparam command="load" file="$(find sciroc)/config/kms_extractor_params.yaml" />
+  </node>
+
   <include file="$(find bica_planning)/launch/planning_system.launch" >
     <arg name="data_path" value="/tmp/" />
     <arg name="domain_path"  value="$(arg pddl_domain_file)" />
