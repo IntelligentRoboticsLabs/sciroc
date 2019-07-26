@@ -32,11 +32,14 @@
 *   POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Jonatan Gines jgines@gsyc.urjc.es */
+/* Author: Jonatan Gines jonatan.gines@urjc.es */
 
-/* Mantainer: Jonatan Gines jgines@gsyc.urjc.es */
+/* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
-#include "restaurant_executor.h"
+#include "./restaurant_executor.h"
+#include <string>
+#include <list>
+#include <vector>
 
 RestaurantExecutor::RestaurantExecutor(): current_goal_(), nh_()
 {
@@ -46,7 +49,8 @@ RestaurantExecutor::RestaurantExecutor(): current_goal_(), nh_()
   new_customer = false;
 }
 
-void RestaurantExecutor::init_knowledge() {
+void RestaurantExecutor::init_knowledge()
+{
   robot_id = "leia";
 
   add_instance("robot", robot_id);
@@ -98,9 +102,11 @@ void RestaurantExecutor::init_knowledge() {
   }
 }
 
-bool RestaurantExecutor::update() {
+bool RestaurantExecutor::update()
+{
   return ok();
 }
+
 std::vector<std::string> RestaurantExecutor::splitSpaces(std::string raw_str)
 {
   std::vector<std::string> output;
@@ -239,7 +245,9 @@ bool RestaurantExecutor::setOrder_2_checkOrder()
     std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
     for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
     {
-      if (it->get_source() == "barman" && it->get_target() == robot_id && it->get().find("response:") != std::string::npos)
+      if (it->get_source() == "barman" &&
+        it->get_target() == robot_id &&
+        it->get().find("response:") != std::string::npos)
       {
         graph_.remove_edge(*it);
         order_ready_asked = false;
@@ -272,7 +280,9 @@ bool RestaurantExecutor::fixOrder_2_checkOrder()
     std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
     for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
     {
-      if (it->get_source() == "barman" && it->get_target() == robot_id && it->get().find("response:") != std::string::npos)
+      if (it->get_source() == "barman" &&
+        it->get_target() == robot_id &&
+        it->get().find("response:") != std::string::npos)
       {
         graph_.remove_edge(*it);
         order_ready_asked = false;
@@ -296,7 +306,9 @@ bool RestaurantExecutor::deliverOrder_2_idle()
     std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
     for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
     {
-      if (it->get_source() == robot_id && it->get_target() == robot_id && it->get().find("response:") != std::string::npos)
+      if (it->get_source() == robot_id &&
+        it->get_target() == robot_id &&
+        it->get().find("response:") != std::string::npos)
       {
         graph_.remove_edge(*it);
         order_ready_asked = false;

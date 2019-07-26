@@ -22,6 +22,8 @@ void RP_deliver_order::activateCode()
       last_msg_.parameters[i].value.c_str());
     if (0 == last_msg_.parameters[i].key.compare("r"))
       robot_id = last_msg_.parameters[i].value;
+    else if (0 == last_msg_.parameters[i].key.compare("t"))
+      table_id = last_msg_.parameters[i].value;
   }
 
   std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
@@ -39,6 +41,9 @@ void RP_deliver_order::activateCode()
     }
     object_needed = it->get_target();
   }
+
+  graph_.remove_edge(table_id, "status: needs_serving", table_id);
+  graph_.add_edge(table_id, "status: already_served", table_id);
   setSuccess();
 }
 

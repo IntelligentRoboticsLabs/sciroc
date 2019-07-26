@@ -32,9 +32,9 @@
 *   POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Jonatan Gines jgines@gsyc.urjc.es */
+/* Author: Jonatan Gines jonatan.gines@urjc.es */
 
-/* Mantainer: Jonatan Gines jgines@gsyc.urjc.es */
+/* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
 #include <ros/ros.h>
 #include "bica_planning/Executor.h"

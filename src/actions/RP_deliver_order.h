@@ -35,7 +35,7 @@ protected:
 private:
     ros::NodeHandle nh_;
     bica_graph::GraphClient graph_;
-    std::string robot_id, object_needed;
+    std::string robot_id, object_needed, table_id;
 };
 
 #endif  // SRC_ACTIONS_RP_DELIVER_ORDER_H

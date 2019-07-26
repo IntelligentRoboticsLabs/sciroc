@@ -92,4 +92,5 @@ roslint_cpp(
   src/actions/RP_fix_order.cpp src/actions/RP_fix_order.h
   src/actions/RP_deliver_order.cpp src/actions/RP_deliver_order.h
   src/actions/RP_gretting_new_customer.cpp src/actions/RP_gretting_new_customer.h
+  src/restaurant/restaurant_executor.cpp src/restaurant/restaurant_executor.h 
 )
