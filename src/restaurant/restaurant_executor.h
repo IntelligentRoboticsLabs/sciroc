@@ -32,9 +32,9 @@
 *   POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Jonatan Gines jgines@gsyc.urjc.es */
+/* Author: Jonatan Gines jonatan.gines@urjc.es */
 
-/* Mantainer: Jonatan Gines jgines@gsyc.urjc.es */
+/* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
 #ifndef SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
 #define SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
