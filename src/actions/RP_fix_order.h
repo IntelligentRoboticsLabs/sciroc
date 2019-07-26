@@ -1,8 +1,4 @@
 #include <ros/ros.h>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <boost/foreach.hpp>
 
 #include "rosplan_action_interface/RPActionInterface.h"
 #include <bica_planning/Action.h>
@@ -11,8 +7,14 @@
 #include <std_msgs/String.h>
 #include "yaml-cpp/yaml.h"
 
-#ifndef KCL_fix_order
-#define KCL_fix_order
+#include <string>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <boost/foreach.hpp>
+
+#ifndef SRC_ACTIONS_RP_FIX_ORDER_H
+#define SRC_ACTIONS_RP_FIX_ORDER_H
 
 /**
 * This file defines the ***** class.
@@ -24,7 +26,7 @@ class RP_fix_order: public bica_planning::Action
 {
 public:
     /* constructor */
-    RP_fix_order(ros::NodeHandle &nh);
+    explicit RP_fix_order(const ros::NodeHandle& nh);
 
 protected:
     /* listen to and process action_dispatch topic */
@@ -36,4 +38,4 @@ private:
     std::string robot_id, object_needed, wrong_object;
 };
 
-#endif
+#endif  // SRC_ACTIONS_RP_FIX_ORDER_H

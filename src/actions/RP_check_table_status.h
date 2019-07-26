@@ -24,7 +24,7 @@ class RP_check_table_status: public bica_planning::Action
 {
 public:
     /* constructor */
-    RP_check_table_status(ros::NodeHandle &nh);
+    RP_check_table_status(const ros::NodeHandle& nh);
 
 protected:
     /* listen to and process action_dispatch topic */

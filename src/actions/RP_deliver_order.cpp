@@ -2,13 +2,15 @@
 
 /* The implementation of RP_deliver_order.h */
 
+#include <string>
+#include <list>
+
 /* constructor */
-RP_deliver_order::RP_deliver_order(ros::NodeHandle &nh)
+RP_deliver_order::RP_deliver_order(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("deliver_order"),
   robot_id()
 {
-
 }
 
 void RP_deliver_order::activateCode()
@@ -45,14 +47,16 @@ void RP_deliver_order::activateCode()
   setSuccess();
 }
 
-void RP_deliver_order::deActivateCode(){}
+void RP_deliver_order::deActivateCode()
+{
+}
 
 /*-------------*/
 /* Main method */
 /*-------------*/
 
-int main(int argc, char **argv) {
-
+int main(int argc, char **argv)
+{
     ros::init(argc, argv, "rosplan_interface_deliver_order");
     ros::NodeHandle nh("~");
 
@@ -60,7 +64,10 @@ int main(int argc, char **argv) {
     RP_deliver_order rpmb(nh);
 
     // listen for action dispatch
-    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000, &KCL_rosplan::RPActionInterface::dispatchCallback, dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,
+      &KCL_rosplan::RPActionInterface::dispatchCallback,
+      dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+
     rpmb.runActionInterface();
 
     return 0;

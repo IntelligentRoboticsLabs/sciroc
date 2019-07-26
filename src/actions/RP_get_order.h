@@ -1,8 +1,4 @@
 #include <ros/ros.h>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <boost/foreach.hpp>
 
 #include "rosplan_action_interface/RPActionInterface.h"
 #include <bica_planning/Action.h>
@@ -11,8 +7,14 @@
 #include <std_msgs/String.h>
 #include "yaml-cpp/yaml.h"
 
-#ifndef KCL_get_order
-#define KCL_get_order
+#include <string>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <boost/foreach.hpp>
+
+#ifndef SRC_ACTIONS_RP_GET_ORDER_H
+#define SRC_ACTIONS_RP_GET_ORDER_H
 
 /**
 * This file defines the ***** class.
@@ -24,7 +26,7 @@ class RP_get_order: public bica_planning::Action
 {
 public:
     /* constructor */
-    RP_get_order(ros::NodeHandle &nh);
+    explicit RP_get_order(const ros::NodeHandle& nh);
 
 protected:
     /* listen to and process action_dispatch topic */
@@ -38,7 +40,6 @@ private:
     std::string wp_id_, robot_id_, table_id_;
 
     std::vector<std::string> splitSpaces(std::string raw_str);
-
 };
 
-#endif
+#endif  // SRC_ACTIONS_RP_GET_ORDER_H

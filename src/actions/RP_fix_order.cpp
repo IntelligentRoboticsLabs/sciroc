@@ -2,8 +2,11 @@
 
 /* The implementation of RP_fix_order.h */
 
+#include <string>
+#include <list>
+
 /* constructor */
-RP_fix_order::RP_fix_order(ros::NodeHandle &nh)
+RP_fix_order::RP_fix_order(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("fix_order"),
   robot_id()
@@ -43,19 +46,21 @@ void RP_fix_order::activateCode()
       "say: Excuse me sir, I need a " + object_needed + " and I don't need a " + \
         wrong_object + ". Could you replace it?",
       "barman");
-    
+
   wrong_object = "";
   setSuccess();
 }
 
-void RP_fix_order::deActivateCode(){}
+void RP_fix_order::deActivateCode()
+{
+}
 
 /*-------------*/
 /* Main method */
 /*-------------*/
 
-int main(int argc, char **argv) {
-
+int main(int argc, char **argv)
+{
     ros::init(argc, argv, "rosplan_interface_fix_order");
     ros::NodeHandle nh("~");
 
@@ -63,7 +68,10 @@ int main(int argc, char **argv) {
     RP_fix_order rpmb(nh);
 
     // listen for action dispatch
-    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000, &KCL_rosplan::RPActionInterface::dispatchCallback, dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,
+      &KCL_rosplan::RPActionInterface::dispatchCallback,
+      dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+
     rpmb.runActionInterface();
 
     return 0;

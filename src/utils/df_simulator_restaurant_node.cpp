@@ -38,10 +38,12 @@
 
 #include <ros/ros.h>
 #include <ros/console.h>
-#include <string>
 #include <dialogflow_ros_msgs/DialogflowResult.h>
 #include <dialogflow_ros_msgs/DialogflowParameter.h>
 #include <std_msgs/Int64.h>
+
+#include <vector>
+#include <string>
 
 class DFSimulator
 {
