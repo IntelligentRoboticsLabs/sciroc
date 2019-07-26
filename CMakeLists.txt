@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   bica_graph
   bica
   dialogflow_ros_msgs
+  roslint
 )
 
 find_package(PkgConfig REQUIRED)
@@ -78,4 +79,17 @@ add_dependencies(restaurant_executor_node
 )
 target_link_libraries(restaurant_executor_node
   ${catkin_LIBRARIES}
+)
+
+set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
+
+roslint_cpp(
+  src/utils/df_simulator_restaurant_node.cpp
+  src/actions/RP_check_table_status.cpp
+  src/actions/RP_get_order.cpp src/actions/RP_get_order.h
+  src/actions/RP_set_order.cpp src/actions/RP_set_order.h
+  src/actions/RP_check_order.cpp src/actions/RP_check_order.h
+  src/actions/RP_fix_order.cpp src/actions/RP_fix_order.h
+  src/actions/RP_deliver_order.cpp src/actions/RP_deliver_order.h
+  src/actions/RP_gretting_new_customer.cpp src/actions/RP_gretting_new_customer.h
 )

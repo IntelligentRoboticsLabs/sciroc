@@ -2,13 +2,18 @@
 
 /* The implementation of RP_check_order.h */
 
+
+#include <algorithm>
+#include <string>
+#include <list>
+#include <vector>
+
 /* constructor */
-RP_check_order::RP_check_order(ros::NodeHandle &nh)
+RP_check_order::RP_check_order(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("check_order"),
   robot_id()
 {
-
 }
 
 void RP_check_order::activateCode()
@@ -23,7 +28,9 @@ void RP_check_order::activateCode()
   }
 }
 
-void RP_check_order::deActivateCode(){}
+void RP_check_order::deActivateCode()
+{
+}
 
 void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
 {
@@ -50,7 +57,7 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
       std::string edge = it->get();
       if (edge.find("wants") != std::string::npos)
         order.push_back(it->get_target());
-      else if(edge.find("has") != std::string::npos)
+      else if (edge.find("has") != std::string::npos)
         order_in_robot.push_back(it->get_target());
     }
     std::sort(order.begin(), order.end());
@@ -95,8 +102,8 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
 /* Main method */
 /*-------------*/
 
-int main(int argc, char **argv) {
-
+int main(int argc, char **argv)
+{
     ros::init(argc, argv, "rosplan_interface_check_order");
     ros::NodeHandle nh("~");
 
@@ -104,7 +111,10 @@ int main(int argc, char **argv) {
     RP_check_order rpmb(nh);
 
     // listen for action dispatch
-    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000, &KCL_rosplan::RPActionInterface::dispatchCallback, dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,
+      &KCL_rosplan::RPActionInterface::dispatchCallback,
+      dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+
     rpmb.runActionInterface();
 
     return 0;

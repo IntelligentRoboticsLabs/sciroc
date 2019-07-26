@@ -2,13 +2,16 @@
 
 /* The implementation of RP_get_order.h */
 
+#include <string>
+#include <list>
+#include <vector>
+
 /* constructor */
-RP_get_order::RP_get_order(ros::NodeHandle &nh)
+RP_get_order::RP_get_order(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("get_order"),
   wp_id_()
 {
-
 }
 
 void RP_get_order::activateCode()
@@ -24,10 +27,11 @@ void RP_get_order::activateCode()
       robot_id_ = last_msg_.parameters[i].value;
   }
   graph_.add_edge(robot_id_, "ask: bar_order.ask", robot_id_);
-
 }
 
-void RP_get_order::deActivateCode(){}
+void RP_get_order::deActivateCode()
+{
+}
 
 std::vector<std::string> RP_get_order::splitSpaces(std::string raw_str)
 {
@@ -71,8 +75,8 @@ void RP_get_order::step()
 /* Main method */
 /*-------------*/
 
-int main(int argc, char **argv) {
-
+int main(int argc, char **argv)
+{
     ros::init(argc, argv, "rosplan_interface_get_order");
     ros::NodeHandle nh("~");
 
@@ -80,7 +84,10 @@ int main(int argc, char **argv) {
     RP_get_order rpmb(nh);
 
     // listen for action dispatch
-    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000, &KCL_rosplan::RPActionInterface::dispatchCallback, dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+    ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,
+      &KCL_rosplan::RPActionInterface::dispatchCallback,
+      dynamic_cast<KCL_rosplan::RPActionInterface*>(&rpmb));
+
     rpmb.runActionInterface();
 
     return 0;
