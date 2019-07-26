@@ -20,8 +20,16 @@ void RP_gretting_new_customer::activateCode()
       last_msg_.parameters[i].value.c_str());
     if (0 == last_msg_.parameters[i].key.compare("r"))
       robot_id = last_msg_.parameters[i].value;
+    else if (0 == last_msg_.parameters[i].key.compare("t"))
+      table_id = last_msg_.parameters[i].value;
   }
+  
   graph_.add_edge(robot_id, "say: Here's your table.", robot_id);
+
+  graph_.remove_edge(table_id, "status: ready", table_id);
+  graph_.add_edge(table_id, "status: needs_serving", table_id);
+  graph_.add_edge(table_id, "num_customers: 1", table_id);
+
   setSuccess();
 }
 

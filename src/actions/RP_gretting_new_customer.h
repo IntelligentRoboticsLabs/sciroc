@@ -32,7 +32,7 @@ protected:
 private:
     ros::NodeHandle nh_;
     bica_graph::GraphClient graph_;
-    std::string robot_id;
+    std::string robot_id, table_id;
 };
 
 #endif
