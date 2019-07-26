@@ -93,7 +93,7 @@ void RestaurantExecutor::init_knowledge() {
   for (int i = 0; i < num_tables_to_check; i++)
   {
     std::string table = "mesa_" + std::to_string(i + 1);
-    graph_.add_node(table, "table");
+    graph_.add_node(table, "table");  // node is redundantelly added by graph-kms sync issue
     graph_.add_edge(table, "needs_check", table);
   }
 }
@@ -137,7 +137,7 @@ void RestaurantExecutor::checkTableStatus_code_once()
 
 void RestaurantExecutor::checkTableStatus_code_iterative()
 {
-  std::vector<bica_graph::StringEdge> tables_to_check = graph_.get_string_edges_by_data(std::regex("needs_check"));
+  std::vector<bica_graph::StringEdge> tables_to_check = graph_.get_string_edges_by_data("needs_check");
   if (!tables_to_check.empty())
     setNewGoal("table_checked " + tables_to_check[0].get_source());
 }
@@ -192,7 +192,7 @@ void RestaurantExecutor::grettingNewCustomer_code_iterative()
 bool RestaurantExecutor::Init_2_checkTableStatus()
 {
   std::vector<bica_graph::StringEdge> response_edges =
-    graph_.get_string_edges_by_data(std::regex("response: [[:alnum:]_]*"));
+    graph_.get_string_edges_by_data("response: [[:alnum:]_]*");
 
   bool exists_response = false;
   for (auto edge : response_edges)
@@ -206,16 +206,16 @@ bool RestaurantExecutor::Init_2_checkTableStatus()
 
 bool RestaurantExecutor::checkTableStatus_2_idle()
 {
-  if (graph_.get_string_edges_by_data(std::regex("needs_check")).empty())
+  if (graph_.get_string_edges_by_data("needs_check").empty())
     setNewGoal("robot_at " + robot_id + " wp_entry");
 
-  return graph_.get_string_edges_by_data(std::regex("robot_at"))[0].get_target() == "wp_entry";
+  return graph_.get_string_edges_by_data("robot_at")[0].get_target() == "wp_entry";
 }
 
 bool RestaurantExecutor::idle_2_getOrder()
 {
   std::vector<bica_graph::StringEdge> interest_edges =
-    graph_.get_string_edges_by_data(std::regex("status: needs_serving"));
+    graph_.get_string_edges_by_data("status: needs_serving");
 
   if (!interest_edges.empty() && !order_delivered)
   {
@@ -229,12 +229,12 @@ bool RestaurantExecutor::idle_2_getOrder()
 
 bool RestaurantExecutor::getOrder_2_setOrder()
 {
-  return (!(search_predicates_regex(std::regex(current_goal_))).empty());
+  return (!(search_predicates_regex(current_goal_)).empty());
 }
 
 bool RestaurantExecutor::setOrder_2_checkOrder()
 {
-  if (!(search_predicates_regex(std::regex(current_goal_))).empty())
+  if (!(search_predicates_regex(current_goal_)).empty())
   {
     std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
     for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
@@ -257,17 +257,17 @@ bool RestaurantExecutor::setOrder_2_checkOrder()
 
 bool RestaurantExecutor::checkOrder_2_fixOrder()
 {
-  return (!(search_predicates_regex(std::regex("order_needs_fix " + robot_id))).empty());
+  return (!(search_predicates_regex("order_needs_fix " + robot_id)).empty());
 }
 
 bool RestaurantExecutor::checkOrder_2_deliverOrder()
 {
-  return (!(search_predicates_regex(std::regex(current_goal_))).empty());
+  return (!(search_predicates_regex(current_goal_)).empty());
 }
 
 bool RestaurantExecutor::fixOrder_2_checkOrder()
 {
-  if (!(search_predicates_regex(std::regex(current_goal_))).empty())
+  if (!(search_predicates_regex(current_goal_)).empty())
   {
     std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
     for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
@@ -291,7 +291,7 @@ bool RestaurantExecutor::fixOrder_2_checkOrder()
 
 bool RestaurantExecutor::deliverOrder_2_idle()
 {
-  if (!(search_predicates_regex(std::regex(current_goal_))).empty())
+  if (!(search_predicates_regex(current_goal_)).empty())
   {
     std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
     for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
@@ -315,7 +315,7 @@ bool RestaurantExecutor::deliverOrder_2_idle()
 
 bool RestaurantExecutor::idle_2_grettingNewCustomer()
 {
-  std::vector<bica_graph::StringEdge> edges_list = graph_.get_string_edges_by_data(std::regex("status: ready"));
+  std::vector<bica_graph::StringEdge> edges_list = graph_.get_string_edges_by_data("status: ready");
 
   if (!edges_list.empty() && order_delivered && !new_customer)
   {
@@ -329,5 +329,5 @@ bool RestaurantExecutor::idle_2_grettingNewCustomer()
 
 bool RestaurantExecutor::grettingNewCustomer_2_idle()
 {
-  return (!(search_predicates_regex(std::regex(current_goal_))).empty());
+  return (!(search_predicates_regex(current_goal_)).empty());
 }
