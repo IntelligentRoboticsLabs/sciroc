@@ -83,10 +83,10 @@ public:
 private:
   ros::NodeHandle nh_;
 
-  std::string robot_id, current_goal_, needs_serving_table_, ready_table_;
+  std::string robot_id_, current_goal_, needs_serving_table_, ready_table_;
   std::vector<std::string> splitSpaces(std::string raw_str);
   bica_graph::GraphClient graph_;
-  bool order_ready_asked, order_delivered, new_customer;
+  bool order_ready_asked_, order_delivered_, new_customer_;
 };
 
 #endif  // SRC_RESTAURANT_RESTAURANT_EXECUTOR_H

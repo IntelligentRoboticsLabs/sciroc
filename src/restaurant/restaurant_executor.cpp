@@ -44,20 +44,20 @@
 RestaurantExecutor::RestaurantExecutor(): current_goal_(), nh_()
 {
   init_knowledge();
-  order_ready_asked = false;
-  order_delivered = false;
-  new_customer = false;
+  order_ready_asked_ = false;
+  order_delivered_ = false;
+  new_customer_ = false;
 }
 
 void RestaurantExecutor::init_knowledge()
 {
-  robot_id = "leia";
+  robot_id_ = "leia";
 
-  add_instance("robot", robot_id);
+  add_instance("robot", robot_id_);
   add_instance("person", "barman");
   add_instance("person", "new_customer");
-  add_predicate("robot_at " + robot_id + " wp_entry");
-  add_predicate("robot_at_room " + robot_id + " main_room");
+  add_predicate("robot_at " + robot_id_ + " wp_entry");
+  add_predicate("robot_at_room " + robot_id_ + " main_room");
 
   add_predicate("person_at new_customer wp_entry");
   add_predicate("person_at barman wp_barman");
@@ -88,7 +88,7 @@ void RestaurantExecutor::init_knowledge()
   add_predicate("is_table_at mesa_5 main_room");
   add_predicate("is_table_at mesa_6 main_room");
 
-  graph_.add_node(robot_id, "robot");
+  graph_.add_node(robot_id_, "robot");
   graph_.add_node("barman", "person");
 
   int num_tables_to_check;
@@ -129,7 +129,7 @@ void RestaurantExecutor::setNewGoal(std::string goal)
 
 void RestaurantExecutor::Init_code_once()
 {
-  graph_.add_edge(robot_id, "ask: bar_start.action", robot_id);
+  graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
 }
 
 void RestaurantExecutor::Init_code_iterative()
@@ -138,7 +138,7 @@ void RestaurantExecutor::Init_code_iterative()
 
 void RestaurantExecutor::checkTableStatus_code_once()
 {
-  graph_.add_edge(robot_id, "say: I will check the table status.", robot_id);
+  graph_.add_edge(robot_id_, "say: I will check the table status.", robot_id_);
 }
 
 void RestaurantExecutor::checkTableStatus_code_iterative()
@@ -150,13 +150,13 @@ void RestaurantExecutor::checkTableStatus_code_iterative()
 
 void RestaurantExecutor::idle_code_iterative()
 {
-  if (order_delivered)
-    setNewGoal("robot_at " + robot_id + " wp_entry");
+  if (order_delivered_)
+    setNewGoal("robot_at " + robot_id_ + " wp_entry");
 }
 
 void RestaurantExecutor::getOrder_code_once()
 {
-  graph_.add_edge(robot_id, "say: I will take the order.", robot_id);
+  graph_.add_edge(robot_id_, "say: I will take the order.", robot_id_);
 }
 
 void RestaurantExecutor::getOrder_code_iterative()
@@ -166,28 +166,28 @@ void RestaurantExecutor::getOrder_code_iterative()
 
 void RestaurantExecutor::setOrder_code_iterative()
 {
-  setNewGoal("order_to_barman " + robot_id);
+  setNewGoal("order_to_barman " + robot_id_);
 }
 
 void RestaurantExecutor::checkOrder_code_iterative()
 {
-  setNewGoal("order_checked " + robot_id);
+  setNewGoal("order_checked " + robot_id_);
 }
 
 void RestaurantExecutor::fixOrder_code_iterative()
 {
-  remove_predicate("order_needs_fix " + robot_id);
-  setNewGoal("order_fixed " + robot_id);
+  remove_predicate("order_needs_fix " + robot_id_);
+  setNewGoal("order_fixed " + robot_id_);
 }
 
 void RestaurantExecutor::deliverOrder_code_iterative()
 {
-  setNewGoal("order_delivered " + needs_serving_table_);
+  setNewGoal("order_delivered_ " + needs_serving_table_);
 }
 
 void RestaurantExecutor::grettingNewCustomer_code_once()
 {
-  graph_.add_edge(robot_id, "say: Hi! Welcome to the restaurant, I will guide you to a table. Follow me", robot_id);
+  graph_.add_edge(robot_id_, "say: Hi! Welcome to the restaurant, I will guide you to a table. Follow me", robot_id_);
 }
 
 void RestaurantExecutor::grettingNewCustomer_code_iterative()
@@ -213,7 +213,7 @@ bool RestaurantExecutor::Init_2_checkTableStatus()
 bool RestaurantExecutor::checkTableStatus_2_idle()
 {
   if (graph_.get_string_edges_by_data("needs_check").empty())
-    setNewGoal("robot_at " + robot_id + " wp_entry");
+    setNewGoal("robot_at " + robot_id_ + " wp_entry");
 
   return graph_.get_string_edges_by_data("robot_at")[0].get_target() == "wp_entry";
 }
@@ -223,7 +223,7 @@ bool RestaurantExecutor::idle_2_getOrder()
   std::vector<bica_graph::StringEdge> interest_edges =
     graph_.get_string_edges_by_data("status: needs_serving");
 
-  if (!interest_edges.empty() && !order_delivered)
+  if (!interest_edges.empty() && !order_delivered_)
   {
     needs_serving_table_ = interest_edges[0].get_source();
     current_goal_ = "order_ready " + interest_edges[0].get_source();
@@ -240,32 +240,31 @@ bool RestaurantExecutor::getOrder_2_setOrder()
 
 bool RestaurantExecutor::setOrder_2_checkOrder()
 {
+  bool ret = false;
+
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
-    for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response: [[:alnum:]_]*");
+
+    if (!interest_edges.empty())
     {
-      if (it->get_source() == "barman" &&
-        it->get_target() == robot_id &&
-        it->get().find("response:") != std::string::npos)
-      {
-        graph_.remove_edge(*it);
-        order_ready_asked = false;
-        return true;
-      }
-      else if (!order_ready_asked)
-      {
-        order_ready_asked = true;
-        graph_.add_edge(robot_id, "ask: orderReady.ask", "barman");
-      }
+      graph_.remove_edge(interest_edges[0]);
+      order_ready_asked_ = false;
+      ret = true;
+    }
+    else if (!order_ready_asked_)
+    {
+      order_ready_asked_ = true;
+      graph_.add_edge(robot_id_, "ask: orderReady.ask", "barman");
     }
   }
-  return false;
+
+  return ret;
 }
 
 bool RestaurantExecutor::checkOrder_2_fixOrder()
 {
-  return (!(search_predicates_regex("order_needs_fix " + robot_id)).empty());
+  return (!(search_predicates_regex("order_needs_fix " + robot_id_)).empty());
 }
 
 bool RestaurantExecutor::checkOrder_2_deliverOrder()
@@ -275,63 +274,61 @@ bool RestaurantExecutor::checkOrder_2_deliverOrder()
 
 bool RestaurantExecutor::fixOrder_2_checkOrder()
 {
+  bool ret = false;
+
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
-    for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response: [[:alnum:]_]*");
+
+    if (!interest_edges.empty())
     {
-      if (it->get_source() == "barman" &&
-        it->get_target() == robot_id &&
-        it->get().find("response:") != std::string::npos)
-      {
-        graph_.remove_edge(*it);
-        order_ready_asked = false;
-        remove_predicate("order_checked " + robot_id);
-        return true;
-      }
-      else if (!order_ready_asked)
-      {
-        order_ready_asked = true;
-        graph_.add_edge(robot_id, "ask: orderReady.ask", "barman");
-      }
+      graph_.remove_edge(interest_edges[0]);
+      order_ready_asked_ = false;
+      remove_predicate("order_checked " + robot_id_);
+      ret = true;
+    }
+    else if (!order_ready_asked_)
+    {
+      order_ready_asked_ = true;
+      graph_.add_edge(robot_id_, "ask: orderReady.ask", "barman");
     }
   }
-  return false;
+
+  return ret;
 }
 
 bool RestaurantExecutor::deliverOrder_2_idle()
 {
+  bool ret = false;
+
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
-    for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+    auto interest_edges = graph_.get_string_edges_from_node_by_data(robot_id_, "response: [[:alnum:]_]*");
+
+    if (!interest_edges.empty())
     {
-      if (it->get_source() == robot_id &&
-        it->get_target() == robot_id &&
-        it->get().find("response:") != std::string::npos)
-      {
-        graph_.remove_edge(*it);
-        order_ready_asked = false;
-        order_delivered = true;
-        return true;
-      }
-      else if (!order_ready_asked)
-      {
-        order_ready_asked = true;
-        graph_.add_edge(robot_id, "ask: confirmOrder.ask", needs_serving_table_);
-      }
+      graph_.remove_edge(interest_edges[0]);
+      order_ready_asked_ = false;
+      order_delivered_ = true;
+      ret = true;
+    }
+    else if (!order_ready_asked_)
+    {
+      order_ready_asked_ = true;
+      graph_.add_edge(robot_id_, "ask: confirmOrder.ask", needs_serving_table_);
     }
   }
-  return false;
+
+  return ret;
 }
 
 bool RestaurantExecutor::idle_2_grettingNewCustomer()
 {
   std::vector<bica_graph::StringEdge> edges_list = graph_.get_string_edges_by_data("status: ready");
 
-  if (!edges_list.empty() && order_delivered && !new_customer)
+  if (!edges_list.empty() && order_delivered_ && !new_customer_)
   {
-    new_customer = true;
+    new_customer_ = true;
     ready_table_ = edges_list[0].get_source();
     return true;
   }
