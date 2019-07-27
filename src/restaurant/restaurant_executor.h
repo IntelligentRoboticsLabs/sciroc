@@ -55,6 +55,7 @@ public:
   void init_knowledge();
   void setNewGoal(std::string goal);
 
+  void Init_code_iterative();
   void deliverOrder_code_iterative();
   void fixOrder_code_iterative();
   void grettingNewCustomer_code_iterative();
