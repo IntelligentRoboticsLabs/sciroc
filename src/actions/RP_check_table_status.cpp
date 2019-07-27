@@ -52,6 +52,8 @@ void RP_check_table_status::qrCallback(const std_msgs::String::ConstPtr& qr)
       robot_id_,
       "say: The table status is " + table_status_ + " and have " + num_customers_ + " customers",
       robot_id_);
+
+    graph_.remove_edge(table_id_, "needs_check", table_id_);
     setSuccess();
   }
 }
