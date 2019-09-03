@@ -31,6 +31,8 @@ protected:
     void qrCallback(const std_msgs::String::ConstPtr& qr);
     void activateCode();
     void deActivateCode();
+
+    void step();
 private:
     ros::NodeHandle nh_;
     ros::Subscriber qr_sub_;

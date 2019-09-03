@@ -81,6 +81,10 @@ target_link_libraries(restaurant_executor_node
   ${catkin_LIBRARIES}
 )
 
+add_executable(restaurant_test_check_table src/restaurant/tests/restaurant_test_check_table.cpp)
+add_dependencies(restaurant_test_check_table ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_check_table ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
 set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
 
 roslint_cpp(
@@ -92,5 +96,5 @@ roslint_cpp(
   src/actions/RP_fix_order.cpp src/actions/RP_fix_order.h
   src/actions/RP_deliver_order.cpp src/actions/RP_deliver_order.h
   src/actions/RP_gretting_new_customer.cpp src/actions/RP_gretting_new_customer.h
-  src/restaurant/restaurant_executor.cpp src/restaurant/restaurant_executor.h 
+  src/restaurant/restaurant_executor.cpp src/restaurant/restaurant_executor.h
 )

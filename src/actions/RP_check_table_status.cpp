@@ -27,13 +27,28 @@ void RP_check_table_status::activateCode()
       robot_id_ = last_msg_.parameters[i].value;
   }
   graph_.add_edge(robot_id_, "say: Checking table status", robot_id_);
+
+  graph_.add_edge("leia", "want_see", table_id_);
+
 }
 
-void RP_check_table_status::deActivateCode()
+void
+RP_check_table_status::deActivateCode()
 {
+  graph_.remove_edge("leia", "want_see", table_id_);
 }
 
-void RP_check_table_status::qrCallback(const std_msgs::String::ConstPtr& qr)
+void
+RP_check_table_status::step()
+{
+  if (!isActive())
+    return;
+
+  ROS_INFO("Executing action");
+}
+
+void
+RP_check_table_status::qrCallback(const std_msgs::String::ConstPtr& qr)
 {
   if (isActive())
   {
