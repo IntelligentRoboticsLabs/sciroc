@@ -1,15 +1,20 @@
 #include <ros/ros.h>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <boost/foreach.hpp>
+
+#include <tf2_ros/transform_listener.h>
 
 #include "rosplan_action_interface/RPActionInterface.h"
 #include <bica_planning/Action.h>
 #include <bica_planning/KMSClient.h>
 #include <bica_graph/graph_client.h>
+
+#include <darknet_ros_3d_msgs/BoundingBoxes3d.h>
 #include <std_msgs/String.h>
+
 #include "yaml-cpp/yaml.h"
+
+#include <vector>
+#include <iostream>
+#include <fstream>
 
 #ifndef KCL_check_table_status
 #define KCL_check_table_status
@@ -20,6 +25,42 @@
 * PDDL "*****" actions become "*****" actions.
 */
 
+#define CHECKING_TIME   15.0
+
+#define MIN_PROBABILITY   0.4
+
+#define PERSON_MAX_DIST   1.5
+#define PERSON_MIN_SIZE_X   0.3
+#define PERSON_MIN_SIZE_Y   0.3
+#define PERSON_MIN_SIZE_Z   0.3
+#define PERSON_MAX_SIZE_X   1.2
+#define PERSON_MAX_SIZE_Y   1.2
+#define PERSON_MAX_SIZE_Z   2.0
+
+#define OBJECT_MIN_X   -1.0
+#define OBJECT_MAX_X   1.0
+#define OBJECT_MIN_Y   -0.5
+#define OBJECT_MAX_Y   0.5
+#define OBJECT_MIN_Z   0.7
+#define OBJECT_MAX_Z   1.2
+#define OBJECT_MIN_SIZE_X   0.05
+#define OBJECT_MIN_SIZE_Y   0.05
+#define OBJECT_MIN_SIZE_Z   0.05
+#define OBJECT_MAX_SIZE_X   0.5
+#define OBJECT_MAX_SIZE_Y   0.5
+#define OBJECT_MAX_SIZE_Z   0.5
+
+struct CheckedObject
+{
+  tf2::Vector3 central_point;
+  std::string class_id;
+  float probability;
+  double size_x;
+  double size_y;
+  double size_z;
+};
+
+
 class RP_check_table_status: public bica_planning::Action
 {
 public:
@@ -29,15 +70,28 @@ public:
 protected:
     /* listen to and process action_dispatch topic */
     void qrCallback(const std_msgs::String::ConstPtr& qr);
+    void objectsCallback(const darknet_ros_3d_msgs::BoundingBoxes3d::ConstPtr& msg);
     void activateCode();
     void deActivateCode();
 
     void step();
 private:
     ros::NodeHandle nh_;
-    ros::Subscriber qr_sub_;
     bica_graph::GraphClient graph_;
+
+    tf2_ros::Buffer tfBuffer_;
+  	tf2_ros::TransformListener tf_listener_;
+
+    ros::Subscriber qr_sub_;
+    ros::Subscriber object_sub_;
+
     std::string wp_id_, robot_id_, table_id_, table_status_, num_customers_;
+
+    ros::Time start_check_;
+    std::vector<CheckedObject> objects_;
+
+    bool checkPoint(const CheckedObject& object);
+    bool is_already_detected(const CheckedObject& object);
 };
 
 #endif
