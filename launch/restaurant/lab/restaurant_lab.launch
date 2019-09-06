@@ -4,7 +4,7 @@
   <arg name = "sonar_topic" value = "/sonar_base" />
   <arg name = "sonar_frame_id" value = "/base_sonar_02_link" />
   <arg name = "camera_topic" value = "/xtion/rgb/image_raw" />
-  <arg name = "num_tables_to_check" value = "2" /> <!-- Param to simplify the execution of the task -->
+  <arg name = "num_tables_to_check" value = "6" /> <!-- Param to simplify the execution of the task -->
 
   <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
@@ -45,10 +45,12 @@
   </include>
 
   <include file="$(find sciroc)/launch/restaurant/restaurant_actions.launch" />
-  <node name="restaurant_test_check_table" pkg="sciroc" type="restaurant_test_check_table" respawn="false" output="screen" required="true">
+  <!--<node name="restaurant_test_check_table" pkg="sciroc" type="restaurant_test_check_table" respawn="false" output="screen" required="true">
+    <param name="num_tables_to_check" value="$(arg num_tables_to_check)"/>
+  </node>-->
+  <node name="restaurant_executor_node" pkg="sciroc" type="restaurant_executor_node" respawn="false" output="screen" required="true">
     <param name="num_tables_to_check" value="$(arg num_tables_to_check)"/>
   </node>
-
   <include file="$(find graph_dialog_extractor)/launch/graph_dialog_extractor.launch" >
     <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
     <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>

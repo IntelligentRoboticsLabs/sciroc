@@ -41,12 +41,16 @@
 #include <list>
 #include <vector>
 
-RestaurantExecutor::RestaurantExecutor(): current_goal_(), nh_()
+RestaurantExecutor::RestaurantExecutor():
+  current_goal_(),
+  tf_listener_(tfBuffer_),
+  nh_()
 {
   init_knowledge();
   order_ready_asked_ = false;
-  order_delivered_ = false;
+  order_delivered_ = true;
   new_customer_ = false;
+  //object_sub_ = nh_.subscribe("/darknet_ros_3d/bounding_boxes", 10, &RestaurantExecutor::objectsCallback, this);
 }
 
 void RestaurantExecutor::init_knowledge()
@@ -59,7 +63,7 @@ void RestaurantExecutor::init_knowledge()
   add_predicate("robot_at " + robot_id_ + " wp_entry");
   add_predicate("robot_at_room " + robot_id_ + " main_room");
 
-  add_predicate("person_at new_customer wp_entry");
+  add_predicate("person_at new_customer wp_waiting");
   add_predicate("person_at barman wp_barman");
   add_predicate("person_at_room new_customer main_room");
 
@@ -91,14 +95,24 @@ void RestaurantExecutor::init_knowledge()
   graph_.add_node(robot_id_, "robot");
   graph_.add_node("barman", "person");
 
+  graph_.set_tf_identity("base_footprint", robot_id_);
+  graph_.add_node("main_room", "room");
+  graph_.set_tf_identity("main_room", "map");
+  graph_.add_tf_edge("main_room", robot_id_);
+
   int num_tables_to_check;
   nh_.param<int>("/restaurant_executor_node/num_tables_to_check", num_tables_to_check, 6);
+  tf2::Quaternion q;
+  q.setRPY(0, 0, 0);
 
   for (int i = 0; i < num_tables_to_check; i++)
   {
     std::string table = "mesa_" + std::to_string(i + 1);
-    graph_.add_node(table, "table");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node(table, "table");
+    graph_.add_node("wp_"+ table, "location");  // node is redundantelly added by graph-kms sync issue
     graph_.add_edge(table, "needs_check", table);
+    tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
+    graph_.add_edge("wp_" + table, wp2table, table, true);
   }
 }
 
@@ -127,6 +141,52 @@ void RestaurantExecutor::setNewGoal(std::string goal)
   call_planner();
 }
 
+void RestaurantExecutor::objectsCallback(const darknet_ros_3d_msgs::BoundingBoxes3d::ConstPtr& msg)
+{
+  objects_msg_ = *msg;
+}
+
+
+bool RestaurantExecutor::person_close()
+{
+  for (auto bb : objects_msg_.bounding_boxes)
+  {
+    if (bb.Class == "person")
+    {
+      geometry_msgs::TransformStamped any2bf_msg;
+      tf2::Transform any2bf;
+      std::string error;
+      if (tfBuffer_.canTransform(objects_msg_.header.frame_id, "base_footprint",
+        ros::Time(0), ros::Duration(0.1), &error))
+        any2bf_msg = tfBuffer_.lookupTransform(objects_msg_.header.frame_id, "base_footprint", ros::Time(0));
+      else
+      {
+        ROS_ERROR("Can't transform %s", error.c_str());
+        return false;
+      }
+
+      tf2::Stamped<tf2::Transform> aux;
+      tf2::convert(any2bf_msg, aux);
+      any2bf = aux;
+
+      tf2::Vector3 central_point;
+      central_point.setX((bb.xmax + bb.xmin)/2.0);
+      central_point.setY((bb.ymax + bb.ymin)/2.0);
+      central_point.setZ((bb.zmax + bb.zmin)/2.0);
+      central_point = any2bf.inverse() * central_point;
+
+      float distance = sqrt(pow(central_point.getX(),2) +
+        pow(central_point.getY(),2) +
+        pow(central_point.getZ(),2));
+
+      ROS_INFO("[restaurant_executor] person distance -- %f", distance);
+      if (distance <= DISTANCE_TH_)
+        return true;
+    }
+  }
+  return false;
+}
+
 void RestaurantExecutor::Init_code_once()
 {
   graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
@@ -151,7 +211,7 @@ void RestaurantExecutor::checkTableStatus_code_iterative()
 void RestaurantExecutor::idle_code_iterative()
 {
   if (order_delivered_)
-    setNewGoal("robot_at " + robot_id_ + " wp_entry");
+    setNewGoal("robot_at " + robot_id_ + " wp_waiting");
 }
 
 void RestaurantExecutor::getOrder_code_once()
@@ -213,9 +273,9 @@ bool RestaurantExecutor::Init_2_checkTableStatus()
 bool RestaurantExecutor::checkTableStatus_2_idle()
 {
   if (graph_.get_string_edges_by_data("needs_check").empty())
-    setNewGoal("robot_at " + robot_id_ + " wp_entry");
+    setNewGoal("robot_at " + robot_id_ + " wp_waiting");
 
-  return graph_.get_string_edges_by_data("robot_at")[0].get_target() == "wp_entry";
+  return graph_.get_string_edges_by_data("robot_at")[0].get_target() == "wp_waiting";
 }
 
 bool RestaurantExecutor::idle_2_getOrder()
@@ -325,8 +385,7 @@ bool RestaurantExecutor::deliverOrder_2_idle()
 bool RestaurantExecutor::idle_2_grettingNewCustomer()
 {
   std::vector<bica_graph::StringEdge> edges_list = graph_.get_string_edges_by_data("status: ready");
-
-  if (!edges_list.empty() && order_delivered_ && !new_customer_)
+  if (!edges_list.empty() && order_delivered_ && !new_customer_ /*&& person_close()*/)
   {
     new_customer_ = true;
     ready_table_ = edges_list[0].get_source();

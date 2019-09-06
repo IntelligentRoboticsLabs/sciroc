@@ -43,8 +43,14 @@
 #include "bica_planning/Executor.h"
 #include "./restaurant_hfsm.h"
 #include <bica_graph/graph_client.h>
+#include <darknet_ros_3d_msgs/BoundingBoxes3d.h>
 #include <string>
 #include <vector>
+#include <tf2_ros/transform_listener.h>
+
+
+#define DISTANCE_TH_   1.8
+
 
 class RestaurantExecutor: public bica_planning::Executor, public bica::restaurant_hfsm
 {
@@ -54,6 +60,9 @@ public:
   bool update();
   void init_knowledge();
   void setNewGoal(std::string goal);
+  bool person_close();
+  void objectsCallback(const darknet_ros_3d_msgs::BoundingBoxes3d::ConstPtr& msg);
+
 
   void Init_code_iterative();
   void deliverOrder_code_iterative();
@@ -87,6 +96,11 @@ private:
   std::vector<std::string> splitSpaces(std::string raw_str);
   bica_graph::GraphClient graph_;
   bool order_ready_asked_, order_delivered_, new_customer_;
+  ros::Subscriber object_sub_;
+
+  tf2_ros::Buffer tfBuffer_;
+  tf2_ros::TransformListener tf_listener_;
+  darknet_ros_3d_msgs::BoundingBoxes3d objects_msg_;
 };
 
 #endif  // SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
