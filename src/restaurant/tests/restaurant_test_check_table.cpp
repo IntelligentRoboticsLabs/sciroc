@@ -90,6 +90,7 @@ public:
 
       add_goal("table_checked mesa_1");
       call_planner();
+      executed_ = true;
     }
     else
       ROS_INFO("Finished executing CheckTableExecutor");
