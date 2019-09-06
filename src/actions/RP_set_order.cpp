@@ -30,7 +30,7 @@ void RP_set_order::activateCode()
     if (edge.find("wants") != std::string::npos)
     {
       table_id = it->get_source();
-      order.push_back(it->get_target());
+      order.push_back(graph_.get_node(it->get_target()).get_type());
     }
   }
   std::string table_id_raw = table_id;

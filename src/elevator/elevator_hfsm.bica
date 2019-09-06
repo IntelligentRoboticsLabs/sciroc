@@ -1,0 +1,20 @@
+<component id="elevator_hfsm">
+ <state initial="false" x="-668" y="-143" id="askForFloor"/>
+ <state initial="false" x="-843" y="-292" id="robotAtEnd"/>
+ <state initial="true" x="-1072" y="-307" id="Init"/>
+ <state initial="false" x="-560" y="-458" id="robotAtElevator"/>
+ <state initial="false" x="-534" y="-306" id="waitForDoor"/>
+ <state initial="false" x="-723" y="-458" id="findProxemicPos"/>
+ <state initial="false" x="-888" y="-460" id="approachElevator"/>
+ <state initial="false" x="-416" y="-455" id="advertiseGoal"/>
+ <state initial="false" x="-1072" y="-457" id="getShopList"/>
+ <transition src="askForFloor" dst="robotAtEnd"/>
+ <transition src="waitForDoor" dst="askForFloor"/>
+ <transition src="askForFloor" dst="waitForDoor"/>
+ <transition src="Init" dst="getShopList"/>
+ <transition src="findProxemicPos" dst="robotAtElevator"/>
+ <transition src="getShopList" dst="approachElevator"/>
+ <transition src="approachElevator" dst="findProxemicPos"/>
+ <transition src="robotAtElevator" dst="advertiseGoal"/>
+ <transition src="advertiseGoal" dst="waitForDoor"/>
+</component>

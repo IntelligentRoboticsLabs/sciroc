@@ -61,10 +61,13 @@ void RP_get_order::step()
       std::string delimiter = "response: ";
       response_raw.erase(0, response_raw.find(delimiter) + delimiter.length());
       std::vector<std::string> food = splitSpaces(response_raw);
+
+      int counter = 0;
       for (auto it_food = food.begin(); it_food != food.end(); ++it_food)
       {
-        graph_.add_node(*it_food, "order");
-        graph_.add_edge(table_id_, "wants", *it_food);
+        std::string instance_id = table_id_ + "." + *it_food + "." + std::to_string(counter++);
+        graph_.add_node(instance_id, *it_food);
+        graph_.add_edge(table_id_, "wants", instance_id);
       }
       setSuccess();
     }

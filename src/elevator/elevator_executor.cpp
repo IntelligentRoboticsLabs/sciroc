@@ -36,71 +36,86 @@
 
 /* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
-#ifndef SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
-#define SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
-
-#include <ros/ros.h>
-#include "bica_planning/Executor.h"
-#include "./restaurant_hfsm.h"
-#include <bica_graph/graph_client.h>
-#include <darknet_ros_3d_msgs/BoundingBoxes3d.h>
+#include "./elevator_executor.h"
 #include <string>
+#include <list>
 #include <vector>
-#include <tf2_ros/transform_listener.h>
 
-
-#define DISTANCE_TH_   1.8
-
-
-class RestaurantExecutor: public bica_planning::Executor, public bica::restaurant_hfsm
+ElevatorExecutor::ElevatorExecutor(): current_goal_(), nh_()
 {
-public:
-  RestaurantExecutor();
+  init_knowledge();
+}
 
-  bool update();
-  void init_knowledge();
-  void setNewGoal(std::string goal);
-  bool person_close();
-  void objectsCallback(const darknet_ros_3d_msgs::BoundingBoxes3d::ConstPtr& msg);
+void ElevatorExecutor::init_knowledge()
+{
+  robot_id_ = "leia";
+  add_instance("robot", robot_id_);
+  add_predicate("robot_at " + robot_id_ + " wp_start");
+  add_predicate("robot_at_room " + robot_id_ + " main_room");
 
+  graph_.add_node(robot_id_, "robot");
+  graph_.add_node("elevator", "elevator");
+  graph_.add_node("0", "floor");
+  graph_.add_edge("elevator", "current_floor", "0");
+}
 
-  void Init_code_iterative();
-  void deliverOrder_code_iterative();
-  void fixOrder_code_iterative();
-  void grettingNewCustomer_code_iterative();
-  void grettingNewCustomer_code_once();
-  void idle_code_iterative();
-  void setOrder_code_iterative();
-  void checkOrder_code_iterative();
-  void getOrder_code_iterative();
-  void getOrder_code_once();
-  void Init_code_once();
-  void checkTableStatus_code_iterative();
-  void checkTableStatus_code_once();
+void ElevatorExecutor::setNewGoal(std::string goal)
+{
+  remove_current_goal();
+  current_goal_ = goal;
+  add_goal(current_goal_);
+  call_planner();
+}
 
-  bool fixOrder_2_checkOrder();
-  bool idle_2_grettingNewCustomer();
-  bool checkOrder_2_deliverOrder();
-  bool idle_2_getOrder();
-  bool checkTableStatus_2_idle();
-  bool checkOrder_2_fixOrder();
-  bool deliverOrder_2_idle();
-  bool getOrder_2_setOrder();
-  bool Init_2_checkTableStatus();
-  bool setOrder_2_checkOrder();
-  bool grettingNewCustomer_2_idle();
-private:
-  ros::NodeHandle nh_;
+bool ElevatorExecutor::update()
+{
+  return ok();
+}
 
-  std::string robot_id_, current_goal_, needs_serving_table_, ready_table_;
-  std::vector<std::string> splitSpaces(std::string raw_str);
-  bica_graph::GraphClient graph_;
-  bool order_ready_asked_, order_delivered_, new_customer_;
-  ros::Subscriber object_sub_;
+void ElevatorExecutor::Init_code_once()
+{
+  //graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
+}
 
-  tf2_ros::Buffer tfBuffer_;
-  tf2_ros::TransformListener tf_listener_;
-  darknet_ros_3d_msgs::BoundingBoxes3d objects_msg_;
-};
+void ElevatorExecutor::getShopList_code_once()
+{
+  //getShopList() Request to the DH
+  // get the goal floor from the list
 
-#endif  // SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
+}
+
+bool ElevatorExecutor::Init_2_getShopList()
+{
+  std::vector<bica_graph::StringEdge> response_edges =
+    graph_.get_string_edges_by_data("response: [[:alnum:]_]*");
+
+  bool exists_response = false;
+  for (auto edge : response_edges)
+  {
+    graph_.remove_edge(edge.get_source(), edge.get(), edge.get_target());
+    exists_response = true;
+  }
+
+  return exists_response;
+}
+
+void ElevatorExecutor::approachElevator_code_once()
+{
+  graph_.add_edge(robot_id_, "say: Getting close to the elevator", robot_id_);
+}
+void ElevatorExecutor::approachElevator_code_iterative()
+{
+  setNewGoal("robot_at " + robot_id_ + " wp_waiting_zone");
+}
+
+bool ElevatorExecutor::getShopList_2_approachElevator()
+{
+  // if shopTarget_ is ready
+  graph_.add_edge(robot_id_, "say: I have to go to the floor X. I'm ready", robot_id_);
+  return true;
+}
+
+bool ElevatorExecutor::approachElevator_2_findProxemicPos()
+{
+  return (!(search_predicates_regex(current_goal_)).empty());
+}

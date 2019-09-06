@@ -36,88 +36,65 @@
 
 /* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
+#ifndef ELEVATOR_EXECUTOR_H
+#define ELEVATOR_EXECUTOR_H
+
 #include <ros/ros.h>
-
-#include <bica_planning/Executor.h>
-#include <bica/Component.h>
+#include "bica_planning/Executor.h"
+#include "./elevator_hfsm.h"
 #include <bica_graph/graph_client.h>
+#include <string>
+#include <vector>
 
-class CheckTableExecutor: public bica_planning::Executor, public bica::Component
+class ElevatorExecutor: public bica_planning::Executor, public bica::elevator_hfsm
 {
 public:
-  CheckTableExecutor()
-  {
-    init_knowledge();
-    executed_ = false;
-  }
+  ElevatorExecutor();
 
-  void init_knowledge()
-  {
-    add_instance("robot", "leia");
-    add_instance("table", "mesa_1");
-    add_predicate("robot_at leia wp_mesa_1");
-    add_predicate("is_wp_near_table wp_mesa_1 mesa_1");
-    add_predicate("is_table_at mesa_1 main_room");
-    add_predicate("robot_at_room leia main_room");
+  bool update();
+  void init_knowledge();
+  void setNewGoal(std::string goal);
 
-    graph_.add_node("leia", "robot");
-    std::string table = "mesa_1";
-    std::string waypoint = "wp_mesa_1";
+  void Init_code_once();
+  void getShopList_code_once();
+  void approachElevator_code_once();
+  void approachElevator_code_iterative();
 
-    graph_.add_node("wp_mesa_1", "waypoint");  // node is redundantelly added by graph-kms sync issue
-    graph_.add_node("mesa_1", "table");  // node is redundantelly added by graph-kms sync issue
+  bool Init_2_getShopList();
+  bool getShopList_2_approachElevator();
+  bool approachElevator_2_findProxemicPos();
 
-    tf2::Quaternion q;
-    q.setRPY(0, 0, 0);
 
-    tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
-    graph_.add_edge("wp_mesa_1", wp2table, "mesa_1", true);
+  /*void Init_code_iterative();
+  void askForFloor_code_iterative();
+  void askForFloor_code_once();
+  void robotAtEnd_code_iterative();
+  void robotAtEnd_code_once();
+  void robotAtElevator_code_iterative();
+  void robotAtElevator_code_once();
+  void waitForDoor_code_iterative();
+  void waitForDoor_code_once();
+  void findProxemicPos_code_iterative();
+  void findProxemicPos_code_once();
+  void approachElevator_code_iterative();
+  void approachElevator_code_once();
+  void advertiseGoal_code_iterative();
+  void advertiseGoal_code_once();
+  void getShopList_code_iterative();
 
-    graph_.add_edge("mesa_1", "needs_check", "mesa_1");
 
-    graph_.set_tf_identity("base_footprint", "leia");
-
-    graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
-    graph_.set_tf_identity("main_room", "map");
-    graph_.add_tf_edge("main_room", "leia");
-  }
-
-  void step()
-  {
-    if (!executed_)
-    {
-      ROS_INFO("Adding goal and planning");
-
-      add_goal("table_checked mesa_1");
-      call_planner();
-      executed_ = true;
-    }
-    else
-      ROS_INFO("Finished executing CheckTableExecutor");
-  }
+  bool askForFloor_2_robotAtEnd();
+  bool waitForDoor_2_askForFloor();
+  bool askForFloor_2_waitForDoor();
+  bool findProxemicPos_2_robotAtElevator();
+  bool getShopList_2_approachElevator();
+  bool robotAtElevator_2_advertiseGoal();
+  bool advertiseGoal_2_waitForDoor();*/
 
 private:
   ros::NodeHandle nh_;
-
   bica_graph::GraphClient graph_;
-
-  bool executed_;
+  std::string current_goal_, robot_id_;
 };
 
-
-int main(int argc, char **argv) {
-  ros::init(argc, argv, "Restaurant");
-  ros::NodeHandle n;
-
-  ros::Rate loop_rate(1);
-  CheckTableExecutor exec;
-  exec.setRoot();
-  exec.setActive(true);
-
-  while (exec.ok())
-  {
-    ros::spinOnce();
-    loop_rate.sleep();
-  }
-  return 0;
-}
+#endif  // ELEVATOR_EXECUTOR_H

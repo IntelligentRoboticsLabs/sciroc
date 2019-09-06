@@ -148,17 +148,44 @@ RP_check_table_status::step()
   if ((ros::Time::now() - start_check_).toSec() >= CHECKING_TIME)
   {
     int count = 0;
+    bool object_in_table = false;
+    int num_customers = 0;
+    std::string table_status;
     for (const auto& object : objects_)
     {
       std::string instance_id = table_id_ + "." + object.class_id + "." + std::to_string(count++);
       graph_.add_node(instance_id, object.class_id);
-      graph_.add_edge(instance_id, "is_in", "mesa_1");
+      graph_.add_edge(instance_id, "is_in", table_id_);
 
       tf2::Quaternion q;
       q.setRPY(0, 0, 0);
       tf2::Transform table2obj(q, object.central_point);
       graph_.add_edge(table_id_, table2obj, instance_id, true);
+
+      if (object.class_id != "person")
+        object_in_table = true;
+      else
+        num_customers++;
     }
+
+    if (!object_in_table && num_customers == 0)
+      table_status = "ready";
+    else if(object_in_table && num_customers == 0)
+      table_status = "needs_cleaning";
+    else if(!object_in_table && num_customers > 0)
+      table_status = "needs_serving";
+    else if(object_in_table && num_customers > 0)
+      table_status = "already_served";
+
+    graph_.add_edge(table_id_, "status: " + table_status , table_id_);
+    graph_.add_edge(table_id_, "num_customers: " + std::to_string(num_customers) , table_id_);
+
+    graph_.add_edge(
+      robot_id_,
+      "say: The table status is " + table_status + " and have " + std::to_string(num_customers) + " customers",
+      robot_id_);
+
+    graph_.remove_edge(table_id_, "needs_check", table_id_);
     graph_.remove_edge("leia", "want_see", table_id_);
     setSuccess();
   }

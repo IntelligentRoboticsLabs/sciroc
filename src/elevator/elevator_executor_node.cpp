@@ -37,80 +37,14 @@
 /* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
 #include <ros/ros.h>
-
-#include <bica_planning/Executor.h>
-#include <bica/Component.h>
-#include <bica_graph/graph_client.h>
-
-class CheckTableExecutor: public bica_planning::Executor, public bica::Component
-{
-public:
-  CheckTableExecutor()
-  {
-    init_knowledge();
-    executed_ = false;
-  }
-
-  void init_knowledge()
-  {
-    add_instance("robot", "leia");
-    add_instance("table", "mesa_1");
-    add_predicate("robot_at leia wp_mesa_1");
-    add_predicate("is_wp_near_table wp_mesa_1 mesa_1");
-    add_predicate("is_table_at mesa_1 main_room");
-    add_predicate("robot_at_room leia main_room");
-
-    graph_.add_node("leia", "robot");
-    std::string table = "mesa_1";
-    std::string waypoint = "wp_mesa_1";
-
-    graph_.add_node("wp_mesa_1", "waypoint");  // node is redundantelly added by graph-kms sync issue
-    graph_.add_node("mesa_1", "table");  // node is redundantelly added by graph-kms sync issue
-
-    tf2::Quaternion q;
-    q.setRPY(0, 0, 0);
-
-    tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
-    graph_.add_edge("wp_mesa_1", wp2table, "mesa_1", true);
-
-    graph_.add_edge("mesa_1", "needs_check", "mesa_1");
-
-    graph_.set_tf_identity("base_footprint", "leia");
-
-    graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
-    graph_.set_tf_identity("main_room", "map");
-    graph_.add_tf_edge("main_room", "leia");
-  }
-
-  void step()
-  {
-    if (!executed_)
-    {
-      ROS_INFO("Adding goal and planning");
-
-      add_goal("table_checked mesa_1");
-      call_planner();
-      executed_ = true;
-    }
-    else
-      ROS_INFO("Finished executing CheckTableExecutor");
-  }
-
-private:
-  ros::NodeHandle nh_;
-
-  bica_graph::GraphClient graph_;
-
-  bool executed_;
-};
-
+#include "bica_planning/Executor.h"
+#include "elevator_executor.h"
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "Restaurant");
+  ros::init(argc, argv, "Elevator_hfsm");
   ros::NodeHandle n;
-
   ros::Rate loop_rate(1);
-  CheckTableExecutor exec;
+  ElevatorExecutor exec;
   exec.setRoot();
   exec.setActive(true);
 
