@@ -36,71 +36,65 @@
 
 /* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
-#ifndef SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
-#define SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
+#ifndef ELEVATOR_EXECUTOR_H
+#define ELEVATOR_EXECUTOR_H
 
 #include <ros/ros.h>
 #include "bica_planning/Executor.h"
-#include "./restaurant_hfsm.h"
+#include "./elevator_hfsm.h"
 #include <bica_graph/graph_client.h>
-#include <darknet_ros_3d_msgs/BoundingBoxes3d.h>
 #include <string>
 #include <vector>
-#include <tf2_ros/transform_listener.h>
 
-
-#define DISTANCE_TH_   1.8
-
-
-class RestaurantExecutor: public bica_planning::Executor, public bica::restaurant_hfsm
+class ElevatorExecutor: public bica_planning::Executor, public bica::elevator_hfsm
 {
 public:
-  RestaurantExecutor();
+  ElevatorExecutor();
 
   bool update();
   void init_knowledge();
   void setNewGoal(std::string goal);
-  bool person_close();
-  void objectsCallback(const darknet_ros_3d_msgs::BoundingBoxes3d::ConstPtr& msg);
 
-
-  void Init_code_iterative();
-  void deliverOrder_code_iterative();
-  void fixOrder_code_iterative();
-  void grettingNewCustomer_code_iterative();
-  void grettingNewCustomer_code_once();
-  void idle_code_iterative();
-  void setOrder_code_iterative();
-  void checkOrder_code_iterative();
-  void getOrder_code_iterative();
-  void getOrder_code_once();
   void Init_code_once();
-  void checkTableStatus_code_iterative();
-  void checkTableStatus_code_once();
+  void getShopList_code_once();
+  void approachElevator_code_once();
+  void approachElevator_code_iterative();
 
-  bool fixOrder_2_checkOrder();
-  bool idle_2_grettingNewCustomer();
-  bool checkOrder_2_deliverOrder();
-  bool idle_2_getOrder();
-  bool checkTableStatus_2_idle();
-  bool checkOrder_2_fixOrder();
-  bool deliverOrder_2_idle();
-  bool getOrder_2_setOrder();
-  bool Init_2_checkTableStatus();
-  bool setOrder_2_checkOrder();
-  bool grettingNewCustomer_2_idle();
+  bool Init_2_getShopList();
+  bool getShopList_2_approachElevator();
+  bool approachElevator_2_findProxemicPos();
+
+
+  /*void Init_code_iterative();
+  void askForFloor_code_iterative();
+  void askForFloor_code_once();
+  void robotAtEnd_code_iterative();
+  void robotAtEnd_code_once();
+  void robotAtElevator_code_iterative();
+  void robotAtElevator_code_once();
+  void waitForDoor_code_iterative();
+  void waitForDoor_code_once();
+  void findProxemicPos_code_iterative();
+  void findProxemicPos_code_once();
+  void approachElevator_code_iterative();
+  void approachElevator_code_once();
+  void advertiseGoal_code_iterative();
+  void advertiseGoal_code_once();
+  void getShopList_code_iterative();
+
+
+  bool askForFloor_2_robotAtEnd();
+  bool waitForDoor_2_askForFloor();
+  bool askForFloor_2_waitForDoor();
+  bool findProxemicPos_2_robotAtElevator();
+  bool getShopList_2_approachElevator();
+  bool robotAtElevator_2_advertiseGoal();
+  bool advertiseGoal_2_waitForDoor();*/
+
 private:
   ros::NodeHandle nh_;
-
-  std::string robot_id_, current_goal_, needs_serving_table_, ready_table_;
-  std::vector<std::string> splitSpaces(std::string raw_str);
   bica_graph::GraphClient graph_;
-  bool order_ready_asked_, order_delivered_, new_customer_;
-  ros::Subscriber object_sub_;
-
-  tf2_ros::Buffer tfBuffer_;
-  tf2_ros::TransformListener tf_listener_;
-  darknet_ros_3d_msgs::BoundingBoxes3d objects_msg_;
+  std::string current_goal_, robot_id_;
 };
 
-#endif  // SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
+#endif  // ELEVATOR_EXECUTOR_H

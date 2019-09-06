@@ -1,21 +1,24 @@
 <launch>
-  <arg name="robot" value="tiago" />
-  <arg name = "scan_topic" value = "/scan" />
-  <arg name = "sonar_topic" value = "/sonar_base" />
-  <arg name = "sonar_frame_id" value = "/base_sonar_02_link" />
-  <arg name = "camera_topic" value = "/xtion/rgb/image_raw" />
-  <arg name = "num_tables_to_check" value = "6" /> <!-- Param to simplify the execution of the task -->
+  <arg name="robot" value="kobuki" />
+  <arg name = "scan_topic" value = "/scan_filtered" />
+  <arg name = "sonar_topic" value = "/sonar" />
+  <arg name = "sonar_frame_id" value = "" />
+  <arg name = "camera_topic" value = "/camera/rgb/image_raw" />
 
+  <arg name="initial_pose_x" value="0.0"/>
+  <arg name="initial_pose_y" value="0.0"/>
+  <arg name="initial_pose_a" value="0.0"/>
   <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
-  <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/topological_map.yaml" />
+  <arg name = "topological_map" default = "$(find gb_robots)/maps/elevator/topological_map.yaml" />
   <arg name = "pddl_packages" default = "
     [
     'topological_navigation',
     'person_navigation',
+    'social_navigation',
     'sciroc'
     ]"/>
-  <arg name = "map" default = "$(find gb_robots)/maps/restaurant/map.yaml" />
+  <arg name = "map" default = "$(find gb_robots)/maps/elevator/map.yaml" />
 
   <include file="$(find bica_graph)/launch/bica_graph_master.launch"/>
 
@@ -36,26 +39,24 @@
   </include>
 
   <include file="$(find person_navigation)/launch/person_navigation_only_guide.launch" >
-    <arg name="robot" value="$(arg robot)"/>
+    <arg name="robot" value="$(arg robot)" />
     <arg name="scan_topic" value="$(arg scan_topic)"/>
     <arg name="sonar_topic" value="$(arg sonar_topic)"/>
     <arg name="sonar_frame_id" value="$(arg sonar_frame_id)"/>
     <arg name="topological_map"  value="$(arg topological_map)" />
     <arg name="map" value="$(arg map)"/>
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
   </include>
 
-  <include file="$(find sciroc)/launch/restaurant/restaurant_actions.launch" />
-  <!--<node name="restaurant_test_check_table" pkg="sciroc" type="restaurant_test_check_table" respawn="false" output="screen" required="true">
-    <param name="num_tables_to_check" value="$(arg num_tables_to_check)"/>
-  </node>-->
-  <node name="restaurant_executor_node" pkg="sciroc" type="restaurant_executor_node" respawn="false" output="screen" required="true">
-    <param name="num_tables_to_check" value="$(arg num_tables_to_check)"/>
-  </node>
+  <node name="elevator_executor_node" pkg="sciroc" type="elevator_executor_node" respawn="false" output="screen" required="true"/>
+
   <include file="$(find graph_dialog_extractor)/launch/graph_dialog_extractor.launch" >
     <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
     <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>
   </include>
-
-  <include file="$(find gb_attention)/launch/attention.launch"/>
-
+  <include file="$(find social_navigation)/launch/social_navigation_actions.launch"/>
+  <!--<include file="$(find gb_attention)/launch/attention.launch"/>-->
+  <!--<include file="$(find keep_in_proxemics)/launch/social_elevator_navigation.launch"/>-->
 </launch>

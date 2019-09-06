@@ -155,7 +155,7 @@ RP_check_table_status::step()
     {
       std::string instance_id = table_id_ + "." + object.class_id + "." + std::to_string(count++);
       graph_.add_node(instance_id, object.class_id);
-      graph_.add_edge(instance_id, "is_in", "mesa_1");
+      graph_.add_edge(instance_id, "is_in", table_id_);
 
       tf2::Quaternion q;
       q.setRPY(0, 0, 0);
