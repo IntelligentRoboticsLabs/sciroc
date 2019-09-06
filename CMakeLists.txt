@@ -86,6 +86,14 @@ add_executable(restaurant_test_check_table src/restaurant/tests/restaurant_test_
 add_dependencies(restaurant_test_check_table ${catkin_EXPORTED_TARGETS})
 target_link_libraries(restaurant_test_check_table ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
 
+add_executable(restaurant_test_get_order src/restaurant/tests/restaurant_test_get_order.cpp)
+add_dependencies(restaurant_test_get_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_get_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(restaurant_test_set_order src/restaurant/tests/restaurant_test_set_order.cpp)
+add_dependencies(restaurant_test_set_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_set_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
 set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
 
 roslint_cpp(
