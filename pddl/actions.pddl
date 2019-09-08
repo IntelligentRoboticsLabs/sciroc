@@ -71,14 +71,42 @@
   )
 )
 
-(:durative-action gretting_new_customer
-  :parameters (?r - robot ?p - person ?wp - waypoint ?t - table)
+;(:durative-action gretting_new_customer
+;  :parameters (?r - robot ?p - person ?wp - waypoint ?t - table)
+;  :duration ( = ?duration 10)
+;  :condition (and
+;    (at start(person_guided ?p ?wp))
+;    (at start(is_wp_near_table ?wp ?t))
+; )
+;  :effect (and
+;    (at end(new_customer_attended ?p ?t))
+;  )
+;)
+
+
+(:durative-action check_waiting_person
+  :parameters (?r - robot ?p - person ?wp - waypoint ?z - zone)
   :duration ( = ?duration 10)
   :condition (and
+    (at start(robot_at ?r ?wp))
+    (at start(person_at ?p ?wp))
+    (at start(wp_in_zone ?wp ?z))
+ )
+  :effect (and
+    (at end(person_detected ?r ?p ?z))
+  )
+)
+
+(:durative-action attend_person
+  :parameters (?r - robot ?p - person ?wp - waypoint ?t - table ?z - zone)
+  :duration ( = ?duration 10)
+  :condition (and
+    (at start(person_detected ?r ?p ?z))
     (at start(person_guided ?p ?wp))
+    (at start(person_at ?p ?wp))
     (at start(is_wp_near_table ?wp ?t))
  )
   :effect (and
-    (at end(new_customer_attended ?p ?t))
+    (at end(attended_person ?p ?t))
   )
 )
