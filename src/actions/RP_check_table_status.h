@@ -24,35 +24,35 @@
 * PDDL "*****" actions become "*****" actions.
 */
 
-#define CHECKING_TIME   15.0
+#define CHECK_TABLE_CHECKING_TIME   15.0
 
-#define MIN_PROBABILITY   0.4
+#define CHECK_TABLE_MIN_PROBABILITY   0.4
 
-#define PERSON_MIN_X   -1.0
-#define PERSON_MAX_X   1.0
-#define PERSON_MIN_Y   -1.5
-#define PERSON_MAX_Y   1.5
-#define PERSON_MIN_Z   0.0
-#define PERSON_MAX_Z   2.0
-#define PERSON_MIN_SIZE_X   0.3
-#define PERSON_MIN_SIZE_Y   0.3
-#define PERSON_MIN_SIZE_Z   0.3
-#define PERSON_MAX_SIZE_X   1.2
-#define PERSON_MAX_SIZE_Y   1.2
-#define PERSON_MAX_SIZE_Z   2.0
+#define CHECK_TABLE_PERSON_MIN_X   -1.0
+#define CHECK_TABLE_PERSON_MAX_X   1.0
+#define CHECK_TABLE_PERSON_MIN_Y   -1.5
+#define CHECK_TABLE_PERSON_MAX_Y   1.5
+#define CHECK_TABLE_PERSON_MIN_Z   0.0
+#define CHECK_TABLE_PERSON_MAX_Z   2.0
+#define CHECK_TABLE_PERSON_MIN_SIZE_X   0.3
+#define CHECK_TABLE_PERSON_MIN_SIZE_Y   0.3
+#define CHECK_TABLE_PERSON_MIN_SIZE_Z   0.3
+#define CHECK_TABLE_PERSON_MAX_SIZE_X   1.2
+#define CHECK_TABLE_PERSON_MAX_SIZE_Y   1.2
+#define CHECK_TABLE_PERSON_MAX_SIZE_Z   2.0
 
-#define OBJECT_MIN_X   -1.0
-#define OBJECT_MAX_X   1.0
-#define OBJECT_MIN_Y   -0.5
-#define OBJECT_MAX_Y   0.5
-#define OBJECT_MIN_Z   0.7
-#define OBJECT_MAX_Z   1.2
-#define OBJECT_MIN_SIZE_X   0.05
-#define OBJECT_MIN_SIZE_Y   0.05
-#define OBJECT_MIN_SIZE_Z   0.05
-#define OBJECT_MAX_SIZE_X   0.5
-#define OBJECT_MAX_SIZE_Y   0.5
-#define OBJECT_MAX_SIZE_Z   0.5
+#define CHECK_TABLE_OBJECT_MIN_X   -1.0
+#define CHECK_TABLE_OBJECT_MAX_X   1.0
+#define CHECK_TABLE_OBJECT_MIN_Y   -0.5
+#define CHECK_TABLE_OBJECT_MAX_Y   0.5
+#define CHECK_TABLE_OBJECT_MIN_Z   0.7
+#define CHECK_TABLE_OBJECT_MAX_Z   1.2
+#define CHECK_TABLE_OBJECT_MIN_SIZE_X   0.05
+#define CHECK_TABLE_OBJECT_MIN_SIZE_Y   0.05
+#define CHECK_TABLE_OBJECT_MIN_SIZE_Z   0.05
+#define CHECK_TABLE_OBJECT_MAX_SIZE_X   0.5
+#define CHECK_TABLE_OBJECT_MAX_SIZE_Y   0.5
+#define CHECK_TABLE_OBJECT_MAX_SIZE_Z   0.5
 
 
 class RP_check_table_status: public bica_planning::Action
