@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   bica
   dialogflow_ros_msgs
   roslint
+  darknet_ros_3d
   darknet_ros_3d_msgs
 )
 
