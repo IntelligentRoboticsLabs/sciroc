@@ -2,6 +2,17 @@
 
 /* The implementation of RP_fix_order.h */
 
+/* Esta acción se encarga de comunicar al barman posibles errores en los elementos entregados
+
+Estado inicial:
+- El robot está en wp_bar_location, y ya ha ejecutado "check_order"
+- El robot puede tener arcos "has", "needs" y "not needs"
+
+Efecto de la acción
+- Se crea arco "say" para informar al barman de posibles errores en la comanda
+*/
+
+
 #include <string>
 #include <list>
 

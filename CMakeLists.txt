@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   bica
   dialogflow_ros_msgs
   roslint
+  darknet_ros_3d
   darknet_ros_3d_msgs
 )
 
@@ -99,6 +100,14 @@ target_link_libraries(elevator_executor_node
 add_executable(restaurant_test_check_table src/restaurant/tests/restaurant_test_check_table.cpp)
 add_dependencies(restaurant_test_check_table ${catkin_EXPORTED_TARGETS})
 target_link_libraries(restaurant_test_check_table ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(restaurant_test_get_order src/restaurant/tests/restaurant_test_get_order.cpp)
+add_dependencies(restaurant_test_get_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_get_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(restaurant_test_set_order src/restaurant/tests/restaurant_test_set_order.cpp)
+add_dependencies(restaurant_test_set_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_set_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
 
 set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
 

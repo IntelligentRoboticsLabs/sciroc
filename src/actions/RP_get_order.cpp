@@ -2,6 +2,20 @@
 
 /* The implementation of RP_get_order.h */
 
+/* Esta acción se encarga de pedir a los comensales de una mesa lo que quieren tomar
+
+Estado inicial:
+- El robot está en wp_mesa_N
+
+Efecto de la acción
+- Se crea arco "aks" para preguntar la comanda
+- Se crean nodos con los elementos pedidos
+  - la instancia es "mesa_N.clase.N"
+  - el tipo es "clase"
+- Se crean arcos "wants" desde el robot a los elementos pedidos
+*/
+
+
 #include <string>
 #include <list>
 #include <vector>
@@ -61,10 +75,13 @@ void RP_get_order::step()
       std::string delimiter = "response: ";
       response_raw.erase(0, response_raw.find(delimiter) + delimiter.length());
       std::vector<std::string> food = splitSpaces(response_raw);
+
+      int counter = 0;
       for (auto it_food = food.begin(); it_food != food.end(); ++it_food)
       {
-        graph_.add_node(*it_food, "order");
-        graph_.add_edge(table_id_, "wants", *it_food);
+        std::string instance_id = table_id_ + "." + *it_food + "." + std::to_string(counter++);
+        graph_.add_node(instance_id, *it_food);
+        graph_.add_edge(table_id_, "wants", instance_id);
       }
       setSuccess();
     }

@@ -2,6 +2,17 @@
 
 /* The implementation of RP_set_order.h */
 
+/* Esta acción se encarga de decirle al barman la comanda
+
+Estado inicial:
+- El robot está en wp_bar_location
+- Una de las mesas tiene arcos "wants"
+
+Efecto de la acción
+- Se crea arco "say" para decirle al barman la comanda
+*/
+
+
 #include <string>
 #include <list>
 #include <vector>
@@ -30,7 +41,7 @@ void RP_set_order::activateCode()
     if (edge.find("wants") != std::string::npos)
     {
       table_id = it->get_source();
-      order.push_back(it->get_target());
+      order.push_back(graph_.get_node(it->get_target()).get_type());
     }
   }
   std::string table_id_raw = table_id;

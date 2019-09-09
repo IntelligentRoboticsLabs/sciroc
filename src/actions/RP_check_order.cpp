@@ -3,6 +3,18 @@
 /* The implementation of RP_check_order.h */
 
 
+/* Esta acción se encarga de chequear si lo que nos has dado el barman es correcto
+
+Estado inicial:
+- El robot está en wp_bar_location
+- Una de las mesas tiene arcos "wants" con su comanda a nodos del tipo de lo que pide
+
+Efecto de la acción
+- Crea arcos "has" desde el robot a los elementos percibidos
+- Crea arcos "not needs" desde el robot a los elementos percibidos que no concuerdan con la comanda
+- Crea arcos "needs" desde el robot a los elementos de la mesa que no han sido percibidos
+*/
+
 #include <algorithm>
 #include <string>
 #include <list>
@@ -12,7 +24,8 @@
 RP_check_order::RP_check_order(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("check_order"),
-  robot_id()
+  robot_id(),
+  obj_listener_(std::list<std::string>{"cup"}, "barra")
 {
 }
 
@@ -26,10 +39,44 @@ void RP_check_order::activateCode()
     if (0 == last_msg_.parameters[i].key.compare("r"))
       robot_id = last_msg_.parameters[i].value;
   }
+
+  start_check_ = ros::Time::now();
+
+  obj_listener_.reset();
+  obj_listener_.set_working_frame("barra");
+  obj_listener_.set_active();
 }
 
 void RP_check_order::deActivateCode()
 {
+  obj_listener_.set_inactive();
+}
+
+
+void
+RP_check_order::step()
+{
+  if (!isActive())
+    return;
+
+  if ((ros::Time::now() - start_check_).toSec() >= CHECK_ORDER_CHECKING_TIME)
+  {
+
+    obj_listener_.filter_objects("cup", CHECK_ORDER_MIN_PROBABILITY,
+      CHECK_ORDER_OBJECT_MIN_X, CHECK_ORDER_OBJECT_MAX_X, CHECK_ORDER_OBJECT_MIN_Y,
+      CHECK_ORDER_OBJECT_MAX_Z, CHECK_ORDER_OBJECT_MIN_Z, CHECK_ORDER_OBJECT_MAX_Z,
+      CHECK_ORDER_OBJECT_MIN_SIZE_X, CHECK_ORDER_OBJECT_MAX_SIZE_X, CHECK_ORDER_OBJECT_MIN_SIZE_Y,
+      CHECK_ORDER_OBJECT_MAX_SIZE_Y, CHECK_ORDER_OBJECT_MIN_SIZE_Z, CHECK_ORDER_OBJECT_MAX_SIZE_Z);
+
+
+    for (const auto& object : obj_listener_.get_objects())
+    {
+
+    }
+
+    obj_listener_.set_inactive();
+    setSuccess();
+  }
 }
 
 void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)

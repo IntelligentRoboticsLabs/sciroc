@@ -42,10 +42,10 @@
 #include <bica/Component.h>
 #include <bica_graph/graph_client.h>
 
-class CheckTableExecutor: public bica_planning::Executor, public bica::Component
+class GetOrderExecutor: public bica_planning::Executor, public bica::Component
 {
 public:
-  CheckTableExecutor()
+  GetOrderExecutor()
   {
     init_knowledge();
     executed_ = false;
@@ -73,8 +73,6 @@ public:
     tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
     graph_.add_edge("wp_mesa_1", wp2table, "mesa_1", true);
 
-    graph_.add_edge("mesa_1", "needs_check", "mesa_1");
-
     graph_.set_tf_identity("base_footprint", "leia");
 
     graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
@@ -88,12 +86,12 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      add_goal("table_checked mesa_1");
+      add_goal("order_ready mesa_1");
       call_planner();
       executed_ = true;
     }
     else
-      ROS_INFO("Finished executing CheckTableExecutor");
+      ROS_INFO("Finished executing GetOrderExecutor");
   }
 
 private:
@@ -110,7 +108,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle n;
 
   ros::Rate loop_rate(1);
-  CheckTableExecutor exec;
+  GetOrderExecutor exec;
   exec.setRoot();
   exec.setActive(true);
 
