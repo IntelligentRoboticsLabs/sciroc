@@ -69,10 +69,12 @@ public:
 
     graph_.add_node("wp_bar_location", "waypoint");  // node is redundantelly added by graph-kms sync issue
 
-    graph_.add_node("mesa_1.cock.0", "coke");
-    graph_.add_node("mesa_1.bread.1", "bread");
-    graph_.add_edge("mesa_1", "wants", "mesa_1.cock.0");
-    graph_.add_edge("mesa_1", "wants", "mesa_1.bread.1");
+    graph_.add_node("mesa_1.coke.0", "coke");
+    graph_.add_node("mesa_1.bread.0", "bread");
+    graph_.add_node("mesa_1.cup.0", "cup");
+    graph_.add_edge("mesa_1", "wants", "mesa_1.coke.0");
+    graph_.add_edge("mesa_1", "wants", "mesa_1.bread.0");
+    graph_.add_edge("mesa_1", "wants", "mesa_1.cup.0");
 
 
     tf2::Quaternion q;
