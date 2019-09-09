@@ -1,0 +1,62 @@
+<launch>
+  <arg name="robot" value="tiago" />
+  <arg name = "scan_topic" value = "/scan_filtered" />
+  <arg name = "sonar_topic" value = "/sonar" />
+  <arg name = "sonar_frame_id" value = "" />
+  <arg name = "camera_topic" value = "/camera/rgb/image_raw" />
+
+  <arg name="initial_pose_x" value="0.0"/>
+  <arg name="initial_pose_y" value="0.0"/>
+  <arg name="initial_pose_a" value="0.0"/>
+  <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
+  <arg name = "pddl_domain" default = "test" />
+  <arg name = "topological_map" default = "$(find gb_robots)/maps/elevator/topological_map.yaml" />
+  <arg name = "pddl_packages" default = "
+    [
+    'topological_navigation',
+    'person_navigation',
+    'social_navigation',
+    'sciroc'
+    ]"/>
+  <arg name = "map" default = "$(find gb_robots)/maps/elevator/map.yaml" />
+
+  <include file="$(find bica_graph)/launch/bica_graph_master.launch"/>
+
+  <!-- External requirements -->
+  <node name="pddl_builder" pkg="bica_planning" type="pddl_builder.py" respawn="false" output="screen">
+    <rosparam param="pddl_packages" subst_value="True">$(arg pddl_packages)</rosparam>
+    <param name="pddl_domain_file" value="$(arg pddl_domain_file)" />
+    <param name="pddl_domain" value="$(arg pddl_domain)" />
+  </node>
+
+  <node pkg="bica_graph" type="graph_kms_extractor_node" name="graph_kms_extractor_node" output="screen">
+    <rosparam command="load" file="$(find sciroc)/config/kms_extractor_params.yaml" />
+  </node>
+
+  <include file="$(find bica_planning)/launch/planning_system.launch" >
+    <arg name="data_path" value="/tmp/" />
+    <arg name="domain_path"  value="$(arg pddl_domain_file)" />
+  </include>
+
+  <include file="$(find person_navigation)/launch/person_navigation_only_guide.launch" >
+    <arg name="robot" value="$(arg robot)" />
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="sonar_topic" value="$(arg sonar_topic)"/>
+    <arg name="sonar_frame_id" value="$(arg sonar_frame_id)"/>
+    <arg name="topological_map"  value="$(arg topological_map)" />
+    <arg name="map" value="$(arg map)"/>
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+
+  <node name="elevator_executor_node" pkg="sciroc" type="elevator_executor_node" respawn="false" output="screen" required="true"/>
+
+  <include file="$(find graph_dialog_extractor)/launch/graph_dialog_extractor.launch" >
+    <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
+    <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>
+  </include>
+  <include file="$(find social_navigation)/launch/social_navigation_actions.launch"/>
+  <!--<include file="$(find gb_attention)/launch/attention.launch"/>-->
+  <!--<include file="$(find keep_in_proxemics)/launch/social_elevator_navigation.launch"/>-->
+</launch>
