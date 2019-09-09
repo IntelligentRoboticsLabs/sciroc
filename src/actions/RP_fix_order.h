@@ -35,7 +35,7 @@ protected:
 private:
     ros::NodeHandle nh_;
     bica_graph::GraphClient graph_;
-    std::string robot_id, object_needed, wrong_object;
+    std::string robot_id, person_id, object_needed, wrong_object;
 };
 
 #endif  // SRC_ACTIONS_RP_FIX_ORDER_H
