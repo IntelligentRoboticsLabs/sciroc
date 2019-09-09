@@ -2,6 +2,20 @@
 
 /* The implementation of RP_get_order.h */
 
+/* Esta acción se encarga de pedir a los comensales de una mesa lo que quieren tomar
+
+Estado inicial:
+- El robot está en wp_mesa_N
+
+Efecto de la acción
+- Se crea arco "aks" para preguntar la comanda
+- Se crean nodos con los elementos pedidos
+  - la instancia es "mesa_N.clase.N"
+  - el tipo es "clase"
+- Se crean arcos "wants" desde el robot a los elementos pedidos
+*/
+
+
 #include <string>
 #include <list>
 #include <vector>

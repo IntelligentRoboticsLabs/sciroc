@@ -3,6 +3,18 @@
 /* The implementation of RP_check_order.h */
 
 
+/* Esta acción se encarga de chequear si lo que nos has dado el barman es correcto
+
+Estado inicial:
+- El robot está en wp_bar_location
+- Una de las mesas tiene arcos "wants" con su comanda a nodos del tipo de lo que pide
+
+Efecto de la acción
+- Crea arcos "has" desde el robot a los elementos percibidos
+- Crea arcos "not needs" desde el robot a los elementos percibidos que no concuerdan con la comanda
+- Crea arcos "needs" desde el robot a los elementos de la mesa que no han sido percibidos
+*/
+
 #include <algorithm>
 #include <string>
 #include <list>

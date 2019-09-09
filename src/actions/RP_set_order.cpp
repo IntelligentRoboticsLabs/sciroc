@@ -2,6 +2,17 @@
 
 /* The implementation of RP_set_order.h */
 
+/* Esta acción se encarga de decirle al barman la comanda
+
+Estado inicial:
+- El robot está en wp_bar_location
+- Una de las mesas tiene arcos "wants"
+
+Efecto de la acción
+- Se crea arco "say" para decirle al barman la comanda
+*/
+
+
 #include <string>
 #include <list>
 #include <vector>

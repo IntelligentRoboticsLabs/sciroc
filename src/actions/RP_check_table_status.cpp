@@ -2,6 +2,18 @@
 
 /* The implementation of RP_check_table_status.h */
 
+/* Esta acción se encarga de chequear el estado de la mesa y el número de clientes
+
+Estado inicial:
+- El robot está en wp_mesa_N
+- La mesa tiene un auto-arco "needs_check"
+
+Efecto de la acción
+- Crea un auto-arco "status: STATUS" desde la mesa, donde STATUS es {ready, needs_serving, needs_cleaning
+  already_served}
+- Crea un auto-arco "num_customers: N" desde la mesa, donde N es el número de personas
+*/
+
 #include <string>
 
 /* constructor */
@@ -9,7 +21,7 @@ RP_check_table_status::RP_check_table_status(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("check_table_status"),
   wp_id_(),
-  obj_listener_(std::list<std::string>{"person", "cup"}, "mesa_1")
+  obj_listener_(std::list<std::string>{"person", "cup"}, "base_footprint")
 {
   qr_sub_ = nh_.subscribe("/barcode", 1, &RP_check_table_status::qrCallback, this);
 }
@@ -57,6 +69,7 @@ RP_check_table_status::step()
     int num_customers = 0;
     std::string table_status;
 
+    obj_listener_.print();
     obj_listener_.filter_objects("person", CHECK_TABLE_MIN_PROBABILITY,
       CHECK_TABLE_PERSON_MIN_X, CHECK_TABLE_PERSON_MAX_X, CHECK_TABLE_PERSON_MIN_Y,
       CHECK_TABLE_PERSON_MAX_Y, CHECK_TABLE_PERSON_MIN_Z, CHECK_TABLE_PERSON_MAX_Z,
@@ -68,18 +81,20 @@ RP_check_table_status::step()
       CHECK_TABLE_OBJECT_MIN_SIZE_X, CHECK_TABLE_OBJECT_MAX_SIZE_X, CHECK_TABLE_OBJECT_MIN_SIZE_Y,
       CHECK_TABLE_OBJECT_MAX_SIZE_Y, CHECK_TABLE_OBJECT_MIN_SIZE_Z, CHECK_TABLE_OBJECT_MAX_SIZE_Z);
 
-
+    obj_listener_.print();
     for (const auto& object : obj_listener_.get_objects())
     {
+      /* Jonatan: Esto no es necesario
       std::string instance_id = table_id_ + "." + object.class_id + "." + std::to_string(count++);
       graph_.add_node(instance_id, object.class_id);
       graph_.add_edge(instance_id, "is_in", table_id_);
+      */
 
-      tf2::Quaternion q;
+      /*tf2::Quaternion q;
       q.setRPY(0, 0, 0);
       tf2::Transform table2obj(q, object.central_point);
       graph_.add_edge(table_id_, table2obj, instance_id, true);
-
+      */
       if (object.class_id != "person")
         object_in_table = true;
       else
