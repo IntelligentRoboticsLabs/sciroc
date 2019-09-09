@@ -52,7 +52,6 @@ void RP_deliver_order::activateCode()
       graph_.add_edge(it->get_source(), "has", it->get_target());
       graph_.remove_edge(*it);
     }
-    object_needed = it->get_target();
   }
 
   graph_.remove_edge(table_id, "status: needs_serving", table_id);
