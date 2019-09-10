@@ -64,13 +64,17 @@ add_executable(rp_deliver_order src/actions/RP_deliver_order.cpp)
 add_dependencies(rp_deliver_order ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rp_deliver_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
 
-add_executable(rp_gretting_new_customer src/actions/RP_gretting_new_customer.cpp)
-add_dependencies(rp_gretting_new_customer ${catkin_EXPORTED_TARGETS})
-target_link_libraries(rp_gretting_new_customer ${catkin_LIBRARIES})
+#add_executable(rp_gretting_new_customer src/actions/RP_gretting_new_customer.cpp)
+#add_dependencies(rp_gretting_new_customer ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(rp_gretting_new_customer ${catkin_LIBRARIES})
 
 add_executable(rp_check_waiting_person src/actions/RP_check_waiting_person.cpp)
 add_dependencies(rp_check_waiting_person ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rp_check_waiting_person ${catkin_LIBRARIES})
+
+add_executable(rp_attend_person src/actions/RP_attend_person.cpp)
+add_dependencies(rp_attend_person ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_attend_person ${catkin_LIBRARIES})
 
 
 # HFSM
@@ -133,7 +137,8 @@ roslint_cpp(
   src/actions/RP_check_order.cpp src/actions/RP_check_order.h
   src/actions/RP_fix_order.cpp src/actions/RP_fix_order.h
   src/actions/RP_deliver_order.cpp src/actions/RP_deliver_order.h
-  src/actions/RP_gretting_new_customer.cpp src/actions/RP_gretting_new_customer.h
+  src/actions/RP_check_waiting_person.cpp src/actions/RP_check_waiting_person.h
+  src/actions/RP_attend_person.cpp src/actions/RP_attend_person.h
   src/restaurant/restaurant_executor.cpp src/restaurant/restaurant_executor.h
   src/elevator/elevator_executor.cpp src/elevator/elevator_executor.h
 
