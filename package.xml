@@ -26,6 +26,8 @@
   <build_depend>roslint</build_depend>
   <build_depend>darknet_ros_3d</build_depend>
   <build_depend>darknet_ros_3d_msgs</build_depend>
+  <build_depend>gb_datahub</build_depend>
+
 
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
@@ -37,6 +39,8 @@
   <build_export_depend>roslint</build_export_depend>
   <build_export_depend>darknet_ros_3d</build_export_depend>
   <build_export_depend>darknet_ros_3d_msgs</build_export_depend>
+  <build_export_depend>gb_datahub</build_export_depend>
+
 
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
@@ -48,6 +52,8 @@
   <exec_depend>roslint</exec_depend>
   <exec_depend>darknet_ros_3d</exec_depend>
   <exec_depend>darknet_ros_3d_msgs</exec_depend>
+  <exec_depend>gb_datahub</exec_depend>
+
 
 
   <!-- The export tag contains other, unspecified, tags -->

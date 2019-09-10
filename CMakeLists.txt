@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   roslint
   darknet_ros_3d
   darknet_ros_3d_msgs
+  gb_datahub
 )
 
 find_package(PkgConfig REQUIRED)
