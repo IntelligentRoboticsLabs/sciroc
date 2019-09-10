@@ -6,7 +6,7 @@
 /* Esta acción se encarga de chequear el estado de la mesa y el número de clientes
 
 Estado inicial:
-- El robot está en wp_mesa_N
+- El robot está en wp_table_N
 - El robot tiene arcos "has" con los elementos de la comanda que le ha dado el barman
 - La mesa tiene arcos "wants" con los elementos de la comanda
 

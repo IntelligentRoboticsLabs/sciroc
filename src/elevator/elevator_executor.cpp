@@ -48,7 +48,7 @@ ElevatorExecutor::ElevatorExecutor(): current_goal_(), nh_()
 
 void ElevatorExecutor::init_knowledge()
 {
-  robot_id_ = "leia";
+  robot_id_ = "sonny";
   add_instance("robot", robot_id_);
   add_predicate("robot_at " + robot_id_ + " wp_start");
   add_predicate("robot_at_room " + robot_id_ + " main_room");

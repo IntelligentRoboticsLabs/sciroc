@@ -53,24 +53,24 @@ public:
 
   void init_knowledge()
   {
-    add_instance("robot", "leia");
+    add_instance("robot", "sonny");
     add_instance("person", "new_customer");
     add_instance("zone", "waiting_zone");
-    add_predicate("robot_at leia wp_waiting_zone");
+    add_predicate("robot_at sonny wp_waiting_zone");
     add_predicate("person_at new_customer wp_waiting_zone");
     add_predicate("wp_in_zone wp_waiting_zone waiting_zone");
     add_predicate("waypoint_at wp_waiting_zone main_room");
 
 
-    graph_.add_node("leia", "robot");
+    graph_.add_node("sonny", "robot");
     graph_.add_node("wp_waiting_zone", "waypoint");  // node is redundantelly added by graph-kms sync issue
     graph_.add_node("waiting_zone", "zone");  // node is redundantelly added by graph-kms sync issue
     graph_.add_node("main_room", "room");
 
     graph_.set_tf_identity("main_room", "map");
-    graph_.set_tf_identity("base_footprint", "leia");
+    graph_.set_tf_identity("base_footprint", "sonny");
 
-    graph_.add_tf_edge("main_room", "leia");
+    graph_.add_tf_edge("main_room", "sonny");
 
     tf2::Quaternion q;
     q.setRPY(0, 0, 0);
@@ -86,7 +86,7 @@ public:
       sleep(11);
       ROS_INFO("Adding goal and planning");
 
-      add_goal("person_detected leia new_customer waiting_zone");
+      add_goal("person_detected sonny new_customer waiting_zone");
       call_planner();
       executed_ = true;
     }

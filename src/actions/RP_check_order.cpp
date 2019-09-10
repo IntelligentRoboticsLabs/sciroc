@@ -228,7 +228,7 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
         if (std::find(order.begin(), order.end(), *it) == order.end())
           graph_.add_edge(robot_id_,"not needs", *it);
       }
-      add_predicate("order_needs_fix leia");
+      add_predicate("order_needs_fix sonny");
     }
     setSuccess();
     order.clear();

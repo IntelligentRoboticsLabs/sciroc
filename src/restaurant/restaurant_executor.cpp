@@ -48,14 +48,14 @@ RestaurantExecutor::RestaurantExecutor():
 {
   init_knowledge();
   order_ready_asked_ = false;
-  order_delivered_ = true;
+  order_delivered_ = false;
   new_customer_ = false;
   //object_sub_ = nh_.subscribe("/darknet_ros_3d/bounding_boxes", 10, &RestaurantExecutor::objectsCallback, this);
 }
 
 void RestaurantExecutor::init_knowledge()
 {
-  robot_id_ = "leia";
+  robot_id_ = "sonny";
 
   add_instance("robot", robot_id_);
   add_instance("person", "barman");
@@ -63,45 +63,42 @@ void RestaurantExecutor::init_knowledge()
   add_instance("zone", "waiting_zone");
 
   add_predicate("person_at new_customer wp_waiting_zone");
-  add_predicate("person_at barman wp_bar");
+  add_predicate("person_at barman wp_barra");
   add_predicate("wp_in_zone wp_waiting_zone waiting_zone");
 
   add_predicate("robot_at " + robot_id_ + " wp_entry");
   add_predicate("robot_at_room " + robot_id_ + " main_room");
 
-  add_predicate("person_at new_customer wp_waiting_zone");
-  add_predicate("person_at barman wp_bar");
-
   add_predicate("person_at_room new_customer main_room");
   add_predicate("person_at new_customer wp_waiting_zone");
   add_predicate("wp_in_zone wp_waiting_zone waiting_zone");
 
-  add_predicate("wp_bar_location wp_bar");
+  add_predicate("wp_bar_location wp_barra");
   add_predicate("wp_entry_location wp_entry");
   add_predicate("barman barman");
 
-  add_instance("table", "mesa_1");
-  add_instance("table", "mesa_2");
-  add_instance("table", "mesa_3");
-  add_instance("table", "mesa_4");
-  add_instance("table", "mesa_5");
-  add_instance("table", "mesa_6");
+  add_instance("table", "table_1");
+  add_instance("table", "table_2");
+  add_instance("table", "table_3");
+  add_instance("table", "table_4");
+  add_instance("table", "table_5");
+  add_instance("table", "table_6");
   add_instance("table", "barra");
 
-  add_predicate("is_wp_near_table wp_mesa_1 mesa_1");
-  add_predicate("is_wp_near_table wp_mesa_2 mesa_2");
-  add_predicate("is_wp_near_table wp_mesa_3 mesa_3");
-  add_predicate("is_wp_near_table wp_mesa_4 mesa_4");
-  add_predicate("is_wp_near_table wp_mesa_5 mesa_5");
-  add_predicate("is_wp_near_table wp_mesa_6 mesa_6");
+  add_predicate("is_wp_near_table wp_table_1 table_1");
+  add_predicate("is_wp_near_table wp_table_2 table_2");
+  add_predicate("is_wp_near_table wp_table_3 table_3");
+  add_predicate("is_wp_near_table wp_table_4 table_4");
+  add_predicate("is_wp_near_table wp_table_5 table_5");
+  add_predicate("is_wp_near_table wp_table_6 table_6");
   add_predicate("is_wp_near_table wp_barra barra");
 
-  add_predicate("is_table_at mesa_1 main_room");
-  add_predicate("is_table_at mesa_2 main_room");
-  add_predicate("is_table_at mesa_3 main_room");
-  add_predicate("is_table_at mesa_4 main_room");
-  add_predicate("is_table_at mesa_5 main_room");
-  add_predicate("is_table_at mesa_6 main_room");
+  add_predicate("is_table_at table_1 main_room");
+  add_predicate("is_table_at table_2 main_room");
+  add_predicate("is_table_at table_3 main_room");
+  add_predicate("is_table_at table_4 main_room");
+  add_predicate("is_table_at table_5 main_room");
+  add_predicate("is_table_at table_6 main_room");
   add_predicate("is_table_at barra main_room");
 
   graph_.add_node(robot_id_, "robot");
@@ -120,20 +117,20 @@ void RestaurantExecutor::init_knowledge()
 
   for (int i = 0; i < num_tables_to_check; i++)
   {
-    std::string table = "mesa_" + std::to_string(i + 1);
+    std::string table = "table_" + std::to_string(i + 1);
     graph_.add_node(table, "table");
-    graph_.add_node("wp_"+ table, "location");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("wp_"+ table, "waypoint");  // node is redundantelly added by graph-kms sync issue
     graph_.add_edge(table, "needs_check", table);
     tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
     graph_.add_edge("wp_" + table, wp2table, table, true);
   }
 
-  graph_.add_node("wp_bar", "waypoint");
+  graph_.add_node("wp_barra", "waypoint");
   graph_.add_node("barra", "table");
   graph_.add_node("waiting_zone", "zone");
 
   tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
-  graph_.add_edge("wp_bar", wp2table, "barra", true);
+  graph_.add_edge("wp_barra", wp2table, "barra", true);
   tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
   graph_.add_edge("main_room", main2zone, "waiting_zone", true);
 
@@ -275,7 +272,7 @@ void RestaurantExecutor::grettingNewCustomer_code_once()
 
 void RestaurantExecutor::grettingNewCustomer_code_iterative()
 {
-  setNewGoal("new_customer_attended new_customer " + ready_table_);
+  setNewGoal("attended_person new_customer " + ready_table_);
 }
 
 bool RestaurantExecutor::Init_2_checkTableStatus()
@@ -289,7 +286,6 @@ bool RestaurantExecutor::Init_2_checkTableStatus()
     graph_.remove_edge(edge.get_source(), edge.get(), edge.get_target());
     exists_response = true;
   }
-
   return exists_response;
 }
 
@@ -328,9 +324,10 @@ bool RestaurantExecutor::setOrder_2_checkOrder()
   if (!(search_predicates_regex(current_goal_)).empty())
   {
     auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response: [[:alnum:]_]*");
-
+    ROS_WARN("setOrder_2_checkOrder current_goal_ not empty");
     if (!interest_edges.empty())
     {
+      ROS_WARN("setOrder_2_checkOrder !interest_edges.empty()");
       graph_.remove_edge(interest_edges[0]);
       order_ready_asked_ = false;
       ret = true;

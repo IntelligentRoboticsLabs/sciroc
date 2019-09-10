@@ -45,7 +45,7 @@ void RP_set_order::activateCode()
     }
   }
   std::string table_id_raw = table_id;
-  std::string delimiter = "mesa_";
+  std::string delimiter = "table_";
   table_id_raw.erase(0, table_id_raw.find(delimiter) + delimiter.length());
   order_str = "The table " + table_id_raw + " ordered: ";
   int word_cnt = 0;
