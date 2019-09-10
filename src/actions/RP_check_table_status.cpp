@@ -113,6 +113,16 @@ RP_check_table_status::step()
     graph_.add_edge(table_id_, "status: " + table_status , table_id_);
     graph_.add_edge(table_id_, "num_customers: " + std::to_string(num_customers) , table_id_);
 
+    //Datahub intregration
+
+    table table_datahub;
+    table_datahub.id = table_id_;
+    table_datahub.type = "Table";
+    table_datahub.customers = num_customers;
+    table_datahub.status = table_status;
+    ROS_INFO("Response received: %d",gb_datahub::postTable(table_datahub));
+
+
     graph_.add_edge(
       robot_id_,
       "say: The table status is " + table_status + " and have " + std::to_string(num_customers) + " customers",

@@ -11,6 +11,8 @@
 
 #include "yaml-cpp/yaml.h"
 
+#include "gb_datahub/gb_datahub.h"
+
 #include <vector>
 #include <iostream>
 #include <fstream>
