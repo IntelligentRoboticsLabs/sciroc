@@ -42,10 +42,10 @@
 #include <bica/Component.h>
 #include <bica_graph/graph_client.h>
 
-class CheckOrderExecutor: public bica_planning::Executor, public bica::Component
+class CheckWaitingZoneExecutor: public bica_planning::Executor, public bica::Component
 {
 public:
-  CheckOrderExecutor()
+  CheckWaitingZoneExecutor()
   {
     init_knowledge();
     executed_ = false;
@@ -54,43 +54,44 @@ public:
   void init_knowledge()
   {
     add_instance("robot", "leia");
-    add_predicate("robot_at leia wp_bar");
-    add_predicate("wp_bar_location wp_bar");
-    add_predicate("robot_at_room leia main_room");
+    add_instance("person", "new_customer");
+    add_instance("zone", "waiting_zone");
+    add_predicate("robot_at leia wp_waiting_zone");
+    add_predicate("person_at new_customer wp_waiting_zone");
+    add_predicate("wp_in_zone wp_waiting_zone waiting_zone");
+    add_predicate("waypoint_at wp_waiting_zone main_room");
+
 
     graph_.add_node("leia", "robot");
-    graph_.add_node("wp_bar", "waypoint");  // node is redundantelly added by graph-kms sync issue
-    graph_.add_node("barra", "table");  // node is redundantelly added by graph-kms sync issue
-    graph_.add_node("mesa_1", "table");
-    graph_.add_node("mesa_1.cup.0", "cup");
-    graph_.add_edge("mesa_1", "wants", "mesa_1.cup.0");
+    graph_.add_node("wp_waiting_zone", "waypoint");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("waiting_zone", "zone");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("main_room", "room");
 
+    graph_.set_tf_identity("main_room", "map");
+    graph_.set_tf_identity("base_footprint", "leia");
+
+    graph_.add_tf_edge("main_room", "leia");
 
     tf2::Quaternion q;
     q.setRPY(0, 0, 0);
 
-    tf2::Transform wp2table(q, tf2::Vector3(1.0, 0.0, 0.0));
-    graph_.add_edge("wp_bar", wp2table, "barra", true);
-
-    graph_.set_tf_identity("base_footprint", "leia");
-
-    graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
-    graph_.set_tf_identity("main_room", "map");
-    graph_.add_tf_edge("main_room", "leia");
+    tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
+    graph_.add_edge("main_room", main2zone, "waiting_zone", true);
   }
 
   void step()
   {
     if (!executed_)
     {
+      sleep(11);
       ROS_INFO("Adding goal and planning");
 
-      add_goal("order_checked leia");
+      add_goal("person_detected leia new_customer waiting_zone");
       call_planner();
       executed_ = true;
     }
     else
-      ROS_INFO("Finished executing CheckOrderExecutor");
+      ROS_INFO("Finished executing CheckWaitingZoneExecutor");
   }
 
 private:
@@ -107,7 +108,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle n;
 
   ros::Rate loop_rate(1);
-  CheckOrderExecutor exec;
+  CheckWaitingZoneExecutor exec;
   exec.setRoot();
   exec.setActive(true);
 

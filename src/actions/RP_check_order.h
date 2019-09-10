@@ -52,7 +52,7 @@ private:
     ros::NodeHandle nh_;
     ros::Subscriber qr_sub_;
     bica_graph::GraphClient graph_;
-    std::string robot_id;
+    std::string robot_id_;
     std::vector<std::string> order, order_in_robot;
 
     darknet_ros_3d::Darknet3DListener obj_listener_;

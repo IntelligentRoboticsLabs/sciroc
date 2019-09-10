@@ -42,10 +42,10 @@
 #include <bica/Component.h>
 #include <bica_graph/graph_client.h>
 
-class CheckOrderExecutor: public bica_planning::Executor, public bica::Component
+class FixOrderExecutor: public bica_planning::Executor, public bica::Component
 {
 public:
-  CheckOrderExecutor()
+  FixOrderExecutor()
   {
     init_knowledge();
     executed_ = false;
@@ -54,23 +54,51 @@ public:
   void init_knowledge()
   {
     add_instance("robot", "leia");
+    add_instance("waypoint", "wp_bar");
+    add_instance("table", "barra");
+    add_instance("person", "jack");
+
+    add_predicate("barman jack");
+    add_predicate("robot_at_room leia main_room");
     add_predicate("robot_at leia wp_bar");
     add_predicate("wp_bar_location wp_bar");
-    add_predicate("robot_at_room leia main_room");
 
     graph_.add_node("leia", "robot");
-    graph_.add_node("wp_bar", "waypoint");  // node is redundantelly added by graph-kms sync issue
-    graph_.add_node("barra", "table");  // node is redundantelly added by graph-kms sync issue
-    graph_.add_node("mesa_1", "table");
-    graph_.add_node("mesa_1.cup.0", "cup");
-    graph_.add_edge("mesa_1", "wants", "mesa_1.cup.0");
+    graph_.add_node("barra", "table");
+    graph_.add_node("jack", "person");
+    graph_.add_node("wp_bar_location", "waypoint");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("bar.water", "water");
+    graph_.add_node("bar.cup", "cup");
+    graph_.add_node("bar.bread", "bread");
 
+    /* TEST 1 */
+    /* OK */
+    /**/
+    graph_.add_edge("leia", "has", "bar.water");
+    graph_.add_edge("leia", "needs", "bar.cup");
+    graph_.add_edge("leia", "not needs", "bar.bread");
+    /**/
 
-    tf2::Quaternion q;
-    q.setRPY(0, 0, 0);
+    /* TEST 2 */
+    /* OK */
+    /*
+    graph_.add_edge("leia", "has", "bar.water");
+    graph_.add_edge("leia", "needs", "bar.cup");
+    */
 
-    tf2::Transform wp2table(q, tf2::Vector3(1.0, 0.0, 0.0));
-    graph_.add_edge("wp_bar", wp2table, "barra", true);
+    /* TEST 3 */
+    /* ¿? */
+    /*
+    graph_.add_edge("leia", "has", "bar.water");
+    graph_.add_edge("leia", "not needs", "bar.bread");
+    */
+
+    /* TEST 4 */
+    /* OK */
+    /*
+    graph_.add_edge("leia", "needs", "bar.cup");
+    graph_.add_edge("leia", "not needs", "bar.bread");
+    */
 
     graph_.set_tf_identity("base_footprint", "leia");
 
@@ -85,12 +113,12 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      add_goal("order_checked leia");
+      add_goal("order_fixed leia");
       call_planner();
       executed_ = true;
     }
     else
-      ROS_INFO("Finished executing CheckOrderExecutor");
+      ROS_INFO("Finished executing FixOrderExecutor");
   }
 
 private:
@@ -107,7 +135,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle n;
 
   ros::Rate loop_rate(1);
-  CheckOrderExecutor exec;
+  FixOrderExecutor exec;
   exec.setRoot();
   exec.setActive(true);
 

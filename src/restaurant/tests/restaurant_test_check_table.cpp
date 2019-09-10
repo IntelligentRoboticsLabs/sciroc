@@ -61,10 +61,9 @@ public:
     add_predicate("robot_at_room leia main_room");
 
     graph_.add_node("leia", "robot");
-    std::string table = "mesa_1";
-    std::string waypoint = "wp_mesa_1";
 
-    graph_.add_node("wp_mesa_1", "waypoint");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("wp_mesa_1", "waypoint");
+
     graph_.add_node("mesa_1", "table");  // node is redundantelly added by graph-kms sync issue
 
     tf2::Quaternion q;
@@ -72,9 +71,7 @@ public:
 
     tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
     graph_.add_edge("wp_mesa_1", wp2table, "mesa_1", true);
-
     graph_.add_edge("mesa_1", "needs_check", "mesa_1");
-
     graph_.set_tf_identity("base_footprint", "leia");
 
     graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue

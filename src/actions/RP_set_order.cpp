@@ -47,10 +47,17 @@ void RP_set_order::activateCode()
   std::string table_id_raw = table_id;
   std::string delimiter = "mesa_";
   table_id_raw.erase(0, table_id_raw.find(delimiter) + delimiter.length());
-  order_str = "The table " + table_id_raw + " wants: ";
+  order_str = "The table " + table_id_raw + " ordered: ";
+  int word_cnt = 0;
   for (std::vector<std::string>::iterator it = order.begin(); it != order.end(); ++it)
   {
-    order_str += *it + ", ";
+    word_cnt++;
+    if (word_cnt == order.size() - 1)
+      order_str += *it + ", and ";
+    else if (word_cnt < order.size())
+      order_str += *it + ", ";
+    else
+      order_str += *it + ".";
   }
 
   graph_.add_edge(robot_id, "say: " + order_str, person_id);

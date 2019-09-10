@@ -29,11 +29,13 @@ void RP_fix_order::activateCode()
 {
   for (size_t i = 0; i < last_msg_.parameters.size(); i++)
   {
-    ROS_INFO("Param %s = %s",
+    ROS_INFO(" Param %s = %s",
       last_msg_.parameters[i].key.c_str(),
       last_msg_.parameters[i].value.c_str());
     if (0 == last_msg_.parameters[i].key.compare("r"))
       robot_id = last_msg_.parameters[i].value;
+    else if (0 == last_msg_.parameters[i].key.compare("p"))
+      person_id = last_msg_.parameters[i].value;
   }
 
   std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
@@ -41,22 +43,22 @@ void RP_fix_order::activateCode()
   {
     std::string edge = it->get();
     if (edge == "needs")
-      object_needed = it->get_target();
+      object_needed = graph_.get_node(it->get_target()).get_type(); // = it->get_target();
     else if (edge == "not needs")
-      wrong_object = it->get_target();
+      wrong_object = graph_.get_node(it->get_target()).get_type(); // = it->get_target();
   }
 
   if (wrong_object == "")
     graph_.add_edge(
       robot_id,
       "say: Excuse me sir, I need a " + object_needed + ". Could you bring me it?",
-      "barman");
+      person_id);
   else
     graph_.add_edge(
       robot_id,
       "say: Excuse me sir, I need a " + object_needed + " and I don't need a " + \
         wrong_object + ". Could you replace it?",
-      "barman");
+      person_id);
 
   wrong_object = "";
   setSuccess();

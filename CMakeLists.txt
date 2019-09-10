@@ -68,6 +68,11 @@ add_executable(rp_gretting_new_customer src/actions/RP_gretting_new_customer.cpp
 add_dependencies(rp_gretting_new_customer ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rp_gretting_new_customer ${catkin_LIBRARIES})
 
+add_executable(rp_check_waiting_person src/actions/RP_check_waiting_person.cpp)
+add_dependencies(rp_check_waiting_person ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_check_waiting_person ${catkin_LIBRARIES})
+
+
 # HFSM
 
 add_executable(restaurant_executor_node
@@ -108,6 +113,15 @@ target_link_libraries(restaurant_test_get_order ${catkin_LIBRARIES} ${YAMLCPP_LI
 add_executable(restaurant_test_set_order src/restaurant/tests/restaurant_test_set_order.cpp)
 add_dependencies(restaurant_test_set_order ${catkin_EXPORTED_TARGETS})
 target_link_libraries(restaurant_test_set_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(restaurant_test_check_order src/restaurant/tests/restaurant_test_check_order.cpp)
+add_dependencies(restaurant_test_check_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_check_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
+add_executable(restaurant_test_waiting_zone src/restaurant/tests/restaurant_test_waiting_zone.cpp)
+add_dependencies(restaurant_test_waiting_zone ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_waiting_zone ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
 
 set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
 
