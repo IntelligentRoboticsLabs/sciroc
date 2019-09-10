@@ -24,27 +24,35 @@ Efecto de la acción
 RP_check_order::RP_check_order(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("check_order"),
-  robot_id(),
+  robot_id_(),
   obj_listener_(std::list<std::string>{"cup"}, "barra")
 {
 }
 
 void RP_check_order::activateCode()
 {
+  ROS_INFO("========> Check order Activated");
   qr_sub_ = nh_.subscribe("/barcode", 1, &RP_check_order::qrCallback, this);
 
   for (size_t i = 0; i < last_msg_.parameters.size(); i++)
   {
     ROS_INFO("Param %s = %s", last_msg_.parameters[i].key.c_str(), last_msg_.parameters[i].value.c_str());
     if (0 == last_msg_.parameters[i].key.compare("r"))
-      robot_id = last_msg_.parameters[i].value;
+      robot_id_ = last_msg_.parameters[i].value;
   }
+
+  graph_.add_edge(robot_id_, "say: Checking order", robot_id_);
+
+  graph_.add_edge(robot_id_, "want_see", "barra");
 
   start_check_ = ros::Time::now();
 
   obj_listener_.reset();
   obj_listener_.set_working_frame("barra");
   obj_listener_.set_active();
+
+  order.clear();
+  order_in_robot.clear();
 }
 
 void RP_check_order::deActivateCode()
@@ -59,8 +67,10 @@ RP_check_order::step()
   if (!isActive())
     return;
 
+  ROS_INFO("========> Check order Step");
   if ((ros::Time::now() - start_check_).toSec() >= CHECK_ORDER_CHECKING_TIME)
   {
+    obj_listener_.print();
 
     obj_listener_.filter_objects("cup", CHECK_ORDER_MIN_PROBABILITY,
       CHECK_ORDER_OBJECT_MIN_X, CHECK_ORDER_OBJECT_MAX_X, CHECK_ORDER_OBJECT_MIN_Y,
@@ -68,10 +78,91 @@ RP_check_order::step()
       CHECK_ORDER_OBJECT_MIN_SIZE_X, CHECK_ORDER_OBJECT_MAX_SIZE_X, CHECK_ORDER_OBJECT_MIN_SIZE_Y,
       CHECK_ORDER_OBJECT_MAX_SIZE_Y, CHECK_ORDER_OBJECT_MIN_SIZE_Z, CHECK_ORDER_OBJECT_MAX_SIZE_Z);
 
+    obj_listener_.print();
 
+    // Adding "has" edges
+    int count = 0;
     for (const auto& object : obj_listener_.get_objects())
     {
+      std::string instance_id = "barra." + object.class_id + "." + std::to_string(count++);
+      graph_.add_node(instance_id, object.class_id);
+      graph_.add_edge(instance_id, "has", "barra");
+    }
 
+    // Removing has if they exist
+    std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
+    for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+    {
+      std::string edge = it->get();
+      if (edge.find("has") != std::string::npos && it->get_source() == robot_id_)
+        graph_.remove_edge(*it);
+    }
+
+    // Comparing has with wants
+    edges_list =  graph_.get_string_edges();
+    for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+    {
+      std::string edge = it->get();
+      if (edge.find("wants") != std::string::npos)
+        order.push_back(graph_.get_node(it->get_target()).get_type());
+      else if (edge.find("has") != std::string::npos)
+        order_in_robot.push_back(graph_.get_node(it->get_target()).get_type());
+    }
+
+    ROS_INFO("WANTS (%zu)", order.size());
+    for (const std::string& obj : order)
+    {
+      ROS_INFO("\t[%s]", obj.c_str());
+    }
+    ROS_INFO("HAS (%zu)", order_in_robot.size());
+    for (const std::string& obj : order_in_robot)
+    {
+      ROS_INFO("\t[%s]", obj.c_str());
+    }
+
+
+    std::sort(order.begin(), order.end());
+    std::sort(order_in_robot.begin(), order_in_robot.end());
+
+    // If lists are equals, clean before finishing
+    if (order == order_in_robot)
+    {
+      for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+      {
+        std::string edge = it->get();
+        if (edge == "not needs" && graph_.get_node(it->get_target()).get_type() == "order")
+        {
+          graph_.remove_edge(*it);
+          graph_.remove_node(graph_.get_node(it->get_target()).get_id());
+        }
+        else if (edge == "needs" && graph_.get_node(it->get_target()).get_type() == "order")
+          graph_.remove_edge(*it);
+      }
+      graph_.add_edge(robot_id_,"say: Thank you! I will deliver the order.", "barman");
+    }
+    else //Need fix
+    {
+      int counter = 0;
+      for (std::vector<std::string>::iterator it = order.begin(); it != order.end(); ++it)
+      {
+        if (std::find(order_in_robot.begin(), order_in_robot.end(), *it) == order_in_robot.end())
+        {
+          std::string instance_id = robot_id_ + "." + *it + "." + std::to_string(counter++);
+          graph_.add_node(instance_id, *it);
+          graph_.add_edge(robot_id_,"needs", instance_id);
+        }
+      }
+
+      for (std::vector<std::string>::iterator it = order_in_robot.begin(); it != order_in_robot.end(); ++it)
+      {
+        if (std::find(order.begin(), order.end(), *it) == order.end())
+        {
+          std::string instance_id = robot_id_ + "." + *it + "." + std::to_string(counter++);
+          graph_.add_node(instance_id, *it);
+          graph_.add_edge(robot_id_,"not needs", *it);
+        }
+      }
+      add_predicate("order_needs_fix " + robot_id_);
     }
 
     obj_listener_.set_inactive();
@@ -87,7 +178,7 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
     for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
     {
       std::string edge = it->get();
-      if (edge.find("has") != std::string::npos && it->get_source() == robot_id)
+      if (edge.find("has") != std::string::npos && it->get_source() == robot_id_)
         graph_.remove_edge(*it);
     }
 
@@ -95,7 +186,7 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
     for (YAML::const_iterator it = root.begin(); it != root.end(); ++it)
     {
       graph_.add_node(it->as<std::string>(), "order");
-      graph_.add_edge(robot_id, "has", it->as<std::string>());
+      graph_.add_edge(robot_id_,"has", it->as<std::string>());
     }
 
     edges_list =  graph_.get_string_edges();
@@ -122,20 +213,20 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
         else if (edge == "needs" && graph_.get_node(it->get_target()).get_type() == "order")
           graph_.remove_edge(*it);
       }
-      graph_.add_edge(robot_id, "say: Thank you! I will deliver the order.", "barman");
+      graph_.add_edge(robot_id_,"say: Thank you! I will deliver the order.", "barman");
     }
     else
     {
       for (std::vector<std::string>::iterator it = order.begin(); it != order.end(); ++it)
       {
         if (std::find(order_in_robot.begin(), order_in_robot.end(), *it) == order_in_robot.end())
-          graph_.add_edge(robot_id, "needs", *it);
+          graph_.add_edge(robot_id_,"needs", *it);
       }
 
       for (std::vector<std::string>::iterator it = order_in_robot.begin(); it != order_in_robot.end(); ++it)
       {
         if (std::find(order.begin(), order.end(), *it) == order.end())
-          graph_.add_edge(robot_id, "not needs", *it);
+          graph_.add_edge(robot_id_,"not needs", *it);
       }
       add_predicate("order_needs_fix leia");
     }

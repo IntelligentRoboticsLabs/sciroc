@@ -45,7 +45,7 @@
 class CheckOrderExecutor: public bica_planning::Executor, public bica::Component
 {
 public:
-  CheckTableExecutor()
+  CheckOrderExecutor()
   {
     init_knowledge();
     executed_ = false;
@@ -54,23 +54,23 @@ public:
   void init_knowledge()
   {
     add_instance("robot", "leia");
-    add_instance("table", "barra");
-    add_predicate("robot_at leia wp_bar_location");
-    add_predicate("is_wp_near_table wp_bar_location barra");
-    add_predicate("is_table_at barra main_room");
+    add_predicate("robot_at leia wp_bar");
+    add_predicate("wp_bar_location wp_bar");
     add_predicate("robot_at_room leia main_room");
 
     graph_.add_node("leia", "robot");
-    graph_.add_node("wp_bar_location", "waypoint");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("wp_bar", "waypoint");  // node is redundantelly added by graph-kms sync issue
     graph_.add_node("barra", "table");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("mesa_1", "table");
+    graph_.add_node("mesa_1.cup.0", "cup");
+    graph_.add_edge("mesa_1", "wants", "mesa_1.cup.0");
+
 
     tf2::Quaternion q;
     q.setRPY(0, 0, 0);
 
-    tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
-    graph_.add_edge("wp_bar_location", wp2table, "barra", true);
-
-    graph_.add_edge("mesa_1", "needs_check", "mesa_1");
+    tf2::Transform wp2table(q, tf2::Vector3(1.0, 0.0, 0.0));
+    graph_.add_edge("wp_bar", wp2table, "barra", true);
 
     graph_.set_tf_identity("base_footprint", "leia");
 
@@ -85,12 +85,12 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      add_goal("order_checked mesa_1");
+      add_goal("order_checked leia");
       call_planner();
       executed_ = true;
     }
     else
-      ROS_INFO("Finished executing CheckTableExecutor");
+      ROS_INFO("Finished executing CheckOrderExecutor");
   }
 
 private:
@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle n;
 
   ros::Rate loop_rate(1);
-  CheckTableExecutor exec;
+  CheckOrderExecutor exec;
   exec.setRoot();
   exec.setActive(true);
 

@@ -114,6 +114,10 @@ add_executable(restaurant_test_set_order src/restaurant/tests/restaurant_test_se
 add_dependencies(restaurant_test_set_order ${catkin_EXPORTED_TARGETS})
 target_link_libraries(restaurant_test_set_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
 
+add_executable(restaurant_test_check_order src/restaurant/tests/restaurant_test_check_order.cpp)
+add_dependencies(restaurant_test_check_order ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_check_order ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
 add_executable(restaurant_test_waiting_zone src/restaurant/tests/restaurant_test_waiting_zone.cpp)
 add_dependencies(restaurant_test_waiting_zone ${catkin_EXPORTED_TARGETS})
 target_link_libraries(restaurant_test_waiting_zone ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
