@@ -6,6 +6,8 @@
 #include <bica_graph/graph_client.h>
 #include <std_msgs/String.h>
 #include "yaml-cpp/yaml.h"
+#include "gb_datahub/gb_datahub.h"
+
 
 #include <string>
 #include <vector>

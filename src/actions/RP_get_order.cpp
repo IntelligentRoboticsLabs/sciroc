@@ -40,6 +40,18 @@ void RP_get_order::activateCode()
     else if (0 == last_msg_.parameters[i].key.compare("r"))
       robot_id_ = last_msg_.parameters[i].value;
   }
+  // Obtain menu
+  menu obtained_menu = gb_datahub::getMenu();
+  std::string obtained_menu_;
+
+  for(int i = 0; i < obtained_menu.products.size(); i++){
+  	obtained_menu_ = obtained_menu.products[i].label + obtained_menu_;
+  }
+
+  graph_.add_edge(
+    robot_id_,
+    "say: Hello sir, Today we have " + obtained_menu_ + ". What do you want to take?",
+    robot_id_);
   graph_.add_edge(robot_id_, "ask: bar_order.ask", robot_id_);
 }
 
@@ -63,7 +75,6 @@ void RP_get_order::step()
 {
   if (!isActive())
     return;
-
   std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
   for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
   {
@@ -96,10 +107,8 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "rosplan_interface_get_order");
     ros::NodeHandle nh("~");
-
     // create PDDL action subscriber
     RP_get_order rpmb(nh);
-
     // listen for action dispatch
     ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,
       &KCL_rosplan::RPActionInterface::dispatchCallback,
