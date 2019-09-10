@@ -1,16 +1,26 @@
-#include "RP_gretting_new_customer.h"
+#include "RP_attend_person.h"
 
-/* The implementation of RP_gretting_new_customer.h */
+/* The implementation of RP_attend_person.h */
 
-/* constructor */
-RP_gretting_new_customer::RP_gretting_new_customer(const ros::NodeHandle& nh)
+/* Esta acción se encarga de anunciar que un cliente ha sido ubicado en una mesa
+
+Estado inicial:
+- El robot ha detectado a una persona
+- La persona ha sido guiada
+- El robot está al lado de la mesa en la que dejar a la persona
+
+Efecto de la acción
+- La mesa con estado (autoarco) 'ready' pasa a estado (autoarco) 'needs_serving'
+*/
+
+RP_attend_person::RP_attend_person(const ros::NodeHandle& nh)
 : nh_(nh),
-  Action("gretting_new_customer"),
+  Action("attend_person"),
   robot_id()
 {
 }
 
-void RP_gretting_new_customer::activateCode()
+void RP_attend_person::activateCode()
 {
   for (size_t i = 0; i < last_msg_.parameters.size(); i++)
   {
@@ -30,7 +40,7 @@ void RP_gretting_new_customer::activateCode()
   setSuccess();
 }
 
-void RP_gretting_new_customer::deActivateCode()
+void RP_attend_person::deActivateCode()
 {
 }
 
@@ -40,11 +50,11 @@ void RP_gretting_new_customer::deActivateCode()
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "rosplan_interface_gretting_new_customer");
+    ros::init(argc, argv, "rosplan_interface_attend_person");
     ros::NodeHandle nh("~");
 
     // create PDDL action subscriber
-    RP_gretting_new_customer rpmb(nh);
+    RP_attend_person rpmb(nh);
 
     // listen for action dispatch
     ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,

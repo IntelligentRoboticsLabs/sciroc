@@ -12,8 +12,8 @@
 #include <fstream>
 #include <boost/foreach.hpp>
 
-#ifndef SRC_ACTIONS_RP_GRETTING_NEW_CUSTOMER_H
-#define SRC_ACTIONS_RP_GRETTING_NEW_CUSTOMER_H
+#ifndef SRC_ACTIONS_RP_ATTEND_PERSON_H
+#define SRC_ACTIONS_RP_ATTEND_PERSON_H
 
 /**
 * This file defines the ***** class.
@@ -21,14 +21,12 @@
 * PDDL "*****" actions become "*****" actions.
 */
 
-class RP_gretting_new_customer: public bica_planning::Action
+class RP_attend_person: public bica_planning::Action
 {
 public:
-    /* constructor */
-    explicit RP_gretting_new_customer(const ros::NodeHandle& nh);
+    explicit RP_attend_person(const ros::NodeHandle& nh);
 
 protected:
-    /* listen to and process action_dispatch topic */
     void activateCode();
     void deActivateCode();
 private:
@@ -37,4 +35,4 @@ private:
     std::string robot_id, table_id;
 };
 
-#endif  // SRC_ACTIONS_RP_GRETTING_NEW_CUSTOMER_H
+#endif  // SRC_ACTIONS_RP_ATTEND_PERSON_H
