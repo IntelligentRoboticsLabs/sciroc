@@ -40,6 +40,18 @@ void RP_get_order::activateCode()
     else if (0 == last_msg_.parameters[i].key.compare("r"))
       robot_id_ = last_msg_.parameters[i].value;
   }
+  // Obtain menu
+  menu obtained_menu = gb_datahub::getMenu();
+  std::string obtained_menu_;
+
+  for(int i = 0; i < obtained_menu.products.size(); i++){
+  	obtained_menu_ = obtained_menu.products[i].label + obtained_menu_;
+  }
+
+  graph_.add_edge(
+    robot_id_,
+    "say: Hello sir, Today we have " + obtained_menu_ + ". What do you want to take?",
+    robot_id_);
   graph_.add_edge(robot_id_, "ask: bar_order.ask", robot_id_);
 }
 
@@ -63,7 +75,6 @@ void RP_get_order::step()
 {
   if (!isActive())
     return;
-
   std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
   for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
   {
@@ -75,14 +86,23 @@ void RP_get_order::step()
       std::string delimiter = "response: ";
       response_raw.erase(0, response_raw.find(delimiter) + delimiter.length());
       std::vector<std::string> food = splitSpaces(response_raw);
-
+      order obtained_order;
       int counter = 0;
       for (auto it_food = food.begin(); it_food != food.end(); ++it_food)
       {
         std::string instance_id = table_id_ + "." + *it_food + "." + std::to_string(counter++);
+        obtained_order.products[counter] = *it_food;
         graph_.add_node(instance_id, *it_food);
         graph_.add_edge(table_id_, "wants", instance_id);
       }
+      
+      obtained_order.id = "ORDER0";
+      obtained_order.type = "Order";
+      obtained_order.timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());
+      obtained_order.status = "Pending";
+
+      ROS_INFO("Response received: %d",gb_datahub::postOrder(obtained_order));
+
       setSuccess();
     }
   }
@@ -96,10 +116,8 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "rosplan_interface_get_order");
     ros::NodeHandle nh("~");
-
     // create PDDL action subscriber
     RP_get_order rpmb(nh);
-
     // listen for action dispatch
     ros::Subscriber ds = nh.subscribe("/kcl_rosplan/action_dispatch", 1000,
       &KCL_rosplan::RPActionInterface::dispatchCallback,
