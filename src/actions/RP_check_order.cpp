@@ -25,8 +25,25 @@ RP_check_order::RP_check_order(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("check_order"),
   robot_id_(),
-  obj_listener_(std::list<std::string>{"cup"}, "bar")
+  obj_listener_("bar")
 {
+  darknet_ros_3d::ObjectConfiguration cup_conf;
+
+  cup_conf.min_probability = CHECK_ORDER_MIN_PROBABILITY;
+  cup_conf.min_x = CHECK_ORDER_OBJECT_MIN_X;
+  cup_conf.max_x = CHECK_ORDER_OBJECT_MAX_X;
+  cup_conf.min_y = CHECK_ORDER_OBJECT_MIN_Y;
+  cup_conf.max_y = CHECK_ORDER_OBJECT_MAX_Y;
+  cup_conf.min_z = CHECK_ORDER_OBJECT_MIN_Z;
+  cup_conf.max_z = CHECK_ORDER_OBJECT_MAX_Z;
+  cup_conf.min_size_x = CHECK_ORDER_OBJECT_MIN_SIZE_X;
+  cup_conf.min_size_y = CHECK_ORDER_OBJECT_MAX_SIZE_X;
+  cup_conf.min_size_z = CHECK_ORDER_OBJECT_MIN_SIZE_Y;
+  cup_conf.max_size_x = CHECK_ORDER_OBJECT_MAX_SIZE_Y;
+  cup_conf.max_size_y = CHECK_ORDER_OBJECT_MIN_SIZE_Z;
+  cup_conf.max_size_z = CHECK_ORDER_OBJECT_MAX_SIZE_Z;
+
+  obj_listener_.add_class("cup", cup_conf);
 }
 
 void RP_check_order::activateCode()
@@ -70,16 +87,6 @@ RP_check_order::step()
   ROS_INFO("========> Check order Step");
   if ((ros::Time::now() - start_check_).toSec() >= CHECK_ORDER_CHECKING_TIME)
   {
-    obj_listener_.print();
-
-    obj_listener_.filter_objects("cup", CHECK_ORDER_MIN_PROBABILITY,
-      CHECK_ORDER_OBJECT_MIN_X, CHECK_ORDER_OBJECT_MAX_X, CHECK_ORDER_OBJECT_MIN_Y,
-      CHECK_ORDER_OBJECT_MAX_Z, CHECK_ORDER_OBJECT_MIN_Z, CHECK_ORDER_OBJECT_MAX_Z,
-      CHECK_ORDER_OBJECT_MIN_SIZE_X, CHECK_ORDER_OBJECT_MAX_SIZE_X, CHECK_ORDER_OBJECT_MIN_SIZE_Y,
-      CHECK_ORDER_OBJECT_MAX_SIZE_Y, CHECK_ORDER_OBJECT_MIN_SIZE_Z, CHECK_ORDER_OBJECT_MAX_SIZE_Z);
-
-    obj_listener_.print();
-
     // Adding "has" edges
     int count = 0;
     for (const auto& object : obj_listener_.get_objects())
