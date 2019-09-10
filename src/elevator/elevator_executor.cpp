@@ -53,6 +53,7 @@ void ElevatorExecutor::init_knowledge()
   add_predicate("robot_at " + robot_id_ + " wp_start");
   add_predicate("robot_at_room " + robot_id_ + " main_room");
 
+  graph_.set_tf_identity("base_footprint", robot_id_);
   graph_.add_node(robot_id_, "robot");
   graph_.add_node("elevator", "elevator");
   graph_.add_node("0", "floor");

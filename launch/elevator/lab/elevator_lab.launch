@@ -57,6 +57,7 @@
     <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>
   </include>
   <include file="$(find social_navigation)/launch/social_navigation_actions.launch"/>
-  <!--<include file="$(find gb_attention)/launch/attention.launch"/>-->
+  <rosparam command="load" file="$(find sciroc)/config/attention_config.yaml" />
+  <include file="$(find gb_attention)/launch/attention.launch"/>
   <!--<include file="$(find keep_in_proxemics)/launch/social_elevator_navigation.launch"/>-->
 </launch>

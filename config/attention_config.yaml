@@ -1,7 +1,9 @@
-attention_classes: [table, zone]
+attention_classes: [table, zone, people, robot]
 
 table_instances: [table_default]
 zone_instances: [waiting_zone, zone_default]
+person_instances: [person_default]
+robot_instances: [robot_default]
 
 table_default: ["0.5, 0.15, 0.75",
                 "0.5, -0.15, 0.75",
@@ -21,3 +23,5 @@ waiting_zone: ["1.0, 1.0, 0.0",
                "-1.0, -1.0, 0.0"
               ]
 zone_default: ["8.0, 8.0, 8.0", "9.0, 9.0, 9.0"]
+person_default: ["2.0, 0.0, 1.8", "2.0, 0.0, 1.8"]
+robot_default: ["2.0, 1.0, 1.2", "2.0, 0.0, 1.2", "2.0, -1.0, 1.2"]
