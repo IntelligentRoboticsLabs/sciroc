@@ -86,14 +86,16 @@ void RP_get_order::step()
       std::string delimiter = "response: ";
       response_raw.erase(0, response_raw.find(delimiter) + delimiter.length());
       std::vector<std::string> food = splitSpaces(response_raw);
-
+      order obtained_order;
       int counter = 0;
       for (auto it_food = food.begin(); it_food != food.end(); ++it_food)
       {
         std::string instance_id = table_id_ + "." + *it_food + "." + std::to_string(counter++);
+        obtained_order.products[counter] = *it_food;
         graph_.add_node(instance_id, *it_food);
         graph_.add_edge(table_id_, "wants", instance_id);
       }
+      gb_datahub::postOrder(obtained_order);
       setSuccess();
     }
   }
