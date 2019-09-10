@@ -114,7 +114,6 @@ RP_check_table_status::step()
     graph_.add_edge(table_id_, "num_customers: " + std::to_string(num_customers) , table_id_);
 
     //Datahub intregration
-
     table table_datahub;
     table_datahub.id = table_id_;
     table_datahub.type = "Table";
