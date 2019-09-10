@@ -5,12 +5,12 @@
 /* Esta acción se encarga de pedir a los comensales de una mesa lo que quieren tomar
 
 Estado inicial:
-- El robot está en wp_mesa_N
+- El robot está en wp_table_N
 
 Efecto de la acción
 - Se crea arco "aks" para preguntar la comanda
 - Se crean nodos con los elementos pedidos
-  - la instancia es "mesa_N.clase.N"
+  - la instancia es "table_N.clase.N"
   - el tipo es "clase"
 - Se crean arcos "wants" desde el robot a los elementos pedidos
 */
@@ -45,12 +45,12 @@ void RP_get_order::activateCode()
   std::string obtained_menu_;
 
   for(int i = 0; i < obtained_menu.products.size(); i++){
-  	obtained_menu_ = obtained_menu.products[i].label + obtained_menu_;
+  	obtained_menu_ = obtained_menu.products[i].label + ", " + obtained_menu_;
   }
 
   graph_.add_edge(
     robot_id_,
-    "say: Hello sir, Today we have " + obtained_menu_ + ". What do you want to take?",
+    "say: Hello sir, Today we have " + obtained_menu_,
     robot_id_);
   graph_.add_edge(robot_id_, "ask: bar_order.ask", robot_id_);
 }
@@ -91,11 +91,11 @@ void RP_get_order::step()
       for (auto it_food = food.begin(); it_food != food.end(); ++it_food)
       {
         std::string instance_id = table_id_ + "." + *it_food + "." + std::to_string(counter++);
-        obtained_order.products[counter] = *it_food;
+        obtained_order.products.push_back(*it_food);
         graph_.add_node(instance_id, *it_food);
         graph_.add_edge(table_id_, "wants", instance_id);
       }
-      
+
       obtained_order.id = "ORDER0";
       obtained_order.type = "Order";
       obtained_order.timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());

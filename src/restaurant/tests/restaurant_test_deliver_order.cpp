@@ -53,33 +53,33 @@ public:
 
   void init_knowledge()
   {
-    add_instance("robot", "leia");
+    add_instance("robot", "sonny");
     //add_instance("waypoint", "wp_bar");
-    add_instance("table", "mesa_1");
+    add_instance("table", "table_1");
 
-    add_predicate("robot_at leia wp_mesa_1");
-    add_predicate("is_wp_near_table wp_mesa_1 mesa_1");
-    add_predicate("is_table_at mesa_1 main_room");
-    add_predicate("robot_at_room leia main_room");
+    add_predicate("robot_at sonny wp_table_1");
+    add_predicate("is_wp_near_table wp_table_1 table_1");
+    add_predicate("is_table_at table_1 main_room");
+    add_predicate("robot_at_room sonny main_room");
 
-    graph_.add_node("leia", "robot");
-    graph_.add_node("mesa_1", "table");
-    graph_.add_node("wp_mesa_1", "waypoint");
+    graph_.add_node("sonny", "robot");
+    graph_.add_node("table_1", "table");
+    graph_.add_node("wp_table_1", "waypoint");
 
-    graph_.add_node("mesa_1.coke.0", "coke");
-    graph_.add_node("mesa_1.bread.1", "bread");
-    graph_.add_edge("mesa_1", "has", "mesa_1.coke.0");
-    graph_.add_edge("mesa_1", "wants", "mesa_1.bread.1");
+    graph_.add_node("table_1.coke.0", "coke");
+    graph_.add_node("table_1.bread.1", "bread");
+    graph_.add_edge("table_1", "has", "table_1.coke.0");
+    graph_.add_edge("table_1", "wants", "table_1.bread.1");
 
 
     tf2::Quaternion q;
     q.setRPY(0, 0, 0);
 
-    graph_.set_tf_identity("base_footprint", "leia");
+    graph_.set_tf_identity("base_footprint", "sonny");
 
     graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
     graph_.set_tf_identity("main_room", "map");
-    graph_.add_tf_edge("main_room", "leia");
+    graph_.add_tf_edge("main_room", "sonny");
   }
 
   void step()
@@ -88,7 +88,7 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      add_goal("order_delivered mesa_1");
+      add_goal("order_delivered table_1");
       call_planner();
       executed_ = true;
     }

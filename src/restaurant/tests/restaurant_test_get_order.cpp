@@ -53,31 +53,31 @@ public:
 
   void init_knowledge()
   {
-    add_instance("robot", "leia");
-    add_instance("table", "mesa_1");
-    add_predicate("robot_at leia wp_mesa_1");
-    add_predicate("is_wp_near_table wp_mesa_1 mesa_1");
-    add_predicate("is_table_at mesa_1 main_room");
-    add_predicate("robot_at_room leia main_room");
+    add_instance("robot", "sonny");
+    add_instance("table", "table_1");
+    add_predicate("robot_at sonny wp_table_1");
+    add_predicate("is_wp_near_table wp_table_1 table_1");
+    add_predicate("is_table_at table_1 main_room");
+    add_predicate("robot_at_room sonny main_room");
 
-    graph_.add_node("leia", "robot");
-    std::string table = "mesa_1";
-    std::string waypoint = "wp_mesa_1";
+    graph_.add_node("sonny", "robot");
+    std::string table = "table_1";
+    std::string waypoint = "wp_table_1";
 
-    graph_.add_node("wp_mesa_1", "waypoint");  // node is redundantelly added by graph-kms sync issue
-    graph_.add_node("mesa_1", "table");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("wp_table_1", "waypoint");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("table_1", "table");  // node is redundantelly added by graph-kms sync issue
 
     tf2::Quaternion q;
     q.setRPY(0, 0, 0);
 
     tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
-    graph_.add_edge("wp_mesa_1", wp2table, "mesa_1", true);
+    graph_.add_edge("wp_table_1", wp2table, "table_1", true);
 
-    graph_.set_tf_identity("base_footprint", "leia");
+    graph_.set_tf_identity("base_footprint", "sonny");
 
     graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
     graph_.set_tf_identity("main_room", "map");
-    graph_.add_tf_edge("main_room", "leia");
+    graph_.add_tf_edge("main_room", "sonny");
   }
 
   void step()
@@ -86,7 +86,7 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      add_goal("order_ready mesa_1");
+      add_goal("order_ready table_1");
       call_planner();
       executed_ = true;
     }

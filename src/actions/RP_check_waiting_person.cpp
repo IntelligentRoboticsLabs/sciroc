@@ -44,7 +44,7 @@ void RP_check_waiting_person::activateCode()
   }
 
   graph_.add_edge(robot_id_, "say: Checking if there are people waiting", robot_id_);
-  graph_.add_edge("leia", "want_see", zone_id_);
+  graph_.add_edge("sonny", "want_see", zone_id_);
 
   start_check_ = ros::Time::now();
 
@@ -55,7 +55,7 @@ void RP_check_waiting_person::activateCode()
 
 void RP_check_waiting_person::deActivateCode()
 {
-  graph_.remove_edge("leia", "want_see", zone_id_);
+  graph_.remove_edge("sonny", "want_see", zone_id_);
   obj_listener_.set_inactive();
 }
 
@@ -89,7 +89,7 @@ void RP_check_waiting_person::step()
     // Crear nodo persona
     // Arco hacia la persona 'waiting'
 
-    graph_.remove_edge("leia", "want_see", zone_id_);
+    graph_.remove_edge("sonny", "want_see", zone_id_);
     obj_listener_.set_inactive();
     if (num_people_waiting > 0)
     {
@@ -163,7 +163,7 @@ void RP_check_waiting_person::qrCallback(const std_msgs::String::ConstPtr& qr)
         if (std::find(order.begin(), order.end(), *it) == order.end())
           graph_.add_edge(robot_id_, "not needs", *it);
       }
-      add_predicate("order_needs_fix leia");
+      add_predicate("order_needs_fix sonny");
     }
     setSuccess();
     order.clear();

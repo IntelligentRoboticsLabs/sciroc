@@ -5,7 +5,7 @@
 /* Esta acción se encarga de chequear el estado de la mesa y el número de clientes
 
 Estado inicial:
-- El robot está en wp_mesa_N
+- El robot está en wp_table_N
 - La mesa tiene un auto-arco "needs_check"
 
 Efecto de la acción
@@ -40,7 +40,7 @@ void RP_check_table_status::activateCode()
   }
   graph_.add_edge(robot_id_, "say: Checking table status", robot_id_);
 
-  graph_.add_edge("leia", "want_see", table_id_);
+  graph_.add_edge("sonny", "want_see", table_id_);
 
   start_check_ = ros::Time::now();
 
@@ -52,7 +52,7 @@ void RP_check_table_status::activateCode()
 void
 RP_check_table_status::deActivateCode()
 {
-  graph_.remove_edge("leia", "want_see", table_id_);
+  graph_.remove_edge("sonny", "want_see", table_id_);
   obj_listener_.set_inactive();
 }
 
@@ -129,7 +129,7 @@ RP_check_table_status::step()
       robot_id_);
 
     graph_.remove_edge(table_id_, "needs_check", table_id_);
-    graph_.remove_edge("leia", "want_see", table_id_);
+    graph_.remove_edge("sonny", "want_see", table_id_);
 
     obj_listener_.set_inactive();
     setSuccess();

@@ -53,18 +53,18 @@ public:
 
   void init_knowledge()
   {
-    add_instance("robot", "leia");
+    add_instance("robot", "sonny");
     add_instance("waypoint", "wp_bar");
-    add_instance("table", "barra");
+    add_instance("table", "bar");
     add_instance("person", "jack");
 
     add_predicate("barman jack");
-    add_predicate("robot_at_room leia main_room");
-    add_predicate("robot_at leia wp_bar");
+    add_predicate("robot_at_room sonny main_room");
+    add_predicate("robot_at sonny wp_bar");
     add_predicate("wp_bar_location wp_bar");
 
-    graph_.add_node("leia", "robot");
-    graph_.add_node("barra", "table");
+    graph_.add_node("sonny", "robot");
+    graph_.add_node("bar", "table");
     graph_.add_node("jack", "person");
     graph_.add_node("wp_bar_location", "waypoint");  // node is redundantelly added by graph-kms sync issue
     graph_.add_node("bar.water", "water");
@@ -74,37 +74,37 @@ public:
     /* TEST 1 */
     /* OK */
     /**/
-    graph_.add_edge("leia", "has", "bar.water");
-    graph_.add_edge("leia", "needs", "bar.cup");
-    graph_.add_edge("leia", "not needs", "bar.bread");
+    graph_.add_edge("sonny", "has", "bar.water");
+    graph_.add_edge("sonny", "needs", "bar.cup");
+    graph_.add_edge("sonny", "not needs", "bar.bread");
     /**/
 
     /* TEST 2 */
     /* OK */
     /*
-    graph_.add_edge("leia", "has", "bar.water");
-    graph_.add_edge("leia", "needs", "bar.cup");
+    graph_.add_edge("sonny", "has", "bar.water");
+    graph_.add_edge("sonny", "needs", "bar.cup");
     */
 
     /* TEST 3 */
     /* ¿? */
     /*
-    graph_.add_edge("leia", "has", "bar.water");
-    graph_.add_edge("leia", "not needs", "bar.bread");
+    graph_.add_edge("sonny", "has", "bar.water");
+    graph_.add_edge("sonny", "not needs", "bar.bread");
     */
 
     /* TEST 4 */
     /* OK */
     /*
-    graph_.add_edge("leia", "needs", "bar.cup");
-    graph_.add_edge("leia", "not needs", "bar.bread");
+    graph_.add_edge("sonny", "needs", "bar.cup");
+    graph_.add_edge("sonny", "not needs", "bar.bread");
     */
 
-    graph_.set_tf_identity("base_footprint", "leia");
+    graph_.set_tf_identity("base_footprint", "sonny");
 
     graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
     graph_.set_tf_identity("main_room", "map");
-    graph_.add_tf_edge("main_room", "leia");
+    graph_.add_tf_edge("main_room", "sonny");
   }
 
   void step()
@@ -113,7 +113,7 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      add_goal("order_fixed leia");
+      add_goal("order_fixed sonny");
       call_planner();
       executed_ = true;
     }

@@ -53,38 +53,38 @@ public:
 
   void init_knowledge()
   {
-    add_instance("robot", "leia");
+    add_instance("robot", "sonny");
     add_instance("person", "jack");
     add_instance("waypoint", "wp_bar");
-    add_instance("table", "mesa_1");
+    add_instance("table", "table_1");
 
     add_predicate("barman Jack");
-    add_predicate("robot_at_room leia main_room");
-    add_predicate("robot_at leia wp_bar");
+    add_predicate("robot_at_room sonny main_room");
+    add_predicate("robot_at sonny wp_bar");
     add_predicate("wp_bar_location wp_bar");
 
-    graph_.add_node("leia", "robot");
-    graph_.add_node("mesa_1", "table");
+    graph_.add_node("sonny", "robot");
+    graph_.add_node("table_1", "table");
     graph_.add_node("jack", "person");
 
     graph_.add_node("wp_bar_location", "waypoint");  // node is redundantelly added by graph-kms sync issue
 
-    graph_.add_node("mesa_1.coke.0", "coke");
-    graph_.add_node("mesa_1.bread.0", "bread");
-    graph_.add_node("mesa_1.cup.0", "cup");
-    graph_.add_edge("mesa_1", "wants", "mesa_1.coke.0");
-    graph_.add_edge("mesa_1", "wants", "mesa_1.bread.0");
-    graph_.add_edge("mesa_1", "wants", "mesa_1.cup.0");
+    graph_.add_node("table_1.coke.0", "coke");
+    graph_.add_node("table_1.bread.0", "bread");
+    graph_.add_node("table_1.cup.0", "cup");
+    graph_.add_edge("table_1", "wants", "table_1.coke.0");
+    graph_.add_edge("table_1", "wants", "table_1.bread.0");
+    graph_.add_edge("table_1", "wants", "table_1.cup.0");
 
 
     tf2::Quaternion q;
     q.setRPY(0, 0, 0);
 
-    graph_.set_tf_identity("base_footprint", "leia");
+    graph_.set_tf_identity("base_footprint", "sonny");
 
     graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
     graph_.set_tf_identity("main_room", "map");
-    graph_.add_tf_edge("main_room", "leia");
+    graph_.add_tf_edge("main_room", "sonny");
   }
 
   void step()
@@ -93,7 +93,7 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      add_goal("order_to_barman leia");
+      add_goal("order_to_barman sonny");
       call_planner();
       executed_ = true;
     }
