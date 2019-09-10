@@ -63,7 +63,7 @@ void RestaurantExecutor::init_knowledge()
   add_instance("zone", "waiting_zone");
 
   add_predicate("person_at new_customer wp_waiting_zone");
-  add_predicate("person_at barman wp_barra");
+  add_predicate("person_at barman wp_bar");
   add_predicate("wp_in_zone wp_waiting_zone waiting_zone");
 
   add_predicate("robot_at " + robot_id_ + " wp_entry");
@@ -73,7 +73,7 @@ void RestaurantExecutor::init_knowledge()
   add_predicate("person_at new_customer wp_waiting_zone");
   add_predicate("wp_in_zone wp_waiting_zone waiting_zone");
 
-  add_predicate("wp_bar_location wp_barra");
+  add_predicate("wp_bar_location wp_bar");
   add_predicate("wp_entry_location wp_entry");
   add_predicate("barman barman");
 
@@ -83,7 +83,7 @@ void RestaurantExecutor::init_knowledge()
   add_instance("table", "table_4");
   add_instance("table", "table_5");
   add_instance("table", "table_6");
-  add_instance("table", "barra");
+  add_instance("table", "bar");
 
   add_predicate("is_wp_near_table wp_table_1 table_1");
   add_predicate("is_wp_near_table wp_table_2 table_2");
@@ -91,7 +91,7 @@ void RestaurantExecutor::init_knowledge()
   add_predicate("is_wp_near_table wp_table_4 table_4");
   add_predicate("is_wp_near_table wp_table_5 table_5");
   add_predicate("is_wp_near_table wp_table_6 table_6");
-  add_predicate("is_wp_near_table wp_barra barra");
+  add_predicate("is_wp_near_table wp_bar bar");
 
   add_predicate("is_table_at table_1 main_room");
   add_predicate("is_table_at table_2 main_room");
@@ -99,7 +99,7 @@ void RestaurantExecutor::init_knowledge()
   add_predicate("is_table_at table_4 main_room");
   add_predicate("is_table_at table_5 main_room");
   add_predicate("is_table_at table_6 main_room");
-  add_predicate("is_table_at barra main_room");
+  add_predicate("is_table_at bar main_room");
 
   graph_.add_node(robot_id_, "robot");
   graph_.add_node("barman", "person");
@@ -125,12 +125,12 @@ void RestaurantExecutor::init_knowledge()
     graph_.add_edge("wp_" + table, wp2table, table, true);
   }
 
-  graph_.add_node("wp_barra", "waypoint");
-  graph_.add_node("barra", "table");
+  graph_.add_node("wp_bar", "waypoint");
+  graph_.add_node("bar", "table");
   graph_.add_node("waiting_zone", "zone");
 
   tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
-  graph_.add_edge("wp_barra", wp2table, "barra", true);
+  graph_.add_edge("wp_bar", wp2table, "bar", true);
   tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
   graph_.add_edge("main_room", main2zone, "waiting_zone", true);
 
@@ -278,7 +278,7 @@ void RestaurantExecutor::grettingNewCustomer_code_iterative()
 bool RestaurantExecutor::Init_2_checkTableStatus()
 {
   std::vector<bica_graph::StringEdge> response_edges =
-    graph_.get_string_edges_by_data("response: [[:alnum:]_]*");
+    graph_.get_string_edges_by_data("response:");
 
   bool exists_response = false;
   for (auto edge : response_edges)
@@ -323,7 +323,7 @@ bool RestaurantExecutor::setOrder_2_checkOrder()
 
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response: [[:alnum:]_]*");
+    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response:");
     ROS_WARN("setOrder_2_checkOrder current_goal_ not empty");
     if (!interest_edges.empty())
     {
@@ -358,7 +358,7 @@ bool RestaurantExecutor::fixOrder_2_checkOrder()
 
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response: [[:alnum:]_]*");
+    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response:");
 
     if (!interest_edges.empty())
     {
@@ -383,7 +383,7 @@ bool RestaurantExecutor::deliverOrder_2_idle()
 
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    auto interest_edges = graph_.get_string_edges_from_node_by_data(robot_id_, "response: [[:alnum:]_]*");
+    auto interest_edges = graph_.get_string_edges_from_node_by_data(robot_id_, "response:");
 
     if (!interest_edges.empty())
     {

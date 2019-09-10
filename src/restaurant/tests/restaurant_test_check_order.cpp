@@ -60,7 +60,7 @@ public:
 
     graph_.add_node("sonny", "robot");
     graph_.add_node("wp_bar", "waypoint");  // node is redundantelly added by graph-kms sync issue
-    graph_.add_node("barra", "table");  // node is redundantelly added by graph-kms sync issue
+    graph_.add_node("bar", "table");  // node is redundantelly added by graph-kms sync issue
     graph_.add_node("table_1", "table");
     graph_.add_node("table_1.cup.0", "cup");
     graph_.add_edge("table_1", "wants", "table_1.cup.0");
@@ -70,7 +70,7 @@ public:
     q.setRPY(0, 0, 0);
 
     tf2::Transform wp2table(q, tf2::Vector3(1.0, 0.0, 0.0));
-    graph_.add_edge("wp_bar", wp2table, "barra", true);
+    graph_.add_edge("wp_bar", wp2table, "bar", true);
 
     graph_.set_tf_identity("base_footprint", "sonny");
 

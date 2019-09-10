@@ -55,7 +55,7 @@ public:
   {
     add_instance("robot", "sonny");
     add_instance("waypoint", "wp_bar");
-    add_instance("table", "barra");
+    add_instance("table", "bar");
     add_instance("person", "jack");
 
     add_predicate("barman jack");
@@ -64,7 +64,7 @@ public:
     add_predicate("wp_bar_location wp_bar");
 
     graph_.add_node("sonny", "robot");
-    graph_.add_node("barra", "table");
+    graph_.add_node("bar", "table");
     graph_.add_node("jack", "person");
     graph_.add_node("wp_bar_location", "waypoint");  // node is redundantelly added by graph-kms sync issue
     graph_.add_node("bar.water", "water");

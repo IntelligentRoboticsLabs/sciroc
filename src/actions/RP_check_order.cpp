@@ -25,7 +25,7 @@ RP_check_order::RP_check_order(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("check_order"),
   robot_id_(),
-  obj_listener_(std::list<std::string>{"cup"}, "barra")
+  obj_listener_(std::list<std::string>{"cup"}, "bar")
 {
 }
 
@@ -43,12 +43,12 @@ void RP_check_order::activateCode()
 
   graph_.add_edge(robot_id_, "say: Checking order", robot_id_);
 
-  graph_.add_edge(robot_id_, "want_see", "barra");
+  graph_.add_edge(robot_id_, "want_see", "bar");
 
   start_check_ = ros::Time::now();
 
   obj_listener_.reset();
-  obj_listener_.set_working_frame("barra");
+  obj_listener_.set_working_frame("bar");
   obj_listener_.set_active();
 
   order.clear();
@@ -84,9 +84,9 @@ RP_check_order::step()
     int count = 0;
     for (const auto& object : obj_listener_.get_objects())
     {
-      std::string instance_id = "barra." + object.class_id + "." + std::to_string(count++);
+      std::string instance_id = "bar." + object.class_id + "." + std::to_string(count++);
       graph_.add_node(instance_id, object.class_id);
-      graph_.add_edge(instance_id, "has", "barra");
+      graph_.add_edge(instance_id, "has", "bar");
     }
 
     // Removing has if they exist
