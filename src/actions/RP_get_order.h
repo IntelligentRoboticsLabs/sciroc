@@ -7,6 +7,7 @@
 #include <std_msgs/String.h>
 #include "yaml-cpp/yaml.h"
 #include "gb_datahub/gb_datahub.h"
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 
 #include <string>

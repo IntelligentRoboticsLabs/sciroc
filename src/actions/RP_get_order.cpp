@@ -95,7 +95,14 @@ void RP_get_order::step()
         graph_.add_node(instance_id, *it_food);
         graph_.add_edge(table_id_, "wants", instance_id);
       }
+      
+      obtained_order.id = "ORDER0";
+      obtained_order.type = "Order";
+      obtained_order.timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());
+      obtained_order.status = "Pending";
+
       ROS_INFO("Response received: %d",gb_datahub::postOrder(obtained_order));
+
       setSuccess();
     }
   }
