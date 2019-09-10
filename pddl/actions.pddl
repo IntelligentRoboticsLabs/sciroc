@@ -103,7 +103,6 @@
   :condition (and
     (at start(person_detected ?r ?p ?z))
     (at start(person_guided ?p ?wp))
-    (at start(person_at ?p ?wp))
     (at start(is_wp_near_table ?wp ?t))
  )
   :effect (and
