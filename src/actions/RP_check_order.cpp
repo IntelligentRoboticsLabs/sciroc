@@ -42,7 +42,8 @@ RP_check_order::RP_check_order(const ros::NodeHandle& nh)
   cup_conf.max_size_x = CHECK_ORDER_OBJECT_MAX_SIZE_Y;
   cup_conf.max_size_y = CHECK_ORDER_OBJECT_MIN_SIZE_Z;
   cup_conf.max_size_z = CHECK_ORDER_OBJECT_MAX_SIZE_Z;
-
+  cup_conf.dynamic = false;
+  
   obj_listener_.add_class("cup", cup_conf);
 }
 
