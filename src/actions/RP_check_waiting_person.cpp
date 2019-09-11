@@ -22,8 +22,26 @@ RP_check_waiting_person::RP_check_waiting_person(const ros::NodeHandle& nh)
 : nh_(nh),
   Action("check_waiting_person"),
   wp_id_(),
-  obj_listener_(std::list<std::string>{"person"}, "base_footprint")
+  obj_listener_("base_footprint")
 {
+  darknet_ros_3d::ObjectConfiguration person_conf;
+
+  person_conf.min_probability = CHECK_WAITING_PERSON_MIN_PROBABILITY;
+  person_conf.min_x = CHECK_WAITING_PERSON_MIN_X;
+  person_conf.max_x = CHECK_WAITING_PERSON_MAX_X;
+  person_conf.min_y = CHECK_WAITING_PERSON_MIN_Y;
+  person_conf.max_y = CHECK_WAITING_PERSON_MAX_Y;
+  person_conf.min_z = CHECK_WAITING_PERSON_MIN_Z;
+  person_conf.max_z = CHECK_WAITING_PERSON_MAX_Z;
+  person_conf.min_size_x = CHECK_WAITING_PERSON_MIN_SIZE_X;
+  person_conf.min_size_y = CHECK_WAITING_PERSON_MAX_SIZE_X;
+  person_conf.min_size_z = CHECK_WAITING_PERSON_MIN_SIZE_Y;
+  person_conf.max_size_x = CHECK_WAITING_PERSON_MAX_SIZE_Y;
+  person_conf.max_size_y = CHECK_WAITING_PERSON_MIN_SIZE_Z;
+  person_conf.max_size_z = CHECK_WAITING_PERSON_MAX_SIZE_Z;
+  person_conf.dynamic = false;
+
+  obj_listener_.add_class("person", person_conf);
 }
 
 void RP_check_waiting_person::activateCode()
@@ -70,15 +88,6 @@ void RP_check_waiting_person::step()
   if ((ros::Time::now() - start_check_).toSec() >= CHECK_WAITING_PERSON_CHECKING_TIME)
   {
     int num_people_waiting = 0;
-
-    obj_listener_.print();
-    obj_listener_.filter_objects("person", CHECK_WAITING_PERSON_MIN_PROBABILITY,
-      CHECK_WAITING_PERSON_OBJECT_MIN_X, CHECK_WAITING_PERSON_OBJECT_MAX_X, CHECK_WAITING_PERSON_OBJECT_MIN_Y,
-      CHECK_WAITING_PERSON_OBJECT_MAX_Z, CHECK_WAITING_PERSON_OBJECT_MIN_Z, CHECK_WAITING_PERSON_OBJECT_MAX_Z,
-      CHECK_WAITING_PERSON_OBJECT_MIN_SIZE_X, CHECK_WAITING_PERSON_OBJECT_MAX_SIZE_X, CHECK_WAITING_PERSON_OBJECT_MIN_SIZE_Y,
-      CHECK_WAITING_PERSON_OBJECT_MAX_SIZE_Y, CHECK_WAITING_PERSON_OBJECT_MIN_SIZE_Z, CHECK_WAITING_PERSON_OBJECT_MAX_SIZE_Z);
-
-    obj_listener_.print();
     for (const auto& object : obj_listener_.get_objects())
     {
       if (object.class_id == "person")
