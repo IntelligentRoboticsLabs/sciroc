@@ -35,10 +35,10 @@ RP_check_table_status::RP_check_table_status(const ros::NodeHandle& nh)
   cup_conf.min_z = CHECK_TABLE_OBJECT_MIN_Z;
   cup_conf.max_z = CHECK_TABLE_OBJECT_MAX_Z;
   cup_conf.min_size_x = CHECK_TABLE_OBJECT_MIN_SIZE_X;
-  cup_conf.min_size_y = CHECK_TABLE_OBJECT_MAX_SIZE_X;
-  cup_conf.min_size_z = CHECK_TABLE_OBJECT_MIN_SIZE_Y;
-  cup_conf.max_size_x = CHECK_TABLE_OBJECT_MAX_SIZE_Y;
-  cup_conf.max_size_y = CHECK_TABLE_OBJECT_MIN_SIZE_Z;
+  cup_conf.min_size_y = CHECK_TABLE_OBJECT_MIN_SIZE_Y;
+  cup_conf.min_size_z = CHECK_TABLE_OBJECT_MIN_SIZE_Z;
+  cup_conf.max_size_x = CHECK_TABLE_OBJECT_MAX_SIZE_X;
+  cup_conf.max_size_y = CHECK_TABLE_OBJECT_MAX_SIZE_Y;
   cup_conf.max_size_z = CHECK_TABLE_OBJECT_MAX_SIZE_Z;
   cup_conf.dynamic = false;
 
@@ -54,10 +54,10 @@ RP_check_table_status::RP_check_table_status(const ros::NodeHandle& nh)
   person_conf.min_z = CHECK_TABLE_PERSON_MIN_Z;
   person_conf.max_z = CHECK_TABLE_PERSON_MAX_Z;
   person_conf.min_size_x = CHECK_TABLE_PERSON_MIN_SIZE_X;
-  person_conf.min_size_y = CHECK_TABLE_PERSON_MAX_SIZE_X;
-  person_conf.min_size_z = CHECK_TABLE_PERSON_MIN_SIZE_Y;
-  person_conf.max_size_x = CHECK_TABLE_PERSON_MAX_SIZE_Y;
-  person_conf.max_size_y = CHECK_TABLE_PERSON_MIN_SIZE_Z;
+  person_conf.min_size_y = CHECK_TABLE_PERSON_MIN_SIZE_Y;
+  person_conf.min_size_z = CHECK_TABLE_PERSON_MIN_SIZE_Z;
+  person_conf.max_size_x = CHECK_TABLE_PERSON_MAX_SIZE_X;
+  person_conf.max_size_y = CHECK_TABLE_PERSON_MAX_SIZE_Y;
   person_conf.max_size_z = CHECK_TABLE_PERSON_MAX_SIZE_Z;
   person_conf.dynamic = false;
 
@@ -101,7 +101,7 @@ RP_check_table_status::step()
     return;
 
   obj_listener_.print();
-
+  
   if ((ros::Time::now() - start_check_).toSec() >= CHECK_TABLE_CHECKING_TIME)
   {
     int count = 0;

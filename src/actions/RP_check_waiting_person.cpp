@@ -34,10 +34,10 @@ RP_check_waiting_person::RP_check_waiting_person(const ros::NodeHandle& nh)
   person_conf.min_z = CHECK_WAITING_PERSON_MIN_Z;
   person_conf.max_z = CHECK_WAITING_PERSON_MAX_Z;
   person_conf.min_size_x = CHECK_WAITING_PERSON_MIN_SIZE_X;
-  person_conf.min_size_y = CHECK_WAITING_PERSON_MAX_SIZE_X;
-  person_conf.min_size_z = CHECK_WAITING_PERSON_MIN_SIZE_Y;
-  person_conf.max_size_x = CHECK_WAITING_PERSON_MAX_SIZE_Y;
-  person_conf.max_size_y = CHECK_WAITING_PERSON_MIN_SIZE_Z;
+  person_conf.min_size_y = CHECK_WAITING_PERSON_MIN_SIZE_X;
+  person_conf.min_size_z = CHECK_WAITING_PERSON_MIN_SIZE_Z;
+  person_conf.max_size_x = CHECK_WAITING_PERSON_MAX_SIZE_X;
+  person_conf.max_size_y = CHECK_WAITING_PERSON_MAX_SIZE_Y;
   person_conf.max_size_z = CHECK_WAITING_PERSON_MAX_SIZE_Z;
   person_conf.dynamic = false;
 
