@@ -34,8 +34,6 @@ void RP_fix_order::activateCode()
       last_msg_.parameters[i].value.c_str());
     if (0 == last_msg_.parameters[i].key.compare("r"))
       robot_id = last_msg_.parameters[i].value;
-    else if (0 == last_msg_.parameters[i].key.compare("p"))
-      person_id = last_msg_.parameters[i].value;
   }
 
   std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
@@ -52,13 +50,13 @@ void RP_fix_order::activateCode()
     graph_.add_edge(
       robot_id,
       "say: Excuse me sir, I need a " + object_needed + ". Could you bring me it?",
-      person_id);
+      "barman");
   else
     graph_.add_edge(
       robot_id,
       "say: Excuse me sir, I need a " + object_needed + " and I don't need a " + \
         wrong_object + ". Could you replace it?",
-      person_id);
+      "barman");
 
   wrong_object = "";
   setSuccess();

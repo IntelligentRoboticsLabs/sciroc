@@ -85,8 +85,9 @@ RP_check_order::step()
     for (const auto& object : obj_listener_.get_objects())
     {
       std::string instance_id = "bar." + object.class_id + "." + std::to_string(count++);
+      ROS_WARN("Object detected: %s", instance_id.c_str());
       graph_.add_node(instance_id, object.class_id);
-      graph_.add_edge(instance_id, "has", "bar");
+      graph_.add_edge("bar", "has", instance_id);
     }
 
     // Removing has if they exist
@@ -130,12 +131,12 @@ RP_check_order::step()
       for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
       {
         std::string edge = it->get();
-        if (edge == "not needs" && graph_.get_node(it->get_target()).get_type() == "order")
+        if (edge == "not needs")
         {
           graph_.remove_edge(*it);
           graph_.remove_node(graph_.get_node(it->get_target()).get_id());
         }
-        else if (edge == "needs" && graph_.get_node(it->get_target()).get_type() == "order")
+        else if (edge == "needs")
           graph_.remove_edge(*it);
       }
       graph_.add_edge(robot_id_,"say: Thank you! I will deliver the order.", "barman");
@@ -159,7 +160,7 @@ RP_check_order::step()
         {
           std::string instance_id = robot_id_ + "." + *it + "." + std::to_string(counter++);
           graph_.add_node(instance_id, *it);
-          graph_.add_edge(robot_id_,"not needs", *it);
+          graph_.add_edge(robot_id_,"not needs", instance_id);
         }
       }
       add_predicate("order_needs_fix " + robot_id_);

@@ -278,7 +278,7 @@ void RestaurantExecutor::grettingNewCustomer_code_iterative()
 bool RestaurantExecutor::Init_2_checkTableStatus()
 {
   std::vector<bica_graph::StringEdge> response_edges =
-    graph_.get_string_edges_by_data("response:");
+    graph_.get_string_edges_by_data("response: [[:alnum:]_]*");
 
   bool exists_response = false;
   for (auto edge : response_edges)
@@ -323,11 +323,9 @@ bool RestaurantExecutor::setOrder_2_checkOrder()
 
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response:");
-    ROS_WARN("setOrder_2_checkOrder current_goal_ not empty");
+    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response: [[:alnum:]_]*");
     if (!interest_edges.empty())
     {
-      ROS_WARN("setOrder_2_checkOrder !interest_edges.empty()");
       graph_.remove_edge(interest_edges[0]);
       order_ready_asked_ = false;
       ret = true;
@@ -358,7 +356,7 @@ bool RestaurantExecutor::fixOrder_2_checkOrder()
 
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response:");
+    auto interest_edges = graph_.get_string_edges_from_node_by_data("barman", "response: [[:alnum:]_]*");
 
     if (!interest_edges.empty())
     {
@@ -383,7 +381,7 @@ bool RestaurantExecutor::deliverOrder_2_idle()
 
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    auto interest_edges = graph_.get_string_edges_from_node_by_data(robot_id_, "response:");
+    auto interest_edges = graph_.get_string_edges_from_node_by_data(robot_id_, "response: [[:alnum:]_]*");
 
     if (!interest_edges.empty())
     {
