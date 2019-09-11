@@ -59,7 +59,6 @@ void RP_set_order::activateCode()
     else
       order_str += *it + ".";
   }
-
   graph_.add_edge(robot_id, "say: " + order_str, person_id);
   setSuccess();
 }

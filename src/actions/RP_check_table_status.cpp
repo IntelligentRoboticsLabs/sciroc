@@ -100,6 +100,8 @@ RP_check_table_status::step()
   if (!isActive())
     return;
 
+  obj_listener_.print();
+
   if ((ros::Time::now() - start_check_).toSec() >= CHECK_TABLE_CHECKING_TIME)
   {
     int count = 0;

@@ -333,6 +333,8 @@ bool RestaurantExecutor::setOrder_2_checkOrder()
     else if (!order_ready_asked_)
     {
       order_ready_asked_ = true;
+      std::string str = "Please, tell me Its ready when the order is in the table";
+      graph_.add_edge(robot_id_, "say: " + str, "barman");
       graph_.add_edge(robot_id_, "ask: orderReady.ask", "barman");
     }
   }
@@ -368,6 +370,8 @@ bool RestaurantExecutor::fixOrder_2_checkOrder()
     else if (!order_ready_asked_)
     {
       order_ready_asked_ = true;
+      std::string str = "Please, tell me Its ready when the order is in the table";
+      graph_.add_edge(robot_id_, "say: " + str, "barman");
       graph_.add_edge(robot_id_, "ask: orderReady.ask", "barman");
     }
   }
