@@ -30,6 +30,9 @@
     <rosparam command="load" file="$(find sciroc)/config/kms_extractor_params.yaml" />
   </node>
 
+  <node pkg="gb_datahub" type="coffee_shop_delivery" name="coffee_shop_delivery" output="screen">
+  </node>
+
   <include file="$(find bica_planning)/launch/planning_system.launch" >
     <arg name="data_path" value="/tmp/" />
     <arg name="domain_path"  value="$(arg pddl_domain_file)" />
