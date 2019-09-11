@@ -24,7 +24,7 @@
 * PDDL "*****" actions become "*****" actions.
 */
 
-#define CHECK_TABLE_CHECKING_TIME   20.0
+#define CHECK_TABLE_CHECKING_TIME   10.0
 
 #define CHECK_TABLE_MIN_PROBABILITY   0.4
 

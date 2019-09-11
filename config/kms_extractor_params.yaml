@@ -1,2 +1,2 @@
-interested_types: ["robot", "table", "person", "zone"]
+interested_types: ["robot", "person", "zone"]
 interested_predicates: ["robot_at", "person_at", "is_wp_near_table", "wp_in_zone"]

@@ -14,6 +14,6 @@
 (new_customer_attended ?p - person ?t - table)
 (wp_in_zone ?wp - waypoint ?z - zone)
 (person_detected ?r -robot ?p - person ?z - zone)
-(attended_person ?p - person ?t - table)
+(attended_person ?p - person ?t - table ?z - zone)
 (robot_at_zone ?r - robot ?z - zone)
 (zone_at_room ?z - zone ?r - room)

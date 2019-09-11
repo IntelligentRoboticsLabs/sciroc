@@ -45,6 +45,10 @@ RP_check_order::RP_check_order(const ros::NodeHandle& nh)
   cup_conf.dynamic = false;
 
   obj_listener_.add_class("cup", cup_conf);
+  obj_listener_.add_class("bottle", cup_conf);
+  obj_listener_.add_class("banana", cup_conf);
+
+
 }
 
 void RP_check_order::activateCode()
@@ -85,6 +89,7 @@ RP_check_order::step()
   if (!isActive())
     return;
 
+  obj_listener_.print();
   ROS_INFO("========> Check order Step");
   if ((ros::Time::now() - start_check_).toSec() >= CHECK_ORDER_CHECKING_TIME)
   {

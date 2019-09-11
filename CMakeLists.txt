@@ -127,6 +127,10 @@ add_executable(restaurant_test_waiting_zone src/restaurant/tests/restaurant_test
 add_dependencies(restaurant_test_waiting_zone ${catkin_EXPORTED_TARGETS})
 target_link_libraries(restaurant_test_waiting_zone ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
 
+add_executable(restaurant_test_attend_person src/restaurant/tests/restaurant_test_attend_person.cpp)
+add_dependencies(restaurant_test_attend_person ${catkin_EXPORTED_TARGETS})
+target_link_libraries(restaurant_test_attend_person ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
+
 
 set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
 

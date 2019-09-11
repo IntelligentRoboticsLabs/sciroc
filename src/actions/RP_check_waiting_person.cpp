@@ -103,7 +103,7 @@ void RP_check_waiting_person::step()
     if (num_people_waiting > 0)
     {
       graph_.add_edge(robot_id_, "say: I have found " + std::to_string(num_people_waiting) +
-        " people in the waiting zone.", robot_id_);
+        " people in the waiting zone. Please, follow me.", robot_id_);
       setSuccess();
     }
     else

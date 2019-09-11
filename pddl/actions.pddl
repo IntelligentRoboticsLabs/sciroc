@@ -85,14 +85,15 @@
 
 
 (:durative-action check_waiting_person
-  :parameters (?r - robot ?p - person ?wp - waypoint ?z - zone)
+  :parameters (?r - robot ?p - person ?wp - waypoint ?z - zone ?room - room)
   :duration ( = ?duration 10)
   :condition (and
     (at start(robot_at ?r ?wp))
-    (at start(person_at ?p ?wp))
+    (at start(person_at_room ?p ?room))
     (at start(wp_in_zone ?wp ?z))
  )
   :effect (and
+    (at end(person_at ?p ?wp))
     (at end(person_detected ?r ?p ?z))
   )
 )
@@ -106,6 +107,6 @@
     (at start(is_wp_near_table ?wp ?t))
  )
   :effect (and
-    (at end(attended_person ?p ?t))
+    (at end(attended_person ?p ?t ?z))
   )
 )

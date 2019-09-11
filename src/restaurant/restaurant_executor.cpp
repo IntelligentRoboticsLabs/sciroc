@@ -262,7 +262,7 @@ void RestaurantExecutor::fixOrder_code_iterative()
 
 void RestaurantExecutor::deliverOrder_code_iterative()
 {
-  setNewGoal("order_delivered_ " + needs_serving_table_);
+  setNewGoal("order_delivered " + needs_serving_table_);
 }
 
 void RestaurantExecutor::grettingNewCustomer_code_once()
