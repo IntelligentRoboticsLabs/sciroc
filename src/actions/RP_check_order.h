@@ -40,7 +40,6 @@ class RP_check_order: public bica_planning::Action
 public:
     /* constructor */
     explicit RP_check_order(const ros::NodeHandle& nh);
-
     void step();
 
 protected:
