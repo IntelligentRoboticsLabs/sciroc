@@ -43,6 +43,7 @@
 #include "bica_planning/Executor.h"
 #include "./elevator_hfsm.h"
 #include <bica_graph/graph_client.h>
+#include <sensor_msgs/LaserScan.h>
 #include <string>
 #include <vector>
 
@@ -59,42 +60,51 @@ public:
   void getShopList_code_once();
   void approachElevator_code_once();
   void approachElevator_code_iterative();
+  void findProxemicPos_code_iterative();
+  void findProxemicPos_code_once();
+  void robotAtElevator_code_iterative();
+  void robotAtElevator_code_once();
+  void advertiseGoal_code_iterative();
+  void advertiseGoal_code_once();
+  void waitForDoor_code_once();
+  void askForFloor_code_once();
+  void robotAtEnd_code_iterative();
+  void robotAtEnd_code_once();
+
 
   bool Init_2_getShopList();
   bool getShopList_2_approachElevator();
   bool approachElevator_2_findProxemicPos();
-
+  bool findProxemicPos_2_robotAtElevator();
+  bool robotAtElevator_2_advertiseGoal();
+  bool advertiseGoal_2_waitForDoor();
+  bool waitForDoor_2_askForFloor();
+  bool askForFloor_2_waitForDoor();
+  bool askForFloor_2_robotAtEnd();
 
   /*void Init_code_iterative();
   void askForFloor_code_iterative();
-  void askForFloor_code_once();
-  void robotAtEnd_code_iterative();
-  void robotAtEnd_code_once();
-  void robotAtElevator_code_iterative();
-  void robotAtElevator_code_once();
+
+
+
   void waitForDoor_code_iterative();
-  void waitForDoor_code_once();
-  void findProxemicPos_code_iterative();
-  void findProxemicPos_code_once();
-  void approachElevator_code_iterative();
-  void approachElevator_code_once();
-  void advertiseGoal_code_iterative();
-  void advertiseGoal_code_once();
+
+
   void getShopList_code_iterative();
 
 
-  bool askForFloor_2_robotAtEnd();
-  bool waitForDoor_2_askForFloor();
-  bool askForFloor_2_waitForDoor();
-  bool findProxemicPos_2_robotAtElevator();
-  bool getShopList_2_approachElevator();
-  bool robotAtElevator_2_advertiseGoal();
-  bool advertiseGoal_2_waitForDoor();*/
+
+  */
 
 private:
   ros::NodeHandle nh_;
   bica_graph::GraphClient graph_;
   std::string current_goal_, robot_id_;
+  ros::Subscriber scan_sub_;
+  sensor_msgs::LaserScan scan_;
+  ros::Time wait_;
+  void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
+
 };
 
 #endif  // ELEVATOR_EXECUTOR_H

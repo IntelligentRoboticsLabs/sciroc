@@ -44,6 +44,8 @@
 ElevatorExecutor::ElevatorExecutor(): current_goal_(), nh_()
 {
   init_knowledge();
+  scan_sub_ = nh_.subscribe("/scan", 1, &ElevatorExecutor::scanCallback, this);
+
 }
 
 void ElevatorExecutor::init_knowledge()
@@ -58,6 +60,11 @@ void ElevatorExecutor::init_knowledge()
   graph_.add_node("elevator", "elevator");
   graph_.add_node("0", "floor");
   graph_.add_edge("elevator", "current_floor", "0");
+}
+
+void ElevatorExecutor::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
+{
+  scan_ = *scan;
 }
 
 void ElevatorExecutor::setNewGoal(std::string goal)
@@ -75,7 +82,7 @@ bool ElevatorExecutor::update()
 
 void ElevatorExecutor::Init_code_once()
 {
-  //graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
+  graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
 }
 
 void ElevatorExecutor::getShopList_code_once()
@@ -106,7 +113,59 @@ void ElevatorExecutor::approachElevator_code_once()
 }
 void ElevatorExecutor::approachElevator_code_iterative()
 {
+  setNewGoal("social_move_pred " + robot_id_ + " wp_waiting_zone");
+}
+
+void ElevatorExecutor::findProxemicPos_code_once()
+{
+  graph_.add_edge(robot_id_, "say: Moving to wait the elevator", robot_id_);
+}
+
+void ElevatorExecutor::findProxemicPos_code_iterative()
+{
   setNewGoal("robot_at " + robot_id_ + " wp_waiting_zone");
+}
+
+void ElevatorExecutor::robotAtElevator_code_once()
+{
+  graph_.add_edge(robot_id_, "say: Closing the elevator door", robot_id_);
+}
+
+void ElevatorExecutor::robotAtElevator_code_iterative()
+{
+  setNewGoal("robot_at " + robot_id_ + " wp_elevator_door");
+}
+
+void ElevatorExecutor::advertiseGoal_code_once()
+{
+  graph_.add_edge(robot_id_, "say: Entring into the elevator", robot_id_);
+}
+
+void ElevatorExecutor::advertiseGoal_code_iterative()
+{
+  setNewGoal("robot_at " + robot_id_ + " wp_elevator");
+}
+
+void ElevatorExecutor::waitForDoor_code_once()
+{
+  wait_ = ros::Time::now();
+  graph_.add_edge(robot_id_, "say: Waiting for door", robot_id_);
+}
+
+void ElevatorExecutor::askForFloor_code_once()
+{
+  wait_ = ros::Time::now();
+  graph_.add_edge(robot_id_, "say: Asking for current floor", robot_id_);
+}
+
+void ElevatorExecutor::robotAtEnd_code_once()
+{
+  graph_.add_edge(robot_id_, "say: Please, let me exit the elevator. Navigating to end point", robot_id_);
+}
+
+void ElevatorExecutor::robotAtEnd_code_iterative()
+{
+  setNewGoal("robot_at " + robot_id_ + " wp_end");
 }
 
 bool ElevatorExecutor::getShopList_2_approachElevator()
@@ -119,4 +178,48 @@ bool ElevatorExecutor::getShopList_2_approachElevator()
 bool ElevatorExecutor::approachElevator_2_findProxemicPos()
 {
   return (!(search_predicates_regex(current_goal_)).empty());
+}
+
+bool ElevatorExecutor::findProxemicPos_2_robotAtElevator()
+{
+  return (!(search_predicates_regex(current_goal_)).empty());
+}
+
+bool ElevatorExecutor::robotAtElevator_2_advertiseGoal()
+{
+  return (!(search_predicates_regex(current_goal_)).empty());
+}
+
+bool ElevatorExecutor::advertiseGoal_2_waitForDoor()
+{
+  if (!(search_predicates_regex(current_goal_)).empty())
+  {
+    graph_.add_edge(robot_id_, "say: Hi! I must go to the XXX floor. Could you press the button by me?", robot_id_);
+    return true;
+  }
+  return false;
+}
+
+bool ElevatorExecutor::waitForDoor_2_askForFloor()
+{
+  return (ros::Time::now() > wait_ + ros::Duration(5));
+  /*bool door_opened = false;
+  for (int i = 0; i<scan_.ranges.size(); i++)
+  {
+    if (scan_.ranges[i] > 3.0)
+      door_opened = true;
+  }
+
+  return door_opened;*/
+
+}
+
+bool ElevatorExecutor::askForFloor_2_waitForDoor()
+{
+  return false;
+}
+
+bool ElevatorExecutor::askForFloor_2_robotAtEnd()
+{
+  return true;
 }
