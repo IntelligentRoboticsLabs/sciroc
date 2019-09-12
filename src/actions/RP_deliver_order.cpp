@@ -17,6 +17,8 @@ Efecto de la acción
 
 #include <string>
 #include <list>
+#include <vector>
+
 
 /* constructor */
 RP_deliver_order::RP_deliver_order(const ros::NodeHandle& nh)
@@ -55,15 +57,15 @@ void RP_deliver_order::activateCode()
   }
 
   //Datahub integration
-  //rder order_datahub = gb_datahub::getOrder("ORDER0");
-  //order_datahub.timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());
-  //order_datahub.status = "Complete";
-  //ROS_INFO("Order updated, response received: %d",gb_datahub::postOrder(order_datahub));
 
-  //table table_datahub = gb_datahub::getTable(table_id);
-  //table_datahub.status = "already_served";
-  //ROS_INFO("Table updated, response received: %d",gb_datahub::postTable(table_datahub));
+  std::vector<order> order_datahub = gb_datahub::getOrder("ORDER0");
+  order_datahub[0].timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());
+  order_datahub[0].status = "Complete";
+  ROS_INFO("Order updated, response received: %d",gb_datahub::postOrder(order_datahub[0]));
 
+  table table_datahub = gb_datahub::getTable(table_id);
+  table_datahub.status = "already_served";
+  ROS_INFO("Table updated, response received: %d",gb_datahub::postTable(table_datahub));
 
   graph_.remove_edge(table_id, "status: needs_serving", table_id);
   graph_.add_edge(table_id, "status: already_served", table_id);
