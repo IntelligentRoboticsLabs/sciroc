@@ -79,6 +79,7 @@ void RP_check_order::activateCode()
 
 void RP_check_order::deActivateCode()
 {
+  graph_.remove_edge(robot_id_, "want_see", "bar");
   obj_listener_.set_inactive();
 }
 
@@ -90,9 +91,19 @@ RP_check_order::step()
     return;
 
   obj_listener_.print();
-  ROS_INFO("========> Check order Step");
+
   if ((ros::Time::now() - start_check_).toSec() >= CHECK_ORDER_CHECKING_TIME)
   {
+    // Removing has if they exist
+    std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
+    for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
+    {
+      std::string edge = it->get();
+      if (edge.find("has") != std::string::npos &&
+        (it->get_source() == robot_id_ || it->get_source() == "bar"))
+        graph_.remove_edge(*it);
+    }
+
     // Adding "has" edges
     int count = 0;
     for (const auto& object : obj_listener_.get_objects())
@@ -101,15 +112,6 @@ RP_check_order::step()
       ROS_WARN("Object detected: %s", instance_id.c_str());
       graph_.add_node(instance_id, object.class_id);
       graph_.add_edge("bar", "has", instance_id);
-    }
-
-    // Removing has if they exist
-    std::list<bica_graph::StringEdge> edges_list =  graph_.get_string_edges();
-    for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
-    {
-      std::string edge = it->get();
-      if (edge.find("has") != std::string::npos && it->get_source() == robot_id_)
-        graph_.remove_edge(*it);
     }
 
     // Comparing has with wants
