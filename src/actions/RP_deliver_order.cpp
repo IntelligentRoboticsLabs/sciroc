@@ -17,6 +17,8 @@ Efecto de la acción
 
 #include <string>
 #include <list>
+#include <vector>
+
 
 /* constructor */
 RP_deliver_order::RP_deliver_order(const ros::NodeHandle& nh)
@@ -55,10 +57,10 @@ void RP_deliver_order::activateCode()
   }
 
   //Datahub integration
-  order order_datahub = gb_datahub::getOrder("ORDER0");
-  order_datahub.timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());
-  order_datahub.status = "Complete";
-  ROS_INFO("Order updated, response received: %d",gb_datahub::postOrder(order_datahub));
+  std::vector<order> order_datahub = gb_datahub::getOrder("ORDER0");
+  order_datahub[0].timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());
+  order_datahub[0].status = "Complete";
+  ROS_INFO("Order updated, response received: %d",gb_datahub::postOrder(order_datahub[0]));
 
   table table_datahub = gb_datahub::getTable(table_id);
   table_datahub.status = "already_served";

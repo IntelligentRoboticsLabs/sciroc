@@ -30,7 +30,7 @@ catkin_package(
 #  DEPENDS system_lib
 )
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
   ${YAMLCPP_INCLUDE_DIRS}
 )
@@ -106,6 +106,10 @@ target_link_libraries(elevator_executor_node
   ${catkin_LIBRARIES}
 )
 
+add_library(${PROJECT_NAME}
+  src/sciroc/Utils.cpp
+)
+
 
 add_executable(restaurant_test_check_table src/restaurant/tests/restaurant_test_check_table.cpp)
 add_dependencies(restaurant_test_check_table ${catkin_EXPORTED_TARGETS})
@@ -131,6 +135,9 @@ add_executable(restaurant_test_attend_person src/restaurant/tests/restaurant_tes
 add_dependencies(restaurant_test_attend_person ${catkin_EXPORTED_TARGETS})
 target_link_libraries(restaurant_test_attend_person ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
 
+add_executable(elevator_test_social_move src/elevator/tests/elevator_test_social_move.cpp)
+add_dependencies(elevator_test_social_move ${catkin_EXPORTED_TARGETS})
+target_link_libraries(elevator_test_social_move ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES} ${PROJECT_NAME})
 
 set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
 
