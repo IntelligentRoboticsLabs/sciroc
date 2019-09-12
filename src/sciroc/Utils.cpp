@@ -67,8 +67,9 @@ Utils::set_inital_pose(double x, double y, double yaw)
   init_pose.pose.pose.orientation.y = q.y();
   init_pose.pose.pose.orientation.z = q.z();
   init_pose.pose.pose.orientation.w = q.w();
-  init_pose.pose.covariance[0] = 0.25;  // oX
-  init_pose.pose.covariance[7] = 0.25;  // oY
+  init_pose.pose.covariance[0] = 0.0025;  // oX
+  init_pose.pose.covariance[7] = 0.0025;  // oY
+  init_pose.pose.covariance[35] = 0.001;  // oY
 
   init_pose_pub_.publish(init_pose);
 }

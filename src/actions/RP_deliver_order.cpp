@@ -57,6 +57,7 @@ void RP_deliver_order::activateCode()
   }
 
   //Datahub integration
+
   std::vector<order> order_datahub = gb_datahub::getOrder("ORDER0");
   order_datahub[0].timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());
   order_datahub[0].status = "Complete";
@@ -65,7 +66,6 @@ void RP_deliver_order::activateCode()
   table table_datahub = gb_datahub::getTable(table_id);
   table_datahub.status = "already_served";
   ROS_INFO("Table updated, response received: %d",gb_datahub::postTable(table_datahub));
-
 
   graph_.remove_edge(table_id, "status: needs_serving", table_id);
   graph_.add_edge(table_id, "status: already_served", table_id);

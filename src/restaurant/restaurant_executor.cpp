@@ -218,6 +218,7 @@ void RestaurantExecutor::Init_code_iterative()
 
 void RestaurantExecutor::checkTableStatus_code_once()
 {
+  graph_.add_edge(robot_id_, "robot_status: Recognizing the shop status", robot_id_);
   graph_.add_edge(robot_id_, "say: I will check the table status.", robot_id_);
 }
 
@@ -236,6 +237,7 @@ void RestaurantExecutor::idle_code_iterative()
 
 void RestaurantExecutor::getOrder_code_once()
 {
+  graph_.add_edge(robot_id_, "robot_status: Getting new order", robot_id_);
   graph_.add_edge(robot_id_, "say: I will take the order.", robot_id_);
 }
 
@@ -262,12 +264,14 @@ void RestaurantExecutor::fixOrder_code_iterative()
 
 void RestaurantExecutor::deliverOrder_code_iterative()
 {
+  graph_.add_edge(robot_id_, "robot_status: Delivering order", robot_id_);
   setNewGoal("order_delivered " + needs_serving_table_);
 }
 
 void RestaurantExecutor::grettingNewCustomer_code_once()
 {
-  graph_.add_edge(robot_id_, "say: Hi! Welcome to the restaurant, I will guide you to a table. Follow me", robot_id_);
+  graph_.add_edge(robot_id_, "robot_status: Greeting new costumer", robot_id_);
+  //graph_.add_edge(robot_id_, "say: Hi! Welcome to the restaurant, I will guide you to a table. Follow me", robot_id_);
 }
 
 void RestaurantExecutor::grettingNewCustomer_code_iterative()
