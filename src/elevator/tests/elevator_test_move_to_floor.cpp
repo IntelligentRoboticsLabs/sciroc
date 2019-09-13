@@ -36,65 +36,97 @@
 
 /* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
-#ifndef ELEVATOR_EXECUTOR_H
-#define ELEVATOR_EXECUTOR_H
-
 #include <ros/ros.h>
-#include "bica_planning/Executor.h"
-#include "./elevator_hfsm.h"
+
+#include <bica_planning/Executor.h>
+#include <bica/Component.h>
 #include <bica_graph/graph_client.h>
 #include "gb_datahub/gb_datahub.h"
-#include <string>
-#include <vector>
 
-class ElevatorExecutor: public bica_planning::Executor, public bica::elevator_hfsm
+class MoveToFloorExecutor: public bica_planning::Executor, public bica::Component
 {
 public:
-  ElevatorExecutor();
+  MoveToFloorExecutor(): nh_("")
+  {
+    init_knowledge();
+    executed_ = false;
+  }
 
-  bool update();
-  void init_knowledge();
-  void setNewGoal(std::string goal);
-  std::string car2ord(int target_floor);
+  void init_knowledge()
+  {
+    add_instance("robot", "sonny");
+    add_instance("zone", "encounter_zone");
+    add_instance("floor", "first");
+    add_instance("floor", "second");
+    add_instance("floor", "third");
+    add_instance("floor", "fourth");
+    add_instance("floor", "fifth");
+    add_predicate("robot_at sonny wp_elevator");
+    add_predicate("robot_at_room sonny main_room");
+    graph_.add_node("sonny", "robot");
 
-  void Init_code_once();
-  void getShopList_code_once();
-  void approachElevator_code_once();
-  void approachElevator_code_iterative();
-  void findProxemicPos_code_iterative();
-  void findProxemicPos_code_once();
-  void robotAtElevator_code_iterative();
-  void robotAtElevator_code_once();
-  void advertiseGoal_code_iterative();
-  void advertiseGoal_code_once();
-  void waitForDoor_code_once();
-  void waitForDoor_code_iterative();
-  void askForFloor_code_once();
-  void robotAtEnd_code_iterative();
-  void robotAtEnd_code_once();
+    std::vector<shop> shops = gb_datahub::getShopsList();
+    for (auto shop : shops)
+    {
+      if (shop.goal = true)
+        target_floor_ = car2ord(shop.floor);
+    }
+    graph_.add_node(target_floor_, "floor");
+    graph_.add_edge("sonny", "target_floor", target_floor_);
 
+    //auto interest_edges = graph_.get_string_edges_from_node_by_data("sonny", "target_floor");
+    //if (!interest_edges.empty())
+    //  target_floor_ = interest_edges[0].get_target();
+  }
 
-  bool Init_2_getShopList();
-  bool getShopList_2_approachElevator();
-  bool approachElevator_2_findProxemicPos();
-  bool findProxemicPos_2_robotAtElevator();
-  bool robotAtElevator_2_advertiseGoal();
-  bool advertiseGoal_2_waitForDoor();
-  bool waitForDoor_2_askForFloor();
-  bool askForFloor_2_waitForDoor();
-  bool askForFloor_2_robotAtEnd();
+  std::string car2ord(int target_floor)
+  {
+    if (target_floor == 1)
+      return "first";
+    else if(target_floor == 2)
+      return "second";
+    else if(target_floor == 3)
+      return "third";
+    else if(target_floor == 4)
+      return "fourth";
+    else if(target_floor == 5)
+      return "fifth";
+  }
 
-  /*void Init_code_iterative();
-  void askForFloor_code_iterative();
-  void getShopList_code_iterative();
-  */
+  void step()
+  {
+    if (!executed_)
+    {
+      ROS_INFO("Adding goal and planning");
+      add_goal("target_floor_reached sonny " + target_floor_);
+      call_planner();
+      executed_ = true;
+    }
+    else
+      ROS_INFO("Finished executing MoveToFloorExecutor");
+  }
 
 private:
   ros::NodeHandle nh_;
   bica_graph::GraphClient graph_;
-  std::string current_goal_, robot_id_, target_floor_;
-  ros::Subscriber scan_sub_;
-  ros::Time wait_;
+  std::string target_floor_;
+  bool executed_;
 };
 
-#endif  // ELEVATOR_EXECUTOR_H
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "MoveToFloorExecutor");
+  ros::NodeHandle n;
+
+  ros::Rate loop_rate(1);
+  MoveToFloorExecutor exec;
+  exec.setRoot();
+  exec.setActive(true);
+
+  while (exec.ok())
+  {
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+  return 0;
+}

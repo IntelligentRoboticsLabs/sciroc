@@ -123,7 +123,6 @@ void RP_move_to_floor::step()
     }
     case END:
     {
-      graph_.add_edge(robot_id_, "say: Please, let me go out first. Have a nice day!", robot_id_);
       setSuccess();
       break;
     }

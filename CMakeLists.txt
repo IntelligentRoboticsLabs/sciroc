@@ -40,7 +40,7 @@ add_executable(df_simulator_restaurant_node src/utils/df_simulator_restaurant_no
 add_dependencies(df_simulator_restaurant_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(df_simulator_restaurant_node ${catkin_LIBRARIES})
 
-# Actions
+# Actions Restaurant
 add_executable(rp_check_table_status src/actions/RP_check_table_status.cpp)
 add_dependencies(rp_check_table_status ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rp_check_table_status ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
@@ -78,6 +78,13 @@ add_dependencies(rp_attend_person ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rp_attend_person ${catkin_LIBRARIES})
 
 
+# Actions Elevator
+
+add_executable(rp_move_to_floor src/actions/RP_move_to_floor.cpp)
+add_dependencies(rp_move_to_floor ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rp_move_to_floor ${catkin_LIBRARIES})
+
+
 # HFSM
 
 add_executable(restaurant_executor_node
@@ -110,6 +117,7 @@ add_library(${PROJECT_NAME}
   src/sciroc/Utils.cpp
 )
 
+# Tests Restaurant
 
 add_executable(restaurant_test_check_table src/restaurant/tests/restaurant_test_check_table.cpp)
 add_dependencies(restaurant_test_check_table ${catkin_EXPORTED_TARGETS})
@@ -135,9 +143,15 @@ add_executable(restaurant_test_attend_person src/restaurant/tests/restaurant_tes
 add_dependencies(restaurant_test_attend_person ${catkin_EXPORTED_TARGETS})
 target_link_libraries(restaurant_test_attend_person ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES})
 
+# Tests Elevator
+
 add_executable(elevator_test_social_move src/elevator/tests/elevator_test_social_move.cpp)
 add_dependencies(elevator_test_social_move ${catkin_EXPORTED_TARGETS})
 target_link_libraries(elevator_test_social_move ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES} ${PROJECT_NAME})
+
+add_executable(elevator_test_move_to_floor src/elevator/tests/elevator_test_move_to_floor.cpp)
+add_dependencies(elevator_test_move_to_floor ${catkin_EXPORTED_TARGETS})
+target_link_libraries(elevator_test_move_to_floor ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES} ${PROJECT_NAME})
 
 set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
 

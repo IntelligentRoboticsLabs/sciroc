@@ -56,6 +56,13 @@ void ElevatorExecutor::init_knowledge()
   graph_.set_tf_identity("base_footprint", robot_id_);
   graph_.add_node(robot_id_, "robot");
   graph_.add_node("elevator", "elevator");
+
+  add_instance("floor", "first");
+  add_instance("floor", "second");
+  add_instance("floor", "third");
+  add_instance("floor", "fourth");
+  add_instance("floor", "fifth");
+
   graph_.add_node("0", "floor");
   graph_.add_edge("elevator", "current_floor", "0");
 }
@@ -73,6 +80,20 @@ bool ElevatorExecutor::update()
   return ok();
 }
 
+std::string ElevatorExecutor::car2ord(int target_floor)
+{
+  if (target_floor == 1)
+    return "first";
+  else if(target_floor == 2)
+    return "second";
+  else if(target_floor == 3)
+    return "third";
+  else if(target_floor == 4)
+    return "fourth";
+  else if(target_floor == 5)
+    return "fifth";
+}
+
 void ElevatorExecutor::Init_code_once()
 {
   graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
@@ -80,9 +101,17 @@ void ElevatorExecutor::Init_code_once()
 
 void ElevatorExecutor::getShopList_code_once()
 {
-  //getShopList() Request to the DH
-  // get the goal floor from the list
+  std::vector<shop> shops = gb_datahub::getShopsList();
+  for (auto shop : shops)
+  {
+    if (shop.goal = true)
+      target_floor_ = car2ord(shop.floor);
+  }
+  if (target_floor_ == "")
+    ROS_ERROR("Target_floor doesn't recovery from DH");
 
+  graph_.add_node(target_floor_, "floor");
+  graph_.add_edge("sonny", "target_floor", target_floor_);
 }
 
 bool ElevatorExecutor::Init_2_getShopList()
@@ -121,7 +150,7 @@ void ElevatorExecutor::findProxemicPos_code_iterative()
 
 void ElevatorExecutor::robotAtElevator_code_once()
 {
-  graph_.add_edge(robot_id_, "say: Closing the elevator door", robot_id_);
+  graph_.add_edge(robot_id_, "say: Getting close to the elevator door", robot_id_);
 }
 
 void ElevatorExecutor::robotAtElevator_code_iterative()
@@ -146,13 +175,12 @@ void ElevatorExecutor::waitForDoor_code_once()
 
 void ElevatorExecutor::waitForDoor_code_iterative()
 {
-  int num_floor = 2;
-  setNewGoal("target_floor_reached " + robot_id_ + " " + std::to_string(num_floor));
+  setNewGoal("target_floor_reached " + robot_id_ + " " + target_floor_);
 }
 
 void ElevatorExecutor::askForFloor_code_once()
 {
-  graph_.add_edge(robot_id_, "say: Asking for current floor", robot_id_);
+  //graph_.add_edge(robot_id_, "say: Asking for current floor", robot_id_);
 }
 
 void ElevatorExecutor::robotAtEnd_code_once()
@@ -167,8 +195,6 @@ void ElevatorExecutor::robotAtEnd_code_iterative()
 
 bool ElevatorExecutor::getShopList_2_approachElevator()
 {
-  // if shopTarget_ is ready
-  //graph_.add_edge(robot_id_, "say: I have to go to the floor X. I'm ready", robot_id_);
   return true;
 }
 
@@ -191,7 +217,7 @@ bool ElevatorExecutor::advertiseGoal_2_waitForDoor()
 {
   if (!(search_predicates_regex(current_goal_)).empty())
   {
-    graph_.add_edge(robot_id_, "say: Hi! I must go to the XXX floor. Could you press the button by me?", robot_id_);
+    graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
     return true;
   }
   return false;
@@ -200,7 +226,6 @@ bool ElevatorExecutor::advertiseGoal_2_waitForDoor()
 bool ElevatorExecutor::waitForDoor_2_askForFloor()
 {
   return (!(search_predicates_regex(current_goal_)).empty());
-
 }
 
 bool ElevatorExecutor::askForFloor_2_waitForDoor()
