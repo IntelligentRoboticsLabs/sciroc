@@ -17,3 +17,4 @@
 (attended_person ?p - person ?t - table ?z - zone)
 (robot_at_zone ?r - robot ?z - zone)
 (zone_at_room ?z - zone ?r - room)
+(target_floor_reached ?r - robot ?f - floor)

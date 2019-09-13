@@ -3,3 +3,4 @@ waypoint
 table
 person
 zone
+floor

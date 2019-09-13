@@ -110,3 +110,16 @@
     (at end(attended_person ?p ?t ?z))
   )
 )
+
+
+
+(:durative-action move_to_floor
+  :parameters (?r - robot ?f - floor)
+  :duration ( = ?duration 10)
+  :condition (and
+
+ )
+  :effect (and
+    (at end(target_floor_reached ?r ?f))
+  )
+)
