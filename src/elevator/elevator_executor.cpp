@@ -44,8 +44,6 @@
 ElevatorExecutor::ElevatorExecutor(): current_goal_(), nh_()
 {
   init_knowledge();
-  scan_sub_ = nh_.subscribe("/scan", 1, &ElevatorExecutor::scanCallback, this);
-
 }
 
 void ElevatorExecutor::init_knowledge()
@@ -60,11 +58,6 @@ void ElevatorExecutor::init_knowledge()
   graph_.add_node("elevator", "elevator");
   graph_.add_node("0", "floor");
   graph_.add_edge("elevator", "current_floor", "0");
-}
-
-void ElevatorExecutor::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
-{
-  scan_ = *scan;
 }
 
 void ElevatorExecutor::setNewGoal(std::string goal)
@@ -109,7 +102,7 @@ bool ElevatorExecutor::Init_2_getShopList()
 
 void ElevatorExecutor::approachElevator_code_once()
 {
-  graph_.add_edge(robot_id_, "say: Getting close to the elevator", robot_id_);
+  //graph_.add_edge(robot_id_, "say: Getting close to the elevator", robot_id_);
 }
 void ElevatorExecutor::approachElevator_code_iterative()
 {
@@ -148,13 +141,17 @@ void ElevatorExecutor::advertiseGoal_code_iterative()
 
 void ElevatorExecutor::waitForDoor_code_once()
 {
-  wait_ = ros::Time::now();
-  graph_.add_edge(robot_id_, "say: Waiting for door", robot_id_);
+
+}
+
+void ElevatorExecutor::waitForDoor_code_iterative()
+{
+  int num_floor = 2;
+  setNewGoal("target_floor_reached " + robot_id_ + " " + std::to_string(num_floor));
 }
 
 void ElevatorExecutor::askForFloor_code_once()
 {
-  wait_ = ros::Time::now();
   graph_.add_edge(robot_id_, "say: Asking for current floor", robot_id_);
 }
 
@@ -171,7 +168,7 @@ void ElevatorExecutor::robotAtEnd_code_iterative()
 bool ElevatorExecutor::getShopList_2_approachElevator()
 {
   // if shopTarget_ is ready
-  graph_.add_edge(robot_id_, "say: I have to go to the floor X. I'm ready", robot_id_);
+  //graph_.add_edge(robot_id_, "say: I have to go to the floor X. I'm ready", robot_id_);
   return true;
 }
 
@@ -202,15 +199,7 @@ bool ElevatorExecutor::advertiseGoal_2_waitForDoor()
 
 bool ElevatorExecutor::waitForDoor_2_askForFloor()
 {
-  return (ros::Time::now() > wait_ + ros::Duration(5));
-  /*bool door_opened = false;
-  for (int i = 0; i<scan_.ranges.size(); i++)
-  {
-    if (scan_.ranges[i] > 3.0)
-      door_opened = true;
-  }
-
-  return door_opened;*/
+  return (!(search_predicates_regex(current_goal_)).empty());
 
 }
 

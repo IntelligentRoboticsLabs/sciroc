@@ -43,7 +43,6 @@
 #include "bica_planning/Executor.h"
 #include "./elevator_hfsm.h"
 #include <bica_graph/graph_client.h>
-#include <sensor_msgs/LaserScan.h>
 #include <string>
 #include <vector>
 
@@ -67,6 +66,7 @@ public:
   void advertiseGoal_code_iterative();
   void advertiseGoal_code_once();
   void waitForDoor_code_once();
+  void waitForDoor_code_iterative();
   void askForFloor_code_once();
   void robotAtEnd_code_iterative();
   void robotAtEnd_code_once();
@@ -84,16 +84,7 @@ public:
 
   /*void Init_code_iterative();
   void askForFloor_code_iterative();
-
-
-
-  void waitForDoor_code_iterative();
-
-
   void getShopList_code_iterative();
-
-
-
   */
 
 private:
@@ -101,10 +92,7 @@ private:
   bica_graph::GraphClient graph_;
   std::string current_goal_, robot_id_;
   ros::Subscriber scan_sub_;
-  sensor_msgs::LaserScan scan_;
   ros::Time wait_;
-  void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
-
 };
 
 #endif  // ELEVATOR_EXECUTOR_H
