@@ -52,8 +52,6 @@ public:
    nh_(""),
    utils_(nh_)
   {
-
-
     init_knowledge();
     executed_ = false;
   }
@@ -88,7 +86,7 @@ public:
     graph_.add_edge("main_room", main2zone, "encounter_zone", true);
 
 
-    utils_.set_inital_pose(0.0, 3.0, 0.0);
+    utils_.set_inital_pose(0.0, 2.0, 0.0);
   }
 
   void step()
