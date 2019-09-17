@@ -60,9 +60,6 @@ public:
   bool update();
   void init_knowledge();
   void setNewGoal(std::string goal);
-  bool person_close();
-  void objectsCallback(const darknet_ros_3d_msgs::BoundingBoxes3d::ConstPtr& msg);
-
 
   void Init_code_iterative();
   void deliverOrder_code_iterative();
@@ -100,7 +97,6 @@ private:
 
   tf2_ros::Buffer tfBuffer_;
   tf2_ros::TransformListener tf_listener_;
-  darknet_ros_3d_msgs::BoundingBoxes3d objects_msg_;
 };
 
 #endif  // SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
