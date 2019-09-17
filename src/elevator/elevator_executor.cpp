@@ -107,7 +107,7 @@ void ElevatorExecutor::getShopList_code_once()
   std::vector<shop> shops = gb_datahub::getShopsList();
   for (auto shop : shops)
   {
-    if (shop.goal = true)
+    if (shop.goal == true)
       target_floor_ = car2ord(shop.floor);
   }
   if (target_floor_ == "")
