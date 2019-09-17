@@ -8,14 +8,14 @@
 
   <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
-  <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/topological_map.yaml" />
+  <arg name = "topological_map" default = "$(find gb_robots)/maps/restaurant/sciroc/topological_map.yaml" />
   <arg name = "pddl_packages" default = "
     [
     'topological_navigation',
     'person_navigation',
     'sciroc'
     ]"/>
-  <arg name = "map" default = "$(find gb_robots)/maps/restaurant/map.yaml" />
+  <arg name = "map" default = "$(find gb_robots)/maps/restaurant/sciroc/map.yaml" />
 
   <include file="$(find bica_graph)/launch/bica_graph_master.launch"/>
 
@@ -30,8 +30,8 @@
     <rosparam command="load" file="$(find sciroc)/config/kms_extractor_params.yaml" />
   </node>
 
-  <node pkg="gb_datahub" type="coffee_shop_delivery" name="coffee_shop_delivery" output="screen">
-  </node>
+  <!--<node pkg="gb_datahub" type="coffee_shop_delivery" name="coffee_shop_delivery" output="screen">
+</node>-->
 
   <include file="$(find bica_planning)/launch/planning_system.launch" >
     <arg name="data_path" value="/tmp/" />

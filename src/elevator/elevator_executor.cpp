@@ -57,6 +57,10 @@ void ElevatorExecutor::init_knowledge()
   graph_.add_node(robot_id_, "robot");
   graph_.add_node("elevator", "elevator");
 
+  graph_.add_node("main_room", "room");
+  graph_.set_tf_identity("main_room", "map");
+  graph_.add_tf_edge("main_room", robot_id_);
+
   add_instance("floor", "first");
   add_instance("floor", "second");
   add_instance("floor", "third");
@@ -67,7 +71,10 @@ void ElevatorExecutor::init_knowledge()
   graph_.add_edge("elevator", "current_floor", "0");
 
   utils_.set_inital_pose(-8.65, -2.73, 1.57);
-
+  tf2::Quaternion q;
+  q.setRPY(0, 0, -1.57);
+  tf2::Transform main2zone(q, tf2::Vector3(-2.88, -0.64, 0.0));
+  graph_.add_edge("main_room", main2zone, "waiting_zone", true);
 }
 
 void ElevatorExecutor::setNewGoal(std::string goal)
@@ -153,6 +160,7 @@ void ElevatorExecutor::findProxemicPos_code_iterative()
 
 void ElevatorExecutor::robotAtElevator_code_once()
 {
+  graph_.add_edge(robot_id_, "want_see", "waiting_zone");
   graph_.add_edge(robot_id_, "say: Getting close to the elevator door", robot_id_);
 }
 
@@ -163,6 +171,7 @@ void ElevatorExecutor::robotAtElevator_code_iterative()
 
 void ElevatorExecutor::advertiseGoal_code_once()
 {
+  graph_.remove_edge("sonny", "want_see", "waiting_zone");
   graph_.add_edge(robot_id_, "say: Entring into the elevator", robot_id_);
 }
 
