@@ -77,28 +77,28 @@ void RestaurantExecutor::init_knowledge()
   add_predicate("wp_entry_location wp_entry");
   add_predicate("barman barman");
 
+  add_instance("table", "table_0");
   add_instance("table", "table_1");
   add_instance("table", "table_2");
   add_instance("table", "table_3");
   add_instance("table", "table_4");
   add_instance("table", "table_5");
-  add_instance("table", "table_6");
   add_instance("table", "bar");
 
+  add_predicate("is_wp_near_table wp_table_0 table_0");
   add_predicate("is_wp_near_table wp_table_1 table_1");
   add_predicate("is_wp_near_table wp_table_2 table_2");
   add_predicate("is_wp_near_table wp_table_3 table_3");
   add_predicate("is_wp_near_table wp_table_4 table_4");
   add_predicate("is_wp_near_table wp_table_5 table_5");
-  add_predicate("is_wp_near_table wp_table_6 table_6");
   add_predicate("is_wp_near_table wp_bar bar");
 
+  add_predicate("is_table_at table_0 main_room");
   add_predicate("is_table_at table_1 main_room");
   add_predicate("is_table_at table_2 main_room");
   add_predicate("is_table_at table_3 main_room");
   add_predicate("is_table_at table_4 main_room");
   add_predicate("is_table_at table_5 main_room");
-  add_predicate("is_table_at table_6 main_room");
   add_predicate("is_table_at bar main_room");
 
   graph_.add_node(robot_id_, "robot");
@@ -209,7 +209,7 @@ bool RestaurantExecutor::person_close()
 
 void RestaurantExecutor::Init_code_once()
 {
-  graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
+  //graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
 }
 
 void RestaurantExecutor::Init_code_iterative()
