@@ -84,6 +84,9 @@ add_executable(rp_move_to_floor src/actions/RP_move_to_floor.cpp)
 add_dependencies(rp_move_to_floor ${catkin_EXPORTED_TARGETS})
 target_link_libraries(rp_move_to_floor ${catkin_LIBRARIES})
 
+add_library(${PROJECT_NAME}
+  src/sciroc/Utils.cpp
+)
 
 # HFSM
 
@@ -111,11 +114,10 @@ add_dependencies(elevator_executor_node
 )
 target_link_libraries(elevator_executor_node
   ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
 )
 
-add_library(${PROJECT_NAME}
-  src/sciroc/Utils.cpp
-)
+
 
 # Tests Restaurant
 

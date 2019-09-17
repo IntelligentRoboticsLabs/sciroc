@@ -86,7 +86,7 @@ public:
     graph_.add_edge("main_room", main2zone, "encounter_zone", true);
 
 
-    utils_.set_inital_pose(0.0, 2.0, 0.0);
+    utils_.set_inital_pose(-8.65, -2.73, 1.57);
   }
 
   void step()
@@ -95,7 +95,7 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      add_goal("social_move_pred sonny wp_waiting_zone");
+      //add_goal("social_move_pred sonny wp_waiting_zone");
       call_planner();
       executed_ = true;
     }

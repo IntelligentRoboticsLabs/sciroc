@@ -50,7 +50,7 @@
     <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
   </include>
 
-  <node name="elevator_test_social_move" pkg="sciroc" type="elevator_test_social_move" respawn="false" output="screen" required="true"/>
+  <node name="elevator_executor_node" pkg="sciroc" type="elevator_executor_node" respawn="false" output="screen" required="true"/>
 
   <include file="$(find graph_dialog_extractor)/launch/graph_dialog_extractor.launch" >
     <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
@@ -60,5 +60,7 @@
 
   <rosparam command="load" file="$(find sciroc)/config/attention_config.yaml" />
   <include file="$(find gb_attention)/launch/attention.launch"/>
+  <include file="$(find sciroc)/launch/elevator/elevator_actions.launch"/>
+
   <!--<include file="$(find keep_in_proxemics)/launch/social_elevator_navigation.launch"/>-->
 </launch>

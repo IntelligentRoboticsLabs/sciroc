@@ -44,6 +44,7 @@
 #include "./elevator_hfsm.h"
 #include <bica_graph/graph_client.h>
 #include "gb_datahub/gb_datahub.h"
+#include <sciroc/Utils.h>
 #include <string>
 #include <vector>
 
@@ -94,6 +95,7 @@ private:
   bica_graph::GraphClient graph_;
   std::string current_goal_, robot_id_, target_floor_;
   ros::Subscriber scan_sub_;
+  sciroc::Utils utils_;
   ros::Time wait_;
 };
 

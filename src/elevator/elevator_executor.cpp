@@ -41,7 +41,7 @@
 #include <list>
 #include <vector>
 
-ElevatorExecutor::ElevatorExecutor(): current_goal_(), nh_()
+ElevatorExecutor::ElevatorExecutor(): current_goal_(), nh_(), utils_(nh_)
 {
   init_knowledge();
 }
@@ -65,6 +65,9 @@ void ElevatorExecutor::init_knowledge()
 
   graph_.add_node("0", "floor");
   graph_.add_edge("elevator", "current_floor", "0");
+
+  utils_.set_inital_pose(-8.65, -2.73, 1.57);
+
 }
 
 void ElevatorExecutor::setNewGoal(std::string goal)
@@ -96,7 +99,7 @@ std::string ElevatorExecutor::car2ord(int target_floor)
 
 void ElevatorExecutor::Init_code_once()
 {
-  graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
+  //graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
 }
 
 void ElevatorExecutor::getShopList_code_once()
@@ -135,7 +138,7 @@ void ElevatorExecutor::approachElevator_code_once()
 }
 void ElevatorExecutor::approachElevator_code_iterative()
 {
-  setNewGoal("social_move_pred " + robot_id_ + " wp_waiting_zone");
+  setNewGoal("social_move_pred " + robot_id_ + " wp_post_encounter");
 }
 
 void ElevatorExecutor::findProxemicPos_code_once()

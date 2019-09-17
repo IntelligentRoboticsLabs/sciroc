@@ -93,7 +93,7 @@ void RP_move_to_floor::step()
     case CHECKING_DOOR:
     {
       ROS_INFO("[move_to_floor] CHECKING_DOOR state");
-      for (auto range : scan_.ranges)
+      for (const auto& range : scan_.ranges)
       {
         if (range >= 3.0)
         {
