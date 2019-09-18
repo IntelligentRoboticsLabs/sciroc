@@ -25,24 +25,35 @@ RP_check_table_status::RP_check_table_status(const ros::NodeHandle& nh)
 {
   qr_sub_ = nh_.subscribe("/barcode", 1, &RP_check_table_status::qrCallback, this);
 
-  darknet_ros_3d::ObjectConfiguration cup_conf;
+  darknet_ros_3d::ObjectConfiguration obj_conf;
 
-  cup_conf.min_probability = CHECK_TABLE_MIN_PROBABILITY;
-  cup_conf.min_x = CHECK_TABLE_OBJECT_MIN_X;
-  cup_conf.max_x = CHECK_TABLE_OBJECT_MAX_X;
-  cup_conf.min_y = CHECK_TABLE_OBJECT_MIN_Y;
-  cup_conf.max_y = CHECK_TABLE_OBJECT_MAX_Y;
-  cup_conf.min_z = CHECK_TABLE_OBJECT_MIN_Z;
-  cup_conf.max_z = CHECK_TABLE_OBJECT_MAX_Z;
-  cup_conf.min_size_x = CHECK_TABLE_OBJECT_MIN_SIZE_X;
-  cup_conf.min_size_y = CHECK_TABLE_OBJECT_MIN_SIZE_Y;
-  cup_conf.min_size_z = CHECK_TABLE_OBJECT_MIN_SIZE_Z;
-  cup_conf.max_size_x = CHECK_TABLE_OBJECT_MAX_SIZE_X;
-  cup_conf.max_size_y = CHECK_TABLE_OBJECT_MAX_SIZE_Y;
-  cup_conf.max_size_z = CHECK_TABLE_OBJECT_MAX_SIZE_Z;
-  cup_conf.dynamic = false;
+  obj_conf.min_probability = CHECK_TABLE_MIN_PROBABILITY;
+  obj_conf.min_x = CHECK_TABLE_OBJECT_MIN_X;
+  obj_conf.max_x = CHECK_TABLE_OBJECT_MAX_X;
+  obj_conf.min_y = CHECK_TABLE_OBJECT_MIN_Y;
+  obj_conf.max_y = CHECK_TABLE_OBJECT_MAX_Y;
+  obj_conf.min_z = CHECK_TABLE_OBJECT_MIN_Z;
+  obj_conf.max_z = CHECK_TABLE_OBJECT_MAX_Z;
+  obj_conf.min_size_x = CHECK_TABLE_OBJECT_MIN_SIZE_X;
+  obj_conf.min_size_y = CHECK_TABLE_OBJECT_MIN_SIZE_Y;
+  obj_conf.min_size_z = CHECK_TABLE_OBJECT_MIN_SIZE_Z;
+  obj_conf.max_size_x = CHECK_TABLE_OBJECT_MAX_SIZE_X;
+  obj_conf.max_size_y = CHECK_TABLE_OBJECT_MAX_SIZE_Y;
+  obj_conf.max_size_z = CHECK_TABLE_OBJECT_MAX_SIZE_Z;
+  obj_conf.dynamic = false;
 
-  obj_listener_.add_class("cup", cup_conf);
+  obj_listener_.add_class("italian_biscotti", obj_conf);
+  obj_listener_.add_class("smoothie", obj_conf);
+  obj_listener_.add_class("mango_juice", obj_conf);
+  obj_listener_.add_class("crisps", obj_conf);
+  obj_listener_.add_class("water", obj_conf);
+  obj_listener_.add_class("sandwich", obj_conf);
+  obj_listener_.add_class("toastie", obj_conf);
+  obj_listener_.add_class("veggie_pot", obj_conf);
+  obj_listener_.add_class("wrap", obj_conf);
+  obj_listener_.add_class("espresso", obj_conf);
+  obj_listener_.add_class("cappuccino", obj_conf);
+  obj_listener_.add_class("americano", obj_conf);
 
   darknet_ros_3d::ObjectConfiguration person_conf;
 
@@ -101,7 +112,7 @@ RP_check_table_status::step()
     return;
 
   obj_listener_.print();
-  
+
   if ((ros::Time::now() - start_check_).toSec() >= CHECK_TABLE_CHECKING_TIME)
   {
     int count = 0;
