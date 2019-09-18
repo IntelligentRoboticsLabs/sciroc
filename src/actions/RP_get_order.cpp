@@ -98,7 +98,7 @@ void RP_get_order::step()
 
       obtained_order.id = "ORDER0";
       obtained_order.type = "Order";
-      obtained_order.timestamp = boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost());
+      obtained_order.timestamp = gb_datahub::magicHour(boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost()));
       obtained_order.status = "Pending";
 
       ROS_INFO("Response received: %d",gb_datahub::postOrder(obtained_order));
