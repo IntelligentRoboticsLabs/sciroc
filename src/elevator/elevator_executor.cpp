@@ -85,7 +85,7 @@ void ElevatorExecutor::init_knowledge()
   graph_.add_node("0", "floor");
   graph_.add_edge("elevator", "current_floor", "0");
 
-  utils_.set_inital_pose(-9.04, -2.04, 1.57);
+  utils_.set_inital_pose(-9.69, -2.41, 1.57);
   tf2::Quaternion q;
   q.setRPY(0, 0, -1.57);
   tf2::Transform main2zone(q, tf2::Vector3(-2.88, -0.64, 0.0));
@@ -172,6 +172,7 @@ void ElevatorExecutor::approachElevator_code_once()
 void ElevatorExecutor::approachElevator_code_iterative()
 {
   setNewGoal("robot_at " + robot_id_ + " wp_pre_encounter");
+  setNewGoal("robot_at " + robot_id_ + " wp_encounter");
   setNewGoal("social_move_pred " + robot_id_ + " wp_post_encounter");
 }
 

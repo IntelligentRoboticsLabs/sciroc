@@ -61,6 +61,10 @@ public:
     add_instance("floor", "third");
     add_instance("floor", "fourth");
     add_instance("floor", "fifth");
+    add_instance("floor", "sixth");
+    add_instance("floor", "seventh");
+    add_instance("floor", "eigth");
+    add_instance("floor", "ninth");
     add_predicate("robot_at sonny wp_elevator");
     add_predicate("robot_at_room sonny main_room");
     graph_.add_node("sonny", "robot");
@@ -73,10 +77,6 @@ public:
     }
     graph_.add_node(target_floor_, "floor");
     graph_.add_edge("sonny", "target_floor", target_floor_);
-
-    //auto interest_edges = graph_.get_string_edges_from_node_by_data("sonny", "target_floor");
-    //if (!interest_edges.empty())
-    //  target_floor_ = interest_edges[0].get_target();
   }
 
   std::string car2ord(int target_floor)
@@ -91,6 +91,14 @@ public:
       return "fourth";
     else if(target_floor == 5)
       return "fifth";
+    else if(target_floor == 6)
+      return "sixth";
+    else if(target_floor == 7)
+      return "seventh";
+    else if(target_floor == 8)
+      return "eigth";
+    else if(target_floor == 9)
+      return "ninth";
   }
 
   void step()
