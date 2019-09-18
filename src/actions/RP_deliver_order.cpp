@@ -64,7 +64,7 @@ void RP_deliver_order::activateCode()
   ROS_INFO("Order updated, response received: %d",gb_datahub::postOrder(order_datahub[0]));
 
   table table_datahub = gb_datahub::getTable(table_id);
-  table_datahub.status = "already_served";
+  table_datahub.status = "Already served";
   ROS_INFO("Table updated, response received: %d",gb_datahub::postTable(table_datahub));
 
   graph_.remove_edge(table_id, "status: needs_serving", table_id);

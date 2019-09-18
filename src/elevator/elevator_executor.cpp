@@ -167,6 +167,7 @@ bool ElevatorExecutor::Init_2_getShopList()
 
 void ElevatorExecutor::approachElevator_code_once()
 {
+  graph_.add_edge(robot_id_, "robot_status: Approaching to the elevator", robot_id_);
   //graph_.add_edge(robot_id_, "say: Getting close to the elevator", robot_id_);
 }
 void ElevatorExecutor::approachElevator_code_iterative()
@@ -178,6 +179,7 @@ void ElevatorExecutor::approachElevator_code_iterative()
 
 void ElevatorExecutor::findProxemicPos_code_once()
 {
+  graph_.add_edge(robot_id_, "robot_status: Moving to wait the elevator", robot_id_);
   graph_.add_edge(robot_id_, "say: Moving to wait the elevator", robot_id_);
 }
 
@@ -188,6 +190,7 @@ void ElevatorExecutor::findProxemicPos_code_iterative()
 
 void ElevatorExecutor::robotAtElevator_code_once()
 {
+  graph_.add_edge(robot_id_, "robot_status: Waiting people enter in the elevator", robot_id_);
   graph_.add_edge(robot_id_, "want_see", "waiting_zone");
   graph_.add_edge(robot_id_, "say: Waiting until people enter in the elevator", robot_id_);
   wait_ = ros::Time::now();
@@ -201,8 +204,9 @@ void ElevatorExecutor::robotAtElevator_code_iterative()
 
 void ElevatorExecutor::advertiseGoal_code_once()
 {
+  graph_.add_edge(robot_id_, "robot_status: Entering into the elevator", robot_id_);
   graph_.remove_edge("sonny", "want_see", "waiting_zone");
-  graph_.add_edge(robot_id_, "say: Entring into the elevator", robot_id_);
+  graph_.add_edge(robot_id_, "say: Entering into the elevator", robot_id_);
 }
 
 void ElevatorExecutor::advertiseGoal_code_iterative()
@@ -223,10 +227,12 @@ void ElevatorExecutor::waitForDoor_code_iterative()
 void ElevatorExecutor::askForFloor_code_once()
 {
   //graph_.add_edge(robot_id_, "say: Asking for current floor", robot_id_);
+  graph_.add_edge(robot_id_, "robot_status: Asking for current floor", robot_id_);
 }
 
 void ElevatorExecutor::robotAtEnd_code_once()
 {
+  graph_.add_edge(robot_id_, "robot_status: Exiting the elevator. Navigating to end point", robot_id_);
   graph_.add_edge(robot_id_, "say: Please, let me exit the elevator. Navigating to end point", robot_id_);
 }
 

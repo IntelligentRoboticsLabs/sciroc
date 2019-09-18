@@ -140,13 +140,13 @@ RP_check_table_status::step()
     }
 
     if (!object_in_table && num_customers == 0)
-      table_status = "ready";
+      table_status = "Ready";
     else if(object_in_table && num_customers == 0)
-      table_status = "needs_cleaning";
+      table_status = "Needs cleaning";
     else if(!object_in_table && num_customers > 0)
-      table_status = "needs_serving";
+      table_status = "Needs serving";
     else if(object_in_table && num_customers > 0)
-      table_status = "already_served";
+      table_status = "Already served";
 
     graph_.add_edge(table_id_, "status: " + table_status , table_id_);
     graph_.add_edge(table_id_, "num_customers: " + std::to_string(num_customers) , table_id_);
