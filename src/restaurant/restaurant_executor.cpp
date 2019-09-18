@@ -42,9 +42,10 @@
 #include <vector>
 
 RestaurantExecutor::RestaurantExecutor():
+  nh_(),
   current_goal_(),
   tf_listener_(tfBuffer_),
-  nh_()
+  utils_(nh_)
 {
   init_knowledge();
   order_ready_asked_ = false;
@@ -133,6 +134,7 @@ void RestaurantExecutor::init_knowledge()
   tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
   graph_.add_edge("main_room", main2zone, "waiting_zone", true);
 
+  utils_.set_inital_pose(0.0, 0.0, 0.0);
 }
 
 bool RestaurantExecutor::update()

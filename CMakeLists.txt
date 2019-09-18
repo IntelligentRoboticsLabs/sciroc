@@ -101,6 +101,7 @@ add_dependencies(restaurant_executor_node
 )
 target_link_libraries(restaurant_executor_node
   ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
 )
 
 add_executable(elevator_executor_node
