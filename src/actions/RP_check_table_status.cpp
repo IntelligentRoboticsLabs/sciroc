@@ -42,18 +42,10 @@ RP_check_table_status::RP_check_table_status(const ros::NodeHandle& nh)
   obj_conf.max_size_z = CHECK_TABLE_OBJECT_MAX_SIZE_Z;
   obj_conf.dynamic = false;
 
-  obj_listener_.add_class("italian_biscotti", obj_conf);
-  obj_listener_.add_class("smoothie", obj_conf);
-  obj_listener_.add_class("mango_juice", obj_conf);
-  obj_listener_.add_class("crisps", obj_conf);
-  obj_listener_.add_class("water", obj_conf);
-  obj_listener_.add_class("sandwich", obj_conf);
-  obj_listener_.add_class("toastie", obj_conf);
-  obj_listener_.add_class("veggie_pot", obj_conf);
-  obj_listener_.add_class("wrap", obj_conf);
-  obj_listener_.add_class("espresso", obj_conf);
-  obj_listener_.add_class("cappuccino", obj_conf);
-  obj_listener_.add_class("americano", obj_conf);
+  obj_listener_.add_class("botte", obj_conf);
+  obj_listener_.add_class("book", obj_conf);
+  obj_listener_.add_class("tie", obj_conf);
+  obj_listener_.add_class("cup", obj_conf);
 
   darknet_ros_3d::ObjectConfiguration person_conf;
 
