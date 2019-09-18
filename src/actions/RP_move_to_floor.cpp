@@ -112,7 +112,7 @@ void RP_move_to_floor::timeoutCB(const ros::TimerEvent&)
   state_ = CHECKING_DOOR;
 }
 
-void RP_move_to_floor::step()
+void RP_move_to_floor::face_person()
 {
   geometry_msgs::Twist vel_msg;
   vel_msg.linear.x = 0;
@@ -133,6 +133,37 @@ void RP_move_to_floor::step()
   }
 
   vel_pub_.publish(vel_msg);
+}
+
+
+void RP_move_to_floor::face_door()
+{
+  tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("sonny", "wp_elevator");
+
+  // wp_elevator
+  geometry_msgs::Twist vel_msg;
+  vel_msg.linear.x = 0;
+  vel_msg.linear.y = 0;
+  vel_msg.linear.z = 0;
+
+
+  vel_msg.angular.x = 0;
+  vel_msg.angular.y = 0;
+
+
+  tf2::Matrix3x3 m(r2door.getRotation());
+  double roll, pitch, yaw;
+  m.getRPY(roll, pitch, yaw);
+
+  double vel = yaw;
+  vel_msg.angular.z = std::max(std::min(vel, 0.2), -0.2);
+
+  vel_pub_.publish(vel_msg);
+}
+
+
+void RP_move_to_floor::step()
+{
 
   switch(state_){
     case INIT:
@@ -141,6 +172,7 @@ void RP_move_to_floor::step()
       break;
     case CHECKING_DOOR:
     {
+      face_door();
       ROS_INFO("[move_to_floor] CHECKING_DOOR state");
       for (const auto& range : scan_.ranges)
       {
@@ -154,6 +186,7 @@ void RP_move_to_floor::step()
     }
     case ASK_FLOOR:
     {
+      face_person();
       ROS_INFO("[move_to_floor] ASK_FLOOR state");
       auto interest_edges = graph_.get_string_edges_from_node_by_data(robot_id_, "response: [[:alnum:]_]*");
       if (!interest_edges.empty())
