@@ -48,6 +48,8 @@
 #include <vector>
 #include <tf2_ros/transform_listener.h>
 
+#include <sciroc/Utils.h>
+
 
 #define DISTANCE_TH_   1.8
 
@@ -94,6 +96,8 @@ private:
   bica_graph::GraphClient graph_;
   bool order_ready_asked_, order_delivered_, new_customer_;
   ros::Subscriber object_sub_;
+
+  sciroc::Utils utils_;
 
   tf2_ros::Buffer tfBuffer_;
   tf2_ros::TransformListener tf_listener_;
