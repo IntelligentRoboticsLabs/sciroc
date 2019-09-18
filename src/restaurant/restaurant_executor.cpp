@@ -162,7 +162,7 @@ void RestaurantExecutor::setNewGoal(std::string goal)
 
 void RestaurantExecutor::Init_code_once()
 {
-  //graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
+  graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
 }
 
 void RestaurantExecutor::Init_code_iterative()
