@@ -90,8 +90,6 @@ void ElevatorExecutor::init_knowledge()
   q.setRPY(0, 0, -1.57);
   tf2::Transform main2zone(q, tf2::Vector3(-2.88, -0.64, 0.0));
   graph_.add_edge("main_room", main2zone, "waiting_zone", true);
-
-  utils_.set_inital_pose(0.0, 0.0, 0.0);
 }
 
 void ElevatorExecutor::setNewGoal(std::string goal)
