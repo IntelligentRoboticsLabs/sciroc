@@ -116,7 +116,7 @@ void RestaurantExecutor::init_knowledge()
 
   for (int i = 0; i < num_tables_to_check; i++)
   {
-    std::string table = "table_" + std::to_string(i + 1);
+    std::string table = "table_" + std::to_string(i);
     graph_.add_node(table, "table");
     graph_.add_node("wp_"+ table, "waypoint");  // node is redundantelly added by graph-kms sync issue
     graph_.add_edge(table, "needs_check", table);

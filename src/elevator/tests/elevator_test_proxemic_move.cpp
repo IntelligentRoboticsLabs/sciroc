@@ -44,10 +44,10 @@
 
 #include <sciroc/Utils.h>
 
-class SocialMoveExecutor: public bica_planning::Executor, public bica::Component
+class ProxemicMoveExecutor: public bica_planning::Executor, public bica::Component
 {
 public:
-  SocialMoveExecutor()
+  ProxemicMoveExecutor()
   :
    nh_(""),
    utils_(nh_)
@@ -72,8 +72,6 @@ public:
     graph_.add_node("encounter_zone", "zone");
 
 
-    graph_.add_node("table_1", "table");  // node is redundantelly added by graph-kms sync issue
-
     graph_.set_tf_identity("base_footprint", "sonny");
     graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
     graph_.set_tf_identity("main_room", "map");
@@ -86,7 +84,7 @@ public:
     graph_.add_edge("main_room", main2zone, "encounter_zone", true);
 
 
-    utils_.set_inital_pose(-8.65, -2.73, 1.57);
+    //utils_.set_inital_pose(-8.65, -2.73, 1.57);
   }
 
   void step()
@@ -100,7 +98,7 @@ public:
       executed_ = true;
     }
     else
-      ROS_INFO("Finished executing SocialMoveExecutor");
+      ROS_INFO("Finished executing ProxemicMoveExecutor");
   }
 
 private:
@@ -119,7 +117,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle n;
 
   ros::Rate loop_rate(1);
-  SocialMoveExecutor exec;
+  ProxemicMoveExecutor exec;
   exec.setRoot();
   exec.setActive(true);
 

@@ -115,7 +115,7 @@ void RP_move_to_floor::step()
         if (response_floor_num == target_floor_)
           state_ = END;
         else
-          state_ = CHECKING_DOOR;
+          init_timer_.start();
       }
       break;
     }

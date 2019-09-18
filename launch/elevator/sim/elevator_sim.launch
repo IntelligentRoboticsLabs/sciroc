@@ -58,7 +58,5 @@
   </include>
   <include file="$(find social_navigation)/launch/social_navigation_actions.launch"/>
   <include file="$(find sciroc)/launch/elevator/elevator_actions.launch"/>
-
   <!--<include file="$(find gb_attention)/launch/attention.launch"/>-->
-  <!--<include file="$(find keep_in_proxemics)/launch/social_elevator_navigation.launch"/>-->
 </launch>
