@@ -227,6 +227,7 @@ void ElevatorExecutor::waitForDoor_code_iterative()
 void ElevatorExecutor::askForFloor_code_once()
 {
   //graph_.add_edge(robot_id_, "say: Asking for current floor", robot_id_);
+  graph_.add_edge(robot_id_, "robot_status: Asking for current floor", robot_id_);
 }
 
 void ElevatorExecutor::robotAtEnd_code_once()
