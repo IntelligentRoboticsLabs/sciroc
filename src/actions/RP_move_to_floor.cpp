@@ -38,6 +38,8 @@
 
 #include "RP_move_to_floor.h"
 
+#include <geometry_msgs/Twist.h>
+
 #include <string>
 #include <vector>
 
@@ -46,12 +48,35 @@
 /* constructor */
 RP_move_to_floor::RP_move_to_floor(ros::NodeHandle& nh) :
   nh_(nh),
-  Action("move_to_floor", 3.0)
+  Action("move_to_floor", 3.0),
+  obj_listener_("base_footprint")
 {
   robot_id_ = "sonny";
   init_timer_	=	nh_.createTimer(ros::Duration(5),&RP_move_to_floor::timeoutCB,this,true);
   scan_sub_ = nh_.subscribe("/scan", 1, &RP_move_to_floor::scanCallback, this);
+
+  vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/servoing_cmd_vel", 10);
   init_timer_.stop();
+
+  darknet_ros_3d::ObjectConfiguration person_conf;
+
+  person_conf.min_probability = MOVE_TO_FLOOR_MIN_PROBABILITY;
+  person_conf.min_x = MOVE_TO_FLOOR_PERSON_MIN_X;
+  person_conf.max_x = MOVE_TO_FLOOR_PERSON_MAX_X;
+  person_conf.min_y = MOVE_TO_FLOOR_PERSON_MIN_Y;
+  person_conf.max_y = MOVE_TO_FLOOR_PERSON_MAX_Y;
+  person_conf.min_z = MOVE_TO_FLOOR_PERSON_MIN_Z;
+  person_conf.max_z = MOVE_TO_FLOOR_PERSON_MAX_Z;
+  person_conf.min_size_x = MOVE_TO_FLOOR_PERSON_MIN_SIZE_X;
+  person_conf.min_size_y = MOVE_TO_FLOOR_PERSON_MIN_SIZE_Y;
+  person_conf.min_size_z = MOVE_TO_FLOOR_PERSON_MIN_SIZE_Z;
+  person_conf.max_size_x = MOVE_TO_FLOOR_PERSON_MAX_SIZE_X;
+  person_conf.max_size_y = MOVE_TO_FLOOR_PERSON_MAX_SIZE_Y;
+  person_conf.max_size_z = MOVE_TO_FLOOR_PERSON_MAX_SIZE_Z;
+  person_conf.dynamic = true;
+  person_conf.max_seconds = ros::Duration(3.0);
+
+  obj_listener_.add_class("person", person_conf);
 }
 
 void RP_move_to_floor::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
@@ -69,11 +94,17 @@ void RP_move_to_floor::activateCode()
       target_floor_ = last_msg_.parameters[i].value;
   }
   state_ = INIT;
+
+  graph_.add_edge("sonny", "want_see", "sonny");
+  obj_listener_.reset();
+  obj_listener_.set_working_frame("sonny");
+  obj_listener_.set_active();
 }
 
 void RP_move_to_floor::deActivateCode()
 {
-
+  graph_.remove_edge("sonny", "want_see", "sonny");
+  obj_listener_.set_inactive();
 }
 
 void RP_move_to_floor::timeoutCB(const ros::TimerEvent&)
@@ -83,6 +114,25 @@ void RP_move_to_floor::timeoutCB(const ros::TimerEvent&)
 
 void RP_move_to_floor::step()
 {
+  geometry_msgs::Twist vel_msg;
+  vel_msg.linear.x = 0;
+  vel_msg.linear.y = 0;
+  vel_msg.linear.z = 0;
+  vel_msg.angular.x = 0;
+  vel_msg.angular.y = 0;
+
+  if (obj_listener_.get_objects().empty())
+  {
+    vel_msg.angular.z = 0.2;
+  } else
+  {
+    tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
+    double vel = atan2(pos.y(), pos.x());
+
+    vel_msg.angular.z = std::max(std::min(vel, 0.2), -0.2);
+  }
+
+  vel_pub_.publish(vel_msg);
 
   switch(state_){
     case INIT:
@@ -121,6 +171,8 @@ void RP_move_to_floor::step()
     }
     case END:
     {
+      graph_.remove_edge("sonny", "want_see", "sonny");
+      obj_listener_.set_inactive();
       setSuccess();
       break;
     }

@@ -46,11 +46,27 @@
 #include <bica_planning/Action.h>
 #include <bica_graph/graph_client.h>
 #include <sensor_msgs/LaserScan.h>
+#include <darknet_ros_3d/Darknet3DListener.h>
 
 
 #ifndef KCL_move_to_floor
 #define KCL_move_to_floor
 
+
+#define MOVE_TO_FLOOR_MIN_PROBABILITY   0.3
+
+#define MOVE_TO_FLOOR_PERSON_MIN_X   -1.0
+#define MOVE_TO_FLOOR_PERSON_MAX_X   1.0
+#define MOVE_TO_FLOOR_PERSON_MIN_Y   -1.0
+#define MOVE_TO_FLOOR_PERSON_MAX_Y   1.0
+#define MOVE_TO_FLOOR_PERSON_MIN_Z   0.0
+#define MOVE_TO_FLOOR_PERSON_MAX_Z   2.0
+#define MOVE_TO_FLOOR_PERSON_MIN_SIZE_X   0.2
+#define MOVE_TO_FLOOR_PERSON_MIN_SIZE_Y   0.2
+#define MOVE_TO_FLOOR_PERSON_MIN_SIZE_Z   0.2
+#define MOVE_TO_FLOOR_PERSON_MAX_SIZE_X   1.3
+#define MOVE_TO_FLOOR_PERSON_MAX_SIZE_Y   1.3
+#define MOVE_TO_FLOOR_PERSON_MAX_SIZE_Z   2.2
 
 class RP_move_to_floor : public bica_planning::Action
 {
@@ -81,6 +97,10 @@ private:
   ros::Subscriber scan_sub_;
   std::string robot_id_;
   std::string target_floor_;
+
+  darknet_ros_3d::Darknet3DListener obj_listener_;
+
+  ros::Publisher vel_pub_;
 };
 
 #endif
