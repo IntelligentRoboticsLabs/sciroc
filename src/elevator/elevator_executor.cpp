@@ -195,7 +195,7 @@ void ElevatorExecutor::robotAtElevator_code_once()
 
 void ElevatorExecutor::robotAtElevator_code_iterative()
 {
-  if (ros::Time::now() > wait_ + ros::Duration(30))
+  if (ros::Time::now() > wait_ + ros::Duration(40))
     setNewGoal("robot_at " + robot_id_ + " wp_elevator_door");
 }
 
@@ -257,12 +257,8 @@ bool ElevatorExecutor::robotAtElevator_2_advertiseGoal()
 
 bool ElevatorExecutor::advertiseGoal_2_waitForDoor()
 {
-  if (!(search_predicates_regex(current_goal_)).empty())
-  {
-    graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
-    return true;
-  }
-  return false;
+  //graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
+  return (!(search_predicates_regex(current_goal_)).empty());
 }
 
 bool ElevatorExecutor::waitForDoor_2_askForFloor()
