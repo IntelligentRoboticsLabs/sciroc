@@ -52,11 +52,11 @@ RP_move_to_floor::RP_move_to_floor(ros::NodeHandle& nh) :
   obj_listener_("base_footprint")
 {
   robot_id_ = "sonny";
-  init_timer_	=	nh_.createTimer(ros::Duration(5),&RP_move_to_floor::timeoutCB,this,true);
+  //init_timer_	=	nh_.createTimer(ros::Duration(5),&RP_move_to_floor::timeoutCB,this,true);
   scan_sub_ = nh_.subscribe("/scan", 1, &RP_move_to_floor::scanCallback, this);
 
   vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/servoing_cmd_vel", 10);
-  init_timer_.stop();
+  //init_timer_.stop();
 
   darknet_ros_3d::ObjectConfiguration person_conf;
 
@@ -99,6 +99,8 @@ void RP_move_to_floor::activateCode()
   obj_listener_.reset();
   obj_listener_.set_working_frame("sonny");
   obj_listener_.set_active();
+
+  state_ts_ = ros::Time::now();
 }
 
 void RP_move_to_floor::deActivateCode()
@@ -107,9 +109,18 @@ void RP_move_to_floor::deActivateCode()
   obj_listener_.set_inactive();
 }
 
-void RP_move_to_floor::timeoutCB(const ros::TimerEvent&)
+
+void RP_move_to_floor::stop_robot()
 {
-  state_ = CHECKING_DOOR;
+  geometry_msgs::Twist vel_msg;
+  vel_msg.linear.x = 0;
+  vel_msg.linear.y = 0;
+  vel_msg.linear.z = 0;
+  vel_msg.angular.x = 0;
+  vel_msg.angular.y = 0;
+  vel_msg.angular.z = 0.0;
+
+  vel_pub_.publish(vel_msg);
 }
 
 void RP_move_to_floor::face_person()
@@ -123,13 +134,13 @@ void RP_move_to_floor::face_person()
 
   if (obj_listener_.get_objects().empty())
   {
-    vel_msg.angular.z = 0.2;
+    vel_msg.angular.z = 0.3;
   } else
   {
     tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
     double vel = atan2(pos.y(), pos.x());
 
-    vel_msg.angular.z = std::max(std::min(vel, 0.2), -0.2);
+    vel_msg.angular.z = std::max(std::min(vel, 0.3), -0.3);
   }
 
   vel_pub_.publish(vel_msg);
@@ -156,7 +167,7 @@ void RP_move_to_floor::face_door()
   m.getRPY(roll, pitch, yaw);
 
   double vel = yaw;
-  vel_msg.angular.z = std::max(std::min(vel, 0.2), -0.2);
+  vel_msg.angular.z = std::max(std::min(vel, 0.3), -0.3);
 
   vel_pub_.publish(vel_msg);
 }
@@ -168,25 +179,97 @@ void RP_move_to_floor::step()
   switch(state_){
     case INIT:
       ROS_INFO("[move_to_floor] INIT state");
-      init_timer_.start();
+      state_ts_ = ros::Time::now();
+      state_ = FACE_PERSON_INFORM;
       break;
-    case CHECKING_DOOR:
+    case FACE_PERSON_INFORM:
+      face_person();
+
+      if ((ros::Time::now() - state_ts_ ).toSec() >= 30.0)
+      {
+        ROS_WARN("FACE_PERSON_INFORM timeout");
+        stop_robot();
+        state_ts_ = ros::Time::now();
+        state_ = INFORM_FLOOR;
+      }
+
+      if (!obj_listener_.get_objects().empty())
+      {
+        tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
+        double pos_angle = atan2(pos.y(), pos.x());
+
+        if (fabs(pos_angle) < 0.2)
+        {
+          stop_robot();
+          state_ts_ = ros::Time::now();
+          state_ = INFORM_FLOOR;
+        }
+      }
+      break;
+    case INFORM_FLOOR:
+      graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
+      if ((ros::Time::now() - state_ts_ ).toSec() > 5.0)  // wait 5 secs for speaking
+      {
+        state_ts_ = ros::Time::now();
+        state_ = FACE_DOOR;
+      }
+      break;
+
+    case FACE_DOOR:
+      {
+        face_door();
+        tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("sonny", "wp_elevator");
+        tf2::Matrix3x3 m(r2door.getRotation());
+        double roll, pitch, yaw;
+        m.getRPY(roll, pitch, yaw);
+
+        if (fabs(yaw) < 0.2)
+        {
+          stop_robot();
+          state_ts_ = ros::Time::now();
+          state_ = CHECK_DOOR;
+        }
+      }
+      break;
+    case CHECK_DOOR:
     {
-      face_door();
-      ROS_INFO("[move_to_floor] CHECKING_DOOR state");
       for (const auto& range : scan_.ranges)
       {
         if (range >= 3.0)
         {
-          state_ = ASK_FLOOR;
-          graph_.add_edge(robot_id_, "ask: elevator_current_floor.ask", robot_id_);
+          state_ts_ = ros::Time::now();
+          state_ = FACE_PERSON_ASK;
         }
       }
       break;
     }
+    case FACE_PERSON_ASK:
+      face_person();
+      if ((ros::Time::now() - state_ts_ ).toSec() >= 30.0)
+      {
+        stop_robot();
+        graph_.add_edge(robot_id_, "ask: elevator_current_floor.ask", robot_id_);
+        state_ts_ = ros::Time::now();
+        state_ = ASK_FLOOR;
+      }
+
+      if (!obj_listener_.get_objects().empty())
+      {
+        tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
+        double pos_angle = atan2(pos.y(), pos.x());
+
+        if (fabs(pos_angle) < 0.2)
+        {
+          stop_robot();
+          graph_.add_edge(robot_id_, "ask: elevator_current_floor.ask", robot_id_);
+          state_ts_ = ros::Time::now();
+          state_ = ASK_FLOOR;
+        }
+      }
+      break;
+
     case ASK_FLOOR:
     {
-      face_person();
       ROS_INFO("[move_to_floor] ASK_FLOOR state");
       auto interest_edges = graph_.get_string_edges_from_node_by_data(robot_id_, "response: [[:alnum:]_]*");
       if (!interest_edges.empty())
@@ -195,11 +278,17 @@ void RP_move_to_floor::step()
         graph_.remove_edge(interest_edges[0]);
         std::string delimiter = "response: ";
         response_floor_num = response_raw.erase(0, response_raw.find(delimiter) + delimiter.length());
+
+        state_ts_ = ros::Time::now();
         if (response_floor_num == target_floor_)
           state_ = END;
         else
-          init_timer_.start();
+          state_ = FACE_DOOR;
       }
+
+      if ((ros::Time::now() - state_ts_ ).toSec() >= 45.0)
+        state_ = END;
+
       break;
     }
     case END:

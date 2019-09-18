@@ -77,25 +77,32 @@ protected:
   void activateCode();
   void deActivateCode();
   void step();
-  void timeoutCB(const ros::TimerEvent&);
   void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
 
 private:
 
   void face_door();
   void face_person();
+  void stop_robot();
 
   ros::NodeHandle nh_;
   bica_graph::GraphClient graph_;
   enum StateType
   {
     INIT,
-    CHECKING_DOOR,
+    FACE_PERSON_INFORM,
+    INFORM_FLOOR,
+    FACE_DOOR,
+    CHECK_DOOR,
+    FACE_PERSON_ASK,
     ASK_FLOOR,
     END
   };
   StateType state_;
-  ros::Timer init_timer_;
+  //ros::Timer init_timer_;
+
+  ros::Time state_ts_;
+
   sensor_msgs::LaserScan scan_;
   ros::Subscriber scan_sub_;
   std::string robot_id_;
