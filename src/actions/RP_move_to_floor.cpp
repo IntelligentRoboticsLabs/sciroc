@@ -74,7 +74,7 @@ RP_move_to_floor::RP_move_to_floor(ros::NodeHandle& nh) :
   person_conf.max_size_y = MOVE_TO_FLOOR_PERSON_MAX_SIZE_Y;
   person_conf.max_size_z = MOVE_TO_FLOOR_PERSON_MAX_SIZE_Z;
   person_conf.dynamic = true;
-  person_conf.max_seconds = ros::Duration(3.0);
+  person_conf.max_seconds = ros::Duration(10.0);
 
   obj_listener_.add_class("person", person_conf);
 }
