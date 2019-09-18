@@ -81,7 +81,6 @@ void RP_move_to_floor::timeoutCB(const ros::TimerEvent&)
   state_ = CHECKING_DOOR;
 }
 
-
 void RP_move_to_floor::step()
 {
 
@@ -101,7 +100,6 @@ void RP_move_to_floor::step()
           graph_.add_edge(robot_id_, "ask: elevator_current_floor.ask", robot_id_);
         }
       }
-
       break;
     }
     case ASK_FLOOR:
@@ -117,7 +115,7 @@ void RP_move_to_floor::step()
         if (response_floor_num == target_floor_)
           state_ = END;
         else
-          state_ = CHECKING_DOOR;
+          init_timer_.start();
       }
       break;
     }
@@ -127,7 +125,6 @@ void RP_move_to_floor::step()
       break;
     }
   }
-
 }
 
 int main(int argc, char** argv)

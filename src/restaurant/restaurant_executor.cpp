@@ -50,7 +50,6 @@ RestaurantExecutor::RestaurantExecutor():
   order_ready_asked_ = false;
   order_delivered_ = false;
   new_customer_ = false;
-  //object_sub_ = nh_.subscribe("/darknet_ros_3d/bounding_boxes", 10, &RestaurantExecutor::objectsCallback, this);
 }
 
 void RestaurantExecutor::init_knowledge()
@@ -117,11 +116,11 @@ void RestaurantExecutor::init_knowledge()
 
   for (int i = 0; i < num_tables_to_check; i++)
   {
-    std::string table = "table_" + std::to_string(i + 1);
+    std::string table = "table_" + std::to_string(i);
     graph_.add_node(table, "table");
     graph_.add_node("wp_"+ table, "waypoint");  // node is redundantelly added by graph-kms sync issue
     graph_.add_edge(table, "needs_check", table);
-    tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
+    tf2::Transform wp2table(q, tf2::Vector3(0.7, 0.0, 0.0));
     graph_.add_edge("wp_" + table, wp2table, table, true);
   }
 
@@ -129,7 +128,7 @@ void RestaurantExecutor::init_knowledge()
   graph_.add_node("bar", "table");
   graph_.add_node("waiting_zone", "zone");
 
-  tf2::Transform wp2table(q, tf2::Vector3(1.3, 0.0, 0.0));
+  tf2::Transform wp2table(q, tf2::Vector3(0.7, 0.0, 0.0));
   graph_.add_edge("wp_bar", wp2table, "bar", true);
   tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
   graph_.add_edge("main_room", main2zone, "waiting_zone", true);
@@ -159,52 +158,6 @@ void RestaurantExecutor::setNewGoal(std::string goal)
   current_goal_ = goal;
   add_goal(current_goal_);
   call_planner();
-}
-
-void RestaurantExecutor::objectsCallback(const darknet_ros_3d_msgs::BoundingBoxes3d::ConstPtr& msg)
-{
-  objects_msg_ = *msg;
-}
-
-
-bool RestaurantExecutor::person_close()
-{
-  for (auto bb : objects_msg_.bounding_boxes)
-  {
-    if (bb.Class == "person")
-    {
-      geometry_msgs::TransformStamped any2bf_msg;
-      tf2::Transform any2bf;
-      std::string error;
-      if (tfBuffer_.canTransform(objects_msg_.header.frame_id, "base_footprint",
-        ros::Time(0), ros::Duration(0.1), &error))
-        any2bf_msg = tfBuffer_.lookupTransform(objects_msg_.header.frame_id, "base_footprint", ros::Time(0));
-      else
-      {
-        ROS_ERROR("Can't transform %s", error.c_str());
-        return false;
-      }
-
-      tf2::Stamped<tf2::Transform> aux;
-      tf2::convert(any2bf_msg, aux);
-      any2bf = aux;
-
-      tf2::Vector3 central_point;
-      central_point.setX((bb.xmax + bb.xmin)/2.0);
-      central_point.setY((bb.ymax + bb.ymin)/2.0);
-      central_point.setZ((bb.zmax + bb.zmin)/2.0);
-      central_point = any2bf.inverse() * central_point;
-
-      float distance = sqrt(pow(central_point.getX(),2) +
-        pow(central_point.getY(),2) +
-        pow(central_point.getZ(),2));
-
-      ROS_INFO("[restaurant_executor] person distance -- %f", distance);
-      if (distance <= DISTANCE_TH_)
-        return true;
-    }
-  }
-  return false;
 }
 
 void RestaurantExecutor::Init_code_once()

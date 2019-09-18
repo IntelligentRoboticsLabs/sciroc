@@ -36,67 +36,95 @@
 
 /* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
-#ifndef SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
-#define SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
-
 #include <ros/ros.h>
-#include "bica_planning/Executor.h"
-#include "./restaurant_hfsm.h"
+
+#include <bica_planning/Executor.h>
+#include <bica/Component.h>
 #include <bica_graph/graph_client.h>
-#include <darknet_ros_3d_msgs/BoundingBoxes3d.h>
-#include <string>
-#include <vector>
-#include <tf2_ros/transform_listener.h>
 
+#include <sciroc/Utils.h>
 
-#define DISTANCE_TH_   1.8
-
-
-class RestaurantExecutor: public bica_planning::Executor, public bica::restaurant_hfsm
+class ProxemicMoveExecutor: public bica_planning::Executor, public bica::Component
 {
 public:
-  RestaurantExecutor();
+  ProxemicMoveExecutor()
+  :
+   nh_(""),
+   utils_(nh_)
+  {
+    init_knowledge();
+    executed_ = false;
+  }
 
-  bool update();
-  void init_knowledge();
-  void setNewGoal(std::string goal);
+  void init_knowledge()
+  {
+    add_instance("robot", "sonny");
+    add_instance("zone", "encounter_zone");
 
-  void Init_code_iterative();
-  void deliverOrder_code_iterative();
-  void fixOrder_code_iterative();
-  void grettingNewCustomer_code_iterative();
-  void grettingNewCustomer_code_once();
-  void idle_code_iterative();
-  void setOrder_code_iterative();
-  void checkOrder_code_iterative();
-  void getOrder_code_iterative();
-  void getOrder_code_once();
-  void Init_code_once();
-  void checkTableStatus_code_iterative();
-  void checkTableStatus_code_once();
+    add_predicate("robot_at sonny wp_start");
+    add_predicate("robot_at_room sonny main_room");
 
-  bool fixOrder_2_checkOrder();
-  bool idle_2_grettingNewCustomer();
-  bool checkOrder_2_deliverOrder();
-  bool idle_2_getOrder();
-  bool checkTableStatus_2_idle();
-  bool checkOrder_2_fixOrder();
-  bool deliverOrder_2_idle();
-  bool getOrder_2_setOrder();
-  bool Init_2_checkTableStatus();
-  bool setOrder_2_checkOrder();
-  bool grettingNewCustomer_2_idle();
+
+    graph_.add_node("sonny", "robot");
+    graph_.add_node("main_room", "room");
+    graph_.add_node("wp_start", "waypoint");
+    graph_.add_node("wp_waiting_zone", "waypoint");
+    graph_.add_node("encounter_zone", "zone");
+
+
+    graph_.set_tf_identity("base_footprint", "sonny");
+    graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
+    graph_.set_tf_identity("main_room", "map");
+    graph_.add_tf_edge("main_room", "sonny");
+
+    tf2::Quaternion q;
+    q.setRPY(0.0, 0.0, 0.0);
+
+    tf2::Transform main2zone(q, tf2::Vector3(1.0, 1.5, 0.0));
+    graph_.add_edge("main_room", main2zone, "encounter_zone", true);
+
+
+    //utils_.set_inital_pose(-8.65, -2.73, 1.57);
+  }
+
+  void step()
+  {
+    if (!executed_)
+    {
+      ROS_INFO("Adding goal and planning");
+
+      add_goal("proxemic_moving sonny wp_waiting_zone wp_elevator");
+      call_planner();
+      executed_ = true;
+    }
+    else
+      ROS_INFO("Finished executing ProxemicMoveExecutor");
+  }
+
 private:
   ros::NodeHandle nh_;
+  ros::Publisher init_pose_pub_;
+  sciroc::Utils utils_;
 
-  std::string robot_id_, current_goal_, needs_serving_table_, ready_table_;
-  std::vector<std::string> splitSpaces(std::string raw_str);
   bica_graph::GraphClient graph_;
-  bool order_ready_asked_, order_delivered_, new_customer_;
-  ros::Subscriber object_sub_;
 
-  tf2_ros::Buffer tfBuffer_;
-  tf2_ros::TransformListener tf_listener_;
+  bool executed_;
 };
 
-#endif  // SRC_RESTAURANT_RESTAURANT_EXECUTOR_H
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "Elevator");
+  ros::NodeHandle n;
+
+  ros::Rate loop_rate(1);
+  ProxemicMoveExecutor exec;
+  exec.setRoot();
+  exec.setActive(true);
+
+  while (exec.ok())
+  {
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+  return 0;
+}

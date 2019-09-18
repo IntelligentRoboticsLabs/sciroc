@@ -155,6 +155,10 @@ add_executable(elevator_test_move_to_floor src/elevator/tests/elevator_test_move
 add_dependencies(elevator_test_move_to_floor ${catkin_EXPORTED_TARGETS})
 target_link_libraries(elevator_test_move_to_floor ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES} ${PROJECT_NAME})
 
+add_executable(elevator_test_proxemic_move src/elevator/tests/elevator_test_proxemic_move.cpp)
+add_dependencies(elevator_test_proxemic_move ${catkin_EXPORTED_TARGETS})
+target_link_libraries(elevator_test_proxemic_move ${catkin_LIBRARIES} ${YAMLCPP_LIBRARIES} ${PROJECT_NAME})
+
 set(ROSLINT_CPP_OPTS "--filter=-legal/copyright")
 
 roslint_cpp(

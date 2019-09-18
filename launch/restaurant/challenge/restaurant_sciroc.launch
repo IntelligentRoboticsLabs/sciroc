@@ -4,7 +4,7 @@
   <arg name = "sonar_topic" value = "/sonar_base" />
   <arg name = "sonar_frame_id" value = "/base_sonar_02_link" />
   <arg name = "camera_topic" value = "/xtion/rgb/image_raw" />
-  <arg name = "num_tables_to_check" value = "1" /> <!-- Param to simplify the execution of the task -->
+  <arg name = "num_tables_to_check" value = "6" /> <!-- Param to simplify the execution of the task -->
 
   <arg name = "pddl_domain_file" default = "/tmp/test.pddl" />
   <arg name = "pddl_domain" default = "test" />
@@ -30,8 +30,7 @@
     <rosparam command="load" file="$(find sciroc)/config/kms_extractor_params.yaml" />
   </node>
 
-  <!--<node pkg="gb_datahub" type="coffee_shop_delivery" name="coffee_shop_delivery" output="screen">
-</node>-->
+  <node pkg="gb_datahub" type="coffee_shop_delivery" name="coffee_shop_delivery" output="screen"/>
 
   <include file="$(find bica_planning)/launch/planning_system.launch" >
     <arg name="data_path" value="/tmp/" />
@@ -59,6 +58,7 @@
     <arg name="config_file" value="$(find sciroc)/config/df_params.yaml"/>
   </include>
 
+  <include file="$(find gb_perception)/launch/qr_perception.launch"/>
   <rosparam command="load" file="$(find sciroc)/config/attention_config.yaml" />
   <include file="$(find gb_attention)/launch/attention.launch"/>
 

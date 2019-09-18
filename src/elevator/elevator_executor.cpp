@@ -44,6 +44,7 @@
 ElevatorExecutor::ElevatorExecutor(): current_goal_(), nh_(), utils_(nh_)
 {
   init_knowledge();
+  target_floor_ = "";
 }
 
 void ElevatorExecutor::init_knowledge()
@@ -52,12 +53,18 @@ void ElevatorExecutor::init_knowledge()
   add_instance("robot", robot_id_);
   add_predicate("robot_at " + robot_id_ + " wp_start");
   add_predicate("robot_at_room " + robot_id_ + " main_room");
+  add_instance("zone", "encounter_zone");
+  add_instance("zone", "waiting_zone");
 
   graph_.set_tf_identity("base_footprint", robot_id_);
   graph_.add_node(robot_id_, "robot");
   graph_.add_node("elevator", "elevator");
+  graph_.add_node("wp_waiting_zone", "waypoint");
 
+  graph_.add_node("encounter_zone", "zone");
+  graph_.add_node("waiting_zone", "zone");
   graph_.add_node("main_room", "room");
+
   graph_.set_tf_identity("main_room", "map");
   graph_.add_tf_edge("main_room", robot_id_);
 
@@ -66,11 +73,16 @@ void ElevatorExecutor::init_knowledge()
   add_instance("floor", "third");
   add_instance("floor", "fourth");
   add_instance("floor", "fifth");
+  add_instance("floor", "fifth");
+  add_instance("floor", "sixth");
+  add_instance("floor", "seventh");
+  add_instance("floor", "eigth");
+  add_instance("floor", "ninth");
 
   graph_.add_node("0", "floor");
   graph_.add_edge("elevator", "current_floor", "0");
 
-  utils_.set_inital_pose(-8.65, -2.73, 1.57);
+  utils_.set_inital_pose(-9.04, -2.04, 1.57);
   tf2::Quaternion q;
   q.setRPY(0, 0, -1.57);
   tf2::Transform main2zone(q, tf2::Vector3(-2.88, -0.64, 0.0));
@@ -102,11 +114,19 @@ std::string ElevatorExecutor::car2ord(int target_floor)
     return "fourth";
   else if(target_floor == 5)
     return "fifth";
+  else if(target_floor == 6)
+    return "sixth";
+  else if(target_floor == 7)
+    return "seventh";
+  else if(target_floor == 8)
+    return "eigth";
+  else if(target_floor == 9)
+    return "ninth";
 }
 
 void ElevatorExecutor::Init_code_once()
 {
-  //graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
+  graph_.add_edge(robot_id_, "ask: bar_start.action", robot_id_);
 }
 
 void ElevatorExecutor::getShopList_code_once()
@@ -114,8 +134,11 @@ void ElevatorExecutor::getShopList_code_once()
   std::vector<shop> shops = gb_datahub::getShopsList();
   for (auto shop : shops)
   {
-    if (shop.goal == true)
+    if (shop.goal)
+    {
+      ROS_INFO("shop.floor [%i]",shop.floor);
       target_floor_ = car2ord(shop.floor);
+    }
   }
   if (target_floor_ == "")
     ROS_ERROR("Target_floor doesn't recovery from DH");
@@ -145,6 +168,7 @@ void ElevatorExecutor::approachElevator_code_once()
 }
 void ElevatorExecutor::approachElevator_code_iterative()
 {
+  setNewGoal("robot_at " + robot_id_ + " wp_pre_encounter");
   setNewGoal("social_move_pred " + robot_id_ + " wp_post_encounter");
 }
 
@@ -161,12 +185,14 @@ void ElevatorExecutor::findProxemicPos_code_iterative()
 void ElevatorExecutor::robotAtElevator_code_once()
 {
   graph_.add_edge(robot_id_, "want_see", "waiting_zone");
-  graph_.add_edge(robot_id_, "say: Getting close to the elevator door", robot_id_);
+  graph_.add_edge(robot_id_, "say: Waiting until people enter in the elevator", robot_id_);
+  wait_ = ros::Time::now();
 }
 
 void ElevatorExecutor::robotAtElevator_code_iterative()
 {
-  setNewGoal("robot_at " + robot_id_ + " wp_elevator_door");
+  if (ros::Time::now() > wait_ + ros::Duration(30))
+    setNewGoal("robot_at " + robot_id_ + " wp_elevator_door");
 }
 
 void ElevatorExecutor::advertiseGoal_code_once()

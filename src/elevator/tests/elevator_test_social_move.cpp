@@ -95,7 +95,7 @@ public:
     {
       ROS_INFO("Adding goal and planning");
 
-      //add_goal("social_move_pred sonny wp_waiting_zone");
+      add_goal("proxemic_moving sonny wp_waiting_zone wp_elevator");
       call_planner();
       executed_ = true;
     }
