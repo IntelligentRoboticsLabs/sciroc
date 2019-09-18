@@ -82,6 +82,9 @@ protected:
 
 private:
 
+  void face_door();
+  void face_person();
+
   ros::NodeHandle nh_;
   bica_graph::GraphClient graph_;
   enum StateType
