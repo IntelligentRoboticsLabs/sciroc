@@ -134,6 +134,7 @@ void RP_move_to_floor::face_person()
 
   if (obj_listener_.get_objects().empty())
   {
+    ROS_INFO("\tFace Person NOT FOUND  ==> %lf", vel_msg.angular.z);
     vel_msg.angular.z = 0.3;
   } else
   {
@@ -141,7 +142,9 @@ void RP_move_to_floor::face_person()
     double vel = atan2(pos.y(), pos.x());
 
     vel_msg.angular.z = std::max(std::min(vel, 0.3), -0.3);
+    ROS_INFO("\tFace Person yaw = %lf  ==> %lf", vel, vel_msg.angular.z);
   }
+
 
   vel_pub_.publish(vel_msg);
 }
@@ -149,6 +152,7 @@ void RP_move_to_floor::face_person()
 
 void RP_move_to_floor::face_door()
 {
+
   tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("sonny", "wp_elevator");
 
   // wp_elevator
@@ -166,8 +170,13 @@ void RP_move_to_floor::face_door()
   double roll, pitch, yaw;
   m.getRPY(roll, pitch, yaw);
 
+
+
   double vel = yaw;
   vel_msg.angular.z = std::max(std::min(vel, 0.3), -0.3);
+
+  ROS_INFO("\tFace door yaw = %lf  ==> %lf", yaw, vel_msg.angular.z);
+
 
   vel_pub_.publish(vel_msg);
 }
@@ -183,6 +192,8 @@ void RP_move_to_floor::step()
       state_ = FACE_PERSON_INFORM;
       break;
     case FACE_PERSON_INFORM:
+      ROS_INFO("[move_to_floor] FACE_PERSON_INFORM state");
+
       face_person();
 
       if ((ros::Time::now() - state_ts_ ).toSec() >= 30.0)
@@ -207,6 +218,8 @@ void RP_move_to_floor::step()
       }
       break;
     case INFORM_FLOOR:
+      ROS_INFO("[move_to_floor] INFORM_FLOOR state");
+
       graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
       if ((ros::Time::now() - state_ts_ ).toSec() > 5.0)  // wait 5 secs for speaking
       {
@@ -216,6 +229,8 @@ void RP_move_to_floor::step()
       break;
 
     case FACE_DOOR:
+      ROS_INFO("[move_to_floor] FACE_DOOR state");
+
       {
         face_door();
         tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("sonny", "wp_elevator");
@@ -232,6 +247,7 @@ void RP_move_to_floor::step()
       }
       break;
     case CHECK_DOOR:
+      ROS_INFO("[move_to_floor] CHECK_DOOR state");
     {
       for (const auto& range : scan_.ranges)
       {
@@ -244,6 +260,8 @@ void RP_move_to_floor::step()
       break;
     }
     case FACE_PERSON_ASK:
+      ROS_INFO("[move_to_floor] FACE_PERSON_ASK state");
+
       face_person();
       if ((ros::Time::now() - state_ts_ ).toSec() >= 30.0)
       {
@@ -293,6 +311,8 @@ void RP_move_to_floor::step()
     }
     case END:
     {
+      ROS_INFO("[move_to_floor] END state");
+
       graph_.remove_edge("sonny", "want_see", "sonny");
       obj_listener_.set_inactive();
       setSuccess();
