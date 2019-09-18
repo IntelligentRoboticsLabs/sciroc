@@ -38,9 +38,9 @@ void RP_attend_person::activateCode()
   graph_.add_edge(table_id, "num_customers: 1", table_id);
 
   //Datahub integration
-  table table_datahub = gb_datahub::getTable(table_id);
-  table_datahub.status = "needs_serving";
-  table_datahub.customers = 1;
+  std::vector<table> table_datahub = gb_datahub::getTable(table_id);
+  table_datahub[0].status = "needs_serving";
+  table_datahub[0].customers = 1;
 
   setSuccess();
 }

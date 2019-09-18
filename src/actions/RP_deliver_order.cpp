@@ -63,9 +63,9 @@ void RP_deliver_order::activateCode()
   order_datahub[0].status = "Complete";
   ROS_INFO("Order updated, response received: %d",gb_datahub::postOrder(order_datahub[0]));
 
-  table table_datahub = gb_datahub::getTable(table_id);
-  table_datahub.status = "already_served";
-  ROS_INFO("Table updated, response received: %d",gb_datahub::postTable(table_datahub));
+  std::vector<table> table_datahub = gb_datahub::getTable(table_id);
+  table_datahub[0].status = "already_served";
+  ROS_INFO("Table updated, response received: %d",gb_datahub::postTable(table_datahub[0]));
 
   graph_.remove_edge(table_id, "status: needs_serving", table_id);
   graph_.add_edge(table_id, "status: already_served", table_id);
