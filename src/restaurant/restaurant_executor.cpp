@@ -121,7 +121,7 @@ void RestaurantExecutor::init_knowledge()
     graph_.add_node(table, "table");
     graph_.add_node("wp_"+ table, "waypoint");  // node is redundantelly added by graph-kms sync issue
     graph_.add_edge(table, "needs_check", table);
-    tf2::Transform wp2table(q, tf2::Vector3(0.7, 0.0, 0.0));
+    tf2::Transform wp2table(q, tf2::Vector3(0.9, 0.0, 0.0));
     graph_.add_edge("wp_" + table, wp2table, table, true);
   }
 
@@ -129,7 +129,7 @@ void RestaurantExecutor::init_knowledge()
   graph_.add_node("bar", "table");
   graph_.add_node("waiting_zone", "zone");
 
-  tf2::Transform wp2table(q, tf2::Vector3(0.7, 0.0, 0.0));
+  tf2::Transform wp2table(q, tf2::Vector3(0.9, 0.0, 0.0));
   graph_.add_edge("wp_bar", wp2table, "bar", true);
   tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
   graph_.add_edge("main_room", main2zone, "waiting_zone", true);
@@ -263,8 +263,13 @@ bool RestaurantExecutor::idle_2_getOrder()
 
   if (!interest_edges.empty() && !order_delivered_)
   {
+    ROS_ERROR("--------- idle_2_getOrder transiting 1");
     needs_serving_table_ = interest_edges[0].get_source();
+    ROS_ERROR("--------- idle_2_getOrder transiting 2");
+
     current_goal_ = "order_ready " + interest_edges[0].get_source();
+    ROS_ERROR("--------- idle_2_getOrder transiting 3");
+
     return true;
   }
   else

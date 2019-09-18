@@ -48,14 +48,14 @@
 /* constructor */
 RP_move_to_floor::RP_move_to_floor(ros::NodeHandle& nh) :
   nh_(nh),
-  Action("move_to_floor", 3.0),
+  Action("move_to_floor", 11.0),
   obj_listener_("base_footprint")
 {
   robot_id_ = "sonny";
   //init_timer_	=	nh_.createTimer(ros::Duration(5),&RP_move_to_floor::timeoutCB,this,true);
   scan_sub_ = nh_.subscribe("/scan", 1, &RP_move_to_floor::scanCallback, this);
 
-  vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/servoing_cmd_vel", 10);
+  vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/mobile_base_controller/cmd_vel", 10);
   //init_timer_.stop();
 
   darknet_ros_3d::ObjectConfiguration person_conf;
