@@ -173,8 +173,8 @@ void ElevatorExecutor::approachElevator_code_once()
 void ElevatorExecutor::approachElevator_code_iterative()
 {
   setNewGoal("robot_at " + robot_id_ + " wp_pre_encounter");
-  setNewGoal("robot_at " + robot_id_ + " wp_encounter");
-  setNewGoal("social_move_pred " + robot_id_ + " wp_post_encounter");
+  setNewGoal("social_move_pred " + robot_id_ + " wp_encounter");
+  setNewGoal("robot_at " + robot_id_ + " wp_post_encounter");
 }
 
 void ElevatorExecutor::findProxemicPos_code_once()

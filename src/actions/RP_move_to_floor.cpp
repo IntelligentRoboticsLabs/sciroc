@@ -141,12 +141,16 @@ void RP_move_to_floor::face_person()
     tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
     double person_angle = atan2(pos.y(), pos.x());
 
-    tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("sonny", "wp_elevator");
+    tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("wp_elevator", "sonny");
     tf2::Matrix3x3 m(r2door.getRotation());
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
 
     double vel = person_angle - yaw;
+    ROS_INFO("Person = %lf\trobot = %lf  =====> %lf", person_angle, yaw, vel);
+
+    while (vel > M_PI) vel = vel - 2.0 * M_PI;
+    while (vel < -M_PI) vel = vel + 2.0 * M_PI;
 
     vel_msg.angular.z = std::max(std::min(vel, 0.3), -0.3);
     ROS_INFO("\tFace Person yaw = %lf  ==> %lf", vel, vel_msg.angular.z);
@@ -209,6 +213,7 @@ void RP_move_to_floor::step()
         stop_robot();
         state_ts_ = ros::Time::now();
         state_ = INFORM_FLOOR;
+        graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
       }
 
       if (!obj_listener_.get_objects().empty())
@@ -221,17 +226,17 @@ void RP_move_to_floor::step()
           stop_robot();
           state_ts_ = ros::Time::now();
           state_ = INFORM_FLOOR;
+          graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
         }
       }
       break;
     case INFORM_FLOOR:
       ROS_INFO("[move_to_floor] INFORM_FLOOR state");
-
-      graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
       if ((ros::Time::now() - state_ts_ ).toSec() > 5.0)  // wait 5 secs for speaking
       {
         state_ts_ = ros::Time::now();
         state_ = FACE_DOOR;
+        graph_.add_edge(robot_id_, "say: I'm facing the door", robot_id_);
       }
       break;
 
@@ -250,6 +255,7 @@ void RP_move_to_floor::step()
           stop_robot();
           state_ts_ = ros::Time::now();
           state_ = CHECK_DOOR;
+          graph_.add_edge(robot_id_, "say: Checking if the door is opened", robot_id_);
         }
       }
       break;
@@ -262,6 +268,7 @@ void RP_move_to_floor::step()
         {
           state_ts_ = ros::Time::now();
           state_ = FACE_PERSON_ASK;
+          graph_.add_edge(robot_id_, "say: Looking for a person", robot_id_);
         }
       }
       break;
@@ -308,7 +315,10 @@ void RP_move_to_floor::step()
         if (response_floor_num == target_floor_)
           state_ = END;
         else
+        {
           state_ = FACE_DOOR;
+          graph_.add_edge(robot_id_, "say: I'm facing the door", robot_id_);
+        }
       }
 
       if ((ros::Time::now() - state_ts_ ).toSec() >= 45.0)
@@ -319,7 +329,6 @@ void RP_move_to_floor::step()
     case END:
     {
       ROS_INFO("[move_to_floor] END state");
-
       graph_.remove_edge("sonny", "want_see", "sonny");
       obj_listener_.set_inactive();
       setSuccess();

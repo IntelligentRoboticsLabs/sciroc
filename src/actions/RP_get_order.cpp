@@ -50,7 +50,7 @@ void RP_get_order::activateCode()
 
   graph_.add_edge(
     robot_id_,
-    "say: Hello sir, Today we have " + obtained_menu_,
+    "say: Hello human, Today we have " + obtained_menu_,
     robot_id_);
   graph_.add_edge(robot_id_, "ask: bar_order.ask", robot_id_);
 }

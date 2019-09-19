@@ -51,8 +51,8 @@
   </include>
 
   <node pkg="gb_datahub" type="take_the_elevator" name="take_the_elevator" output="screen"/>
-  <!--<node name="elevator_executor_node" pkg="sciroc" type="elevator_executor_node" respawn="false" output="screen" required="true"/>-->
-  <node name="elevator_test_move_to_floor" pkg="sciroc" type="elevator_test_move_to_floor" respawn="false" output="screen" required="true"/>
+  <node name="elevator_executor_node" pkg="sciroc" type="elevator_executor_node" respawn="false" output="screen" required="true"/>
+  <!--<node name="elevator_test_move_to_floor" pkg="sciroc" type="elevator_test_move_to_floor" respawn="false" output="screen" required="true"/>-->
 
   <include file="$(find graph_dialog_extractor)/launch/graph_dialog_extractor.launch" >
     <arg name="google_application_credentials" value="$(env HOME)/df_sciroc_api.json"/>
