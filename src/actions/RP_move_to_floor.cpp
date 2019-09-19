@@ -77,6 +77,7 @@ RP_move_to_floor::RP_move_to_floor(ros::NodeHandle& nh) :
   person_conf.max_seconds = ros::Duration(10.0);
 
   obj_listener_.add_class("person", person_conf);
+  last_funny_sentence_ = "";
 }
 
 void RP_move_to_floor::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
@@ -269,6 +270,15 @@ void RP_move_to_floor::step()
           state_ts_ = ros::Time::now();
           state_ = FACE_PERSON_ASK;
           graph_.add_edge(robot_id_, "say: Looking for a person", robot_id_);
+        }else{
+          //Say funny speech
+          std::string current_funny_sentence = generateFunnySentence();
+          while(last_funny_sentence_ == current_funny_sentence){
+            current_funny_sentence = generateFunnySentence();
+          }
+          std::string funny_sentence = "say: "+current_funny_sentence;
+          graph_.add_edge(robot_id_, funny_sentence, robot_id_);
+          last_funny_sentence_ = current_funny_sentence;
         }
       }
       break;
@@ -337,11 +347,17 @@ void RP_move_to_floor::step()
   }
 }
 
+std::string RP_move_to_floor::generateFunnySentence()
+{
+    return (funny_sentences_[std::rand() % sizeof(funny_sentences_) + 1]);
+}
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "rosplan_interface_move_to_floor_to");
   ros::NodeHandle nh("~");
   RP_move_to_floor rpmb(nh);
+
 
   ros::Subscriber ds =
       nh.subscribe("/kcl_rosplan/action_dispatch", 1000, &KCL_rosplan::RPActionInterface::dispatchCallback,
