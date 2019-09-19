@@ -131,7 +131,7 @@ void RestaurantExecutor::init_knowledge()
 
   tf2::Transform wp2table(q, tf2::Vector3(0.9, 0.0, 0.0));
   graph_.add_edge("wp_bar", wp2table, "bar", true);
-  tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
+  tf2::Transform main2zone(q, tf2::Vector3(-0.8, -1.0, 0.0));
   graph_.add_edge("main_room", main2zone, "waiting_zone", true);
 
   utils_.set_inital_pose(0.0, 0.0, 0.0);

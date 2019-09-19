@@ -56,7 +56,7 @@ public:
     add_instance("robot", "sonny");
     add_instance("person", "new_customer");
     add_instance("zone", "waiting_zone");
-    add_predicate("robot_at sonny wp_waiting_zone");
+    add_predicate("robot_at sonny wp_table_1");
     add_predicate("robot_at_room sonny main_room");
     add_predicate("person_at_room new_customer main_room");
     add_predicate("wp_in_zone wp_waiting_zone waiting_zone");
@@ -87,7 +87,7 @@ public:
 
     q.setRPY(0, 0, 0);
 
-    tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
+    tf2::Transform main2zone(q, tf2::Vector3(-0.8, -1.0, 0.0));
     graph_.add_edge("main_room", main2zone, "waiting_zone", true);
   }
 
