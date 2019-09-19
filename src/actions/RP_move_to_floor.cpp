@@ -238,7 +238,7 @@ void RP_move_to_floor::step()
         double roll, pitch, yaw;
         m.getRPY(roll, pitch, yaw);
 
-        if (fabs(yaw) < 0.2)
+        if (fabs(yaw) < 0.2 && (ros::Time::now() - state_ts_ ).toSec() >= 15.0)
         {
           stop_robot();
           state_ts_ = ros::Time::now();

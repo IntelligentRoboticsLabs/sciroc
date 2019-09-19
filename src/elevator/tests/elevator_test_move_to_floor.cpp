@@ -68,13 +68,22 @@ public:
     add_predicate("robot_at sonny wp_elevator");
     add_predicate("robot_at_room sonny main_room");
     graph_.add_node("sonny", "robot");
+    graph_.add_node("elevator", "elevator");
+    graph_.add_node("wp_waiting_zone", "waypoint");
+    graph_.add_node("encounter_zone", "zone");
+    graph_.add_node("waiting_zone", "zone");
+    graph_.add_node("main_room", "room");
 
     std::vector<shop> shops = gb_datahub::getShopsList();
     for (auto shop : shops)
     {
-      if (shop.goal = true)
+      if (shop.goal == true)
         target_floor_ = car2ord(shop.floor);
     }
+    graph_.set_tf_identity("base_footprint", "sonny");
+    graph_.set_tf_identity("main_room", "map");
+    graph_.add_tf_edge("main_room", "sonny");
+
     graph_.add_node(target_floor_, "floor");
     graph_.add_edge("sonny", "target_floor", target_floor_);
   }
