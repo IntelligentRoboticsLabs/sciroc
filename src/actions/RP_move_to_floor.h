@@ -84,6 +84,7 @@ private:
   void face_door();
   void face_person();
   void stop_robot();
+  std::string generateFunnySentence();
 
   ros::NodeHandle nh_;
   bica_graph::GraphClient graph_;
@@ -107,10 +108,21 @@ private:
   ros::Subscriber scan_sub_;
   std::string robot_id_;
   std::string target_floor_;
+  std::string last_funny_sentence_;
 
   darknet_ros_3d::Darknet3DListener obj_listener_;
 
   ros::Publisher vel_pub_;
+
+  std::vector<std::string> funny_sentences_ = {
+    "I do not trust elevators, there always up to something",
+    "It had to rain a little, that this does not seem autumn",
+    "Time is crazy",
+    "When I was young I went down the stairs",
+    "Did you hear about the elevator dance? It has no steps",
+    "Good friends are like broken elevators. They never let you down",
+    "Was not your son studing Computer Science? Tell him to repair my laptop"
+  };
 };
 
 #endif
