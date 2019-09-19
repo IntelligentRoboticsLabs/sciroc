@@ -97,7 +97,7 @@ void RP_move_to_floor::activateCode()
 
   graph_.add_edge("sonny", "want_see", "sonny");
   obj_listener_.reset();
-  obj_listener_.set_working_frame("sonny");
+  obj_listener_.set_working_frame("wp_elevator");
   obj_listener_.set_active();
 
   state_ts_ = ros::Time::now();
@@ -139,7 +139,14 @@ void RP_move_to_floor::face_person()
   } else
   {
     tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
-    double vel = atan2(pos.y(), pos.x());
+    double person_angle = atan2(pos.y(), pos.x());
+
+    tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("sonny", "wp_elevator");
+    tf2::Matrix3x3 m(r2door.getRotation());
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+
+    double vel = person_angle - yaw;
 
     vel_msg.angular.z = std::max(std::min(vel, 0.3), -0.3);
     ROS_INFO("\tFace Person yaw = %lf  ==> %lf", vel, vel_msg.angular.z);
