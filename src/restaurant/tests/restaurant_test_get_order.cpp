@@ -60,6 +60,7 @@ public:
     add_predicate("is_table_at table_1 main_room");
     add_predicate("robot_at_room sonny main_room");
 
+    graph_.begin_batch();
     graph_.add_node("sonny", "robot");
     std::string table = "table_1";
     std::string waypoint = "wp_table_1";
@@ -78,6 +79,7 @@ public:
     graph_.add_node("main_room", "room");  // node is redundantelly added by graph-kms sync issue
     graph_.set_tf_identity("main_room", "map");
     graph_.add_tf_edge("main_room", "sonny");
+    graph_.flush();
   }
 
   void step()

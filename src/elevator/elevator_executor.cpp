@@ -59,6 +59,7 @@ void ElevatorExecutor::init_knowledge()
   add_instance("zone", "encounter_zone");
   add_instance("zone", "waiting_zone");
 
+  graph_.begin_batch();
   graph_.set_tf_identity("base_footprint", robot_id_);
   graph_.add_node(robot_id_, "robot");
   graph_.add_node("elevator", "elevator");
@@ -90,6 +91,8 @@ void ElevatorExecutor::init_knowledge()
   q.setRPY(0, 0, -1.57);
   tf2::Transform main2zone(q, tf2::Vector3(-2.88, -0.64, 0.0));
   graph_.add_edge("main_room", main2zone, "waiting_zone", true);
+
+  graph_.flush();
 }
 
 void ElevatorExecutor::setNewGoal(std::string goal)
