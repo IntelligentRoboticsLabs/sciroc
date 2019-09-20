@@ -232,8 +232,7 @@ void RP_move_to_floor::step()
 
       if (!obj_listener_.get_objects().empty())
       {
-        tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
-        double pos_angle = atan2(pos.y(), pos.x());
+        double pos_angle = get_angle_to_person();
 
         if (fabs(pos_angle) < 0.2)
         {
