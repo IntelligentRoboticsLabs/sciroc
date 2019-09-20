@@ -8,7 +8,7 @@
 #include "yaml-cpp/yaml.h"
 #include "gb_datahub/gb_datahub.h"
 #include "boost/date_time/posix_time/posix_time.hpp"
-
+#include <boost/algorithm/string/replace.hpp>
 
 #include <string>
 #include <vector>
@@ -41,8 +41,11 @@ private:
     ros::NodeHandle nh_;
     bica_graph::GraphClient graph_;
     std::string wp_id_, robot_id_, table_id_;
-
+    menu obtained_menu_;
+    bool menu_delivered;
     std::vector<std::string> splitSpaces(std::string raw_str);
+    bool checkInputOrder(std::vector<std::string> &food);
+
 };
 
 #endif  // SRC_ACTIONS_RP_GET_ORDER_H

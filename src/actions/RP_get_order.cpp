@@ -26,6 +26,7 @@ RP_get_order::RP_get_order(const ros::NodeHandle& nh)
   Action("get_order"),
   wp_id_()
 {
+  menu_delivered = false;
 }
 
 void RP_get_order::activateCode()
@@ -41,17 +42,20 @@ void RP_get_order::activateCode()
       robot_id_ = last_msg_.parameters[i].value;
   }
   // Obtain menu
-  menu obtained_menu = gb_datahub::getMenu();
-  std::string obtained_menu_;
+  obtained_menu_ = gb_datahub::getMenu();
+  std::string obtained_menu_str;
 
-  for(int i = 0; i < obtained_menu.products.size(); i++){
-  	obtained_menu_ = obtained_menu.products[i].label + ", " + obtained_menu_;
+  for(int i = 0; i < obtained_menu_.products.size(); i++){
+  	obtained_menu_str = obtained_menu_.products[i].label + ", " + obtained_menu_str;
   }
-
-  graph_.add_edge(
-    robot_id_,
-    "say: Hello human, Today we have " + obtained_menu_,
-    robot_id_);
+  if (!menu_delivered)
+  {
+    graph_.add_edge(
+      robot_id_,
+      "say: Hello human, Today we have " + obtained_menu_str,
+      robot_id_);
+    menu_delivered = true;
+  }
   graph_.add_edge(robot_id_, "ask: bar_order.ask", robot_id_);
 }
 
@@ -71,6 +75,22 @@ std::vector<std::string> RP_get_order::splitSpaces(std::string raw_str)
   return output;
 }
 
+bool RP_get_order::checkInputOrder(std::vector<std::string> &food)
+{
+  int cont = 0;
+  for(int i = 0; i < obtained_menu_.products.size(); i++)
+  {
+    for (auto product : food)
+    {
+      std::string s = product;
+      boost::replace_all(s, "_", " ");
+      if(s == obtained_menu_.products[i].label)
+        cont++;
+    }
+  }
+  return cont == food.size();
+}
+
 void RP_get_order::step()
 {
   if (!isActive())
@@ -79,13 +99,20 @@ void RP_get_order::step()
   for (auto it = edges_list.begin(); it != edges_list.end(); ++it)
   {
     std::string edge = it->get();
-    if (edge.find("response") != std::string::npos)
+    if (edge.find("response:") != std::string::npos)
     {
       graph_.remove_edge(*it);
       std::string response_raw = edge;
       std::string delimiter = "response: ";
       response_raw.erase(0, response_raw.find(delimiter) + delimiter.length());
       std::vector<std::string> food = splitSpaces(response_raw);
+
+      if (!checkInputOrder(food))
+      {
+        setFail();
+        graph_.add_edge(robot_id_, "say: Excuse me, the order is not correct", robot_id_);
+        return;
+      }
       order obtained_order;
       int counter = 0;
       for (auto it_food = food.begin(); it_food != food.end(); ++it_food)

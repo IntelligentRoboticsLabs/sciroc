@@ -90,7 +90,7 @@ public:
 
       add_goal("order_ready table_1");
       call_planner();
-      executed_ = true;
+      executed_ = false;
     }
     else
       ROS_INFO("Finished executing GetOrderExecutor");
