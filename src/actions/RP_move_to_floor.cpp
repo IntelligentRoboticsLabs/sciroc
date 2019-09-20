@@ -134,6 +134,32 @@ void RP_move_to_floor::stop_robot()
   vel_pub_.publish(vel_msg);
 }
 
+double
+RP_move_to_floor::get_angle_to_person()
+{
+  if (obj_listener_.get_objects().empty())
+  {
+    ROS_INFO("\tFace Person NOT FOUND  ");
+    return M_PI; // max
+  } else
+  {
+    tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
+    double person_angle = atan2(pos.y(), pos.x());
+
+    tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("wp_elevator", "sonny");
+    tf2::Matrix3x3 m(r2door.getRotation());
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+
+    double diff = person_angle - yaw;
+    ROS_INFO("Person = %lf\trobot = %lf  =====> %lf", person_angle, yaw, diff);
+
+    while (diff > M_PI) diff = diff - 2.0 * M_PI;
+    while (diff < -M_PI) diff = diff + 2.0 * M_PI;
+    return diff;
+  }
+}
+
 void RP_move_to_floor::face_person()
 {
   geometry_msgs::Twist vel_msg;
@@ -149,24 +175,11 @@ void RP_move_to_floor::face_person()
     vel_msg.angular.z = 0.3;
   } else
   {
-    tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
-    double person_angle = atan2(pos.y(), pos.x());
-
-    tf2::Stamped<tf2::Transform> r2door = graph_.get_tf("wp_elevator", "sonny");
-    tf2::Matrix3x3 m(r2door.getRotation());
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-
-    double vel = person_angle - yaw;
-    ROS_INFO("Person = %lf\trobot = %lf  =====> %lf", person_angle, yaw, vel);
-
-    while (vel > M_PI) vel = vel - 2.0 * M_PI;
-    while (vel < -M_PI) vel = vel + 2.0 * M_PI;
+    double vel = get_angle_to_person();
 
     vel_msg.angular.z = std::max(std::min(vel, 0.3), -0.3);
     ROS_INFO("\tFace Person yaw = %lf  ==> %lf", vel, vel_msg.angular.z);
   }
-
 
   vel_pub_.publish(vel_msg);
 }
@@ -229,8 +242,7 @@ void RP_move_to_floor::step()
 
       if (!obj_listener_.get_objects().empty())
       {
-        tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
-        double pos_angle = atan2(pos.y(), pos.x());
+        double pos_angle = get_angle_to_person();
 
         if (fabs(pos_angle) < 0.2)
         {
@@ -306,8 +318,7 @@ void RP_move_to_floor::step()
 
       if (!obj_listener_.get_objects().empty())
       {
-        tf2::Vector3 pos = obj_listener_.get_objects()[0].central_point;
-        double pos_angle = atan2(pos.y(), pos.x());
+        double pos_angle = get_angle_to_person();
 
         if (fabs(pos_angle) < 0.2)
         {
