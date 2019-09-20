@@ -82,6 +82,7 @@ protected:
 private:
 
   void face_door();
+  double get_angle_to_person();
   void face_person();
   void stop_robot();
 
