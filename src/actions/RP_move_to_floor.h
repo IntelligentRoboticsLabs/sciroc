@@ -114,15 +114,8 @@ private:
 
   ros::Publisher vel_pub_;
 
-  std::vector<std::string> funny_sentences_ = {
-    "I do not trust elevators, there always up to something",
-    "It had to rain a little, that this does not seem autumn",
-    "Time is crazy",
-    "When I was young I went down the stairs",
-    "Did you hear about the elevator dance? It has no steps",
-    "Good friends are like broken elevators. They never let you down",
-    "Was not your son studing Computer Science? Tell him to repair my laptop"
-  };
+  std::vector<std::string> funny_sentences_;
+  bool funny_sentence_said_;
 };
 
 #endif
