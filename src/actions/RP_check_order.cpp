@@ -160,9 +160,9 @@ RP_check_order::step()
         else if (edge == "needs")
           graph_.remove_edge(*it);
       }
-      graph_.add_edge(robot_id_,"say: Thank you! I will deliver the order.", "barman");
+      graph_.add_edge(robot_id_, "say: Thank you! I will deliver the order.", "barman");
     }
-    else //Need fix
+    else  // Need fix
     {
       int counter = 0;
       for (std::vector<std::string>::iterator it = order.begin(); it != order.end(); ++it)
@@ -171,7 +171,7 @@ RP_check_order::step()
         {
           std::string instance_id = robot_id_ + "." + *it + "." + std::to_string(counter++);
           graph_.add_node(instance_id, *it);
-          graph_.add_edge(robot_id_,"needs", instance_id);
+          graph_.add_edge(robot_id_, "needs", instance_id);
         }
       }
 
@@ -181,7 +181,7 @@ RP_check_order::step()
         {
           std::string instance_id = robot_id_ + "." + *it + "." + std::to_string(counter++);
           graph_.add_node(instance_id, *it);
-          graph_.add_edge(robot_id_,"not needs", instance_id);
+          graph_.add_edge(robot_id_, "not needs", instance_id);
         }
       }
       add_predicate("order_needs_fix " + robot_id_);
@@ -242,7 +242,7 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
         else if (edge == "needs")
           graph_.remove_edge(*it);
       }
-      graph_.add_edge(robot_id_,"say: Thank you! I will deliver the order.", "barman");
+      graph_.add_edge(robot_id_, "say: Thank you! I will deliver the order.", "barman");
     }
     else
     {
@@ -253,7 +253,7 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
         {
           std::string instance_id = robot_id_ + "." + *it + "." + std::to_string(counter++);
           graph_.add_node(instance_id, *it);
-          graph_.add_edge(robot_id_,"needs", instance_id);
+          graph_.add_edge(robot_id_, "needs", instance_id);
         }
       }
 
@@ -263,7 +263,7 @@ void RP_check_order::qrCallback(const std_msgs::String::ConstPtr& qr)
         {
           std::string instance_id = robot_id_ + "." + *it + "." + std::to_string(counter++);
           graph_.add_node(instance_id, *it);
-          graph_.add_edge(robot_id_,"not needs", instance_id);
+          graph_.add_edge(robot_id_, "not needs", instance_id);
         }
       }
       add_predicate("order_needs_fix " + robot_id_);

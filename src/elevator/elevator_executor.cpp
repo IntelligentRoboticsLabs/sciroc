@@ -112,21 +112,21 @@ std::string ElevatorExecutor::car2ord(int target_floor)
 {
   if (target_floor == 1)
     return "first";
-  else if(target_floor == 2)
+  else if (target_floor == 2)
     return "second";
-  else if(target_floor == 3)
+  else if (target_floor == 3)
     return "third";
-  else if(target_floor == 4)
+  else if (target_floor == 4)
     return "fourth";
-  else if(target_floor == 5)
+  else if (target_floor == 5)
     return "fifth";
-  else if(target_floor == 6)
+  else if (target_floor == 6)
     return "sixth";
-  else if(target_floor == 7)
+  else if (target_floor == 7)
     return "seventh";
-  else if(target_floor == 8)
+  else if (target_floor == 8)
     return "eigth";
-  else if(target_floor == 9)
+  else if (target_floor == 9)
     return "ninth";
 }
 
@@ -142,7 +142,7 @@ void ElevatorExecutor::getShopList_code_once()
   {
     if (shop.goal)
     {
-      ROS_INFO("shop.floor [%i]",shop.floor);
+      ROS_INFO("shop.floor [%i]", shop.floor);
       target_floor_ = car2ord(shop.floor);
     }
   }
@@ -171,7 +171,7 @@ bool ElevatorExecutor::Init_2_getShopList()
 void ElevatorExecutor::approachElevator_code_once()
 {
   graph_.add_edge(robot_id_, "robot_status: Approaching to the elevator", robot_id_);
-  //graph_.add_edge(robot_id_, "say: Getting close to the elevator", robot_id_);
+  // graph_.add_edge(robot_id_, "say: Getting close to the elevator", robot_id_);
 }
 void ElevatorExecutor::approachElevator_code_iterative()
 {
@@ -219,7 +219,6 @@ void ElevatorExecutor::advertiseGoal_code_iterative()
 
 void ElevatorExecutor::waitForDoor_code_once()
 {
-
 }
 
 void ElevatorExecutor::waitForDoor_code_iterative()
@@ -229,7 +228,7 @@ void ElevatorExecutor::waitForDoor_code_iterative()
 
 void ElevatorExecutor::askForFloor_code_once()
 {
-  //graph_.add_edge(robot_id_, "say: Asking for current floor", robot_id_);
+  // graph_.add_edge(robot_id_, "say: Asking for current floor", robot_id_);
   graph_.add_edge(robot_id_, "robot_status: Asking for current floor", robot_id_);
 }
 
@@ -266,7 +265,8 @@ bool ElevatorExecutor::robotAtElevator_2_advertiseGoal()
 
 bool ElevatorExecutor::advertiseGoal_2_waitForDoor()
 {
-  //graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ + " floor. Could you press the button by me?", robot_id_);
+  // graph_.add_edge(robot_id_, "say: Hi! I must go to the " + target_floor_ +
+  // " floor. Could you press the button by me?", robot_id_);
   return (!(search_predicates_regex(current_goal_)).empty());
 }
 

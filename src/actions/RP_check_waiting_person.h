@@ -56,8 +56,6 @@ private:
     std::string robot_id_, person_id_, wp_id_, zone_id_;
 
     ros::Time start_check_;
-
-    void qrCallback(const std_msgs::String::ConstPtr& qr);
 };
 
 #endif  // SRC_ACTIONS_RP_CHECK_WAITING_PERSON_H

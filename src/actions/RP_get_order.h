@@ -44,8 +44,7 @@ private:
     menu obtained_menu_;
     bool menu_delivered;
     std::vector<std::string> splitSpaces(std::string raw_str);
-    bool checkInputOrder(std::vector<std::string> &food);
-
+    bool checkInputOrder(const std::vector<std::string> &food);
 };
 
 #endif  // SRC_ACTIONS_RP_GET_ORDER_H

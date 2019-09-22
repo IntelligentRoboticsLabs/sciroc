@@ -36,8 +36,8 @@
 
 /* Mantainer: Jonatan Gines jonatan.gines@urjc.es */
 
-#ifndef ELEVATOR_EXECUTOR_H
-#define ELEVATOR_EXECUTOR_H
+#ifndef SRC_ELEVATOR_ELEVATOR_EXECUTOR_H
+#define SRC_ELEVATOR_ELEVATOR_EXECUTOR_H
 
 #include <ros/ros.h>
 #include "bica_planning/Executor.h"
@@ -99,4 +99,4 @@ private:
   ros::Time wait_;
 };
 
-#endif  // ELEVATOR_EXECUTOR_H
+#endif  // SRC_ELEVATOR_ELEVATOR_EXECUTOR_H

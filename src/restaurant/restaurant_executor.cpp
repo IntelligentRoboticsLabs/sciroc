@@ -227,7 +227,8 @@ void RestaurantExecutor::deliverOrder_code_iterative()
 void RestaurantExecutor::grettingNewCustomer_code_once()
 {
   graph_.add_edge(robot_id_, "robot_status: Greeting new costumer", robot_id_);
-  //graph_.add_edge(robot_id_, "say: Hi! Welcome to the restaurant, I will guide you to a table. Follow me", robot_id_);
+  // graph_.add_edge(robot_id_,
+  //  "say: Hi! Welcome to the restaurant, I will guide you to a table. Follow me", robot_id_);
 }
 
 void RestaurantExecutor::grettingNewCustomer_code_iterative()

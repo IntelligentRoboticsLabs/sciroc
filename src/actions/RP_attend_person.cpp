@@ -1,5 +1,7 @@
 #include "RP_attend_person.h"
 
+#include <vector>
+
 /* The implementation of RP_attend_person.h */
 
 /* Esta acción se encarga de anunciar que un cliente ha sido ubicado en una mesa
@@ -40,7 +42,7 @@ void RP_attend_person::activateCode()
   graph_.add_edge(table_id, "num_customers: 1", table_id);
   graph_.flush();
 
-  //Datahub integration
+  // Datahub integration
   std::vector<table> table_datahub = gb_datahub::getTable(table_id);
   table_datahub[0].status = "needs_serving";
   table_datahub[0].customers = 1;

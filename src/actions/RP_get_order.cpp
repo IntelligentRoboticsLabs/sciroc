@@ -45,9 +45,11 @@ void RP_get_order::activateCode()
   obtained_menu_ = gb_datahub::getMenu();
   std::string obtained_menu_str;
 
-  for(int i = 0; i < obtained_menu_.products.size(); i++){
-  	obtained_menu_str = obtained_menu_.products[i].label + ", " + obtained_menu_str;
+  for (int i = 0; i < obtained_menu_.products.size(); i++)
+  {
+    obtained_menu_str = obtained_menu_.products[i].label + ", " + obtained_menu_str;
   }
+
   if (!menu_delivered)
   {
     graph_.add_edge(
@@ -75,16 +77,16 @@ std::vector<std::string> RP_get_order::splitSpaces(std::string raw_str)
   return output;
 }
 
-bool RP_get_order::checkInputOrder(std::vector<std::string> &food)
+bool RP_get_order::checkInputOrder(const std::vector<std::string> &food)
 {
   int cont = 0;
-  for(int i = 0; i < obtained_menu_.products.size(); i++)
+  for (int i = 0; i < obtained_menu_.products.size(); i++)
   {
     for (auto product : food)
     {
       std::string s = product;
       boost::replace_all(s, "_", " ");
-      if(s == obtained_menu_.products[i].label)
+      if (s == obtained_menu_.products[i].label)
         cont++;
     }
   }
@@ -126,10 +128,11 @@ void RP_get_order::step()
       obtained_order.id = "ORDER0";
       obtained_order.type = "Order";
       obtained_order.table = table_id_;
-      obtained_order.timestamp = gb_datahub::magicHour(boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost()));
+      obtained_order.timestamp = gb_datahub::magicHour(
+        boost::posix_time::to_iso_extended_string(ros::Time::now().toBoost()));
       obtained_order.status = "Pending";
 
-      ROS_INFO("Response received: %d",gb_datahub::postOrder(obtained_order));
+      ROS_INFO("Response received: %d", gb_datahub::postOrder(obtained_order));
 
       setSuccess();
     }

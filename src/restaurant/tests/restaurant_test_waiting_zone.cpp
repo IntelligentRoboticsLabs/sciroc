@@ -75,7 +75,7 @@ public:
     tf2::Quaternion q;
     q.setRPY(0, 0, 0);
 
-    tf2::Transform main2zone(q, tf2::Vector3(0.0, 0.0, 0.0));
+    tf2::Transform main2zone(q, tf2::Vector3(1.5, 1.5, 0.0));
     graph_.add_edge("main_room", main2zone, "waiting_zone", true);
   }
 
@@ -83,11 +83,10 @@ public:
   {
     if (!executed_)
     {
-      sleep(11);
       ROS_INFO("Adding goal and planning");
 
-      add_goal("person_detected sonny new_customer waiting_zone");
-      call_planner();
+      //add_goal("person_detected sonny new_customer waiting_zone");
+      //call_planner();
       executed_ = true;
     }
     else

@@ -41,9 +41,9 @@ void RP_fix_order::activateCode()
   {
     std::string edge = it->get();
     if (edge == "needs")
-      object_needed = graph_.get_node(it->get_target()).get_type(); // = it->get_target();
+      object_needed = graph_.get_node(it->get_target()).get_type();  // = it->get_target();
     else if (edge == "not needs")
-      wrong_object = graph_.get_node(it->get_target()).get_type(); // = it->get_target();
+      wrong_object = graph_.get_node(it->get_target()).get_type();  // = it->get_target();
   }
 
   if (wrong_object == "")
