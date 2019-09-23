@@ -78,6 +78,16 @@ RP_move_to_floor::RP_move_to_floor(ros::NodeHandle& nh) :
 
   obj_listener_.add_class("person", person_conf);
   last_funny_sentence_ = "";
+  funny_sentences_ = {
+    "I do not trust elevators, there always up to something",
+    "I hope it rains, this does not seem autumn",
+    "The weather is crazy",
+    "When I was young I went down the stairs",
+    "Did you hear about the elevator dance? It has no steps",
+    "Good friends are like broken elevators. They never let you down",
+    "Was not your son studing Computer Science? Please, tell him to repair my laptop"
+  };
+  funny_sentence_said_ = false;
 }
 
 void RP_move_to_floor::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
@@ -268,6 +278,7 @@ void RP_move_to_floor::step()
           stop_robot();
           state_ts_ = ros::Time::now();
           state_ = CHECK_DOOR;
+          funny_sentence_said_ = false;
           graph_.add_edge(robot_id_, "say: Checking if the door is opened", robot_id_);
         }
       }
@@ -283,14 +294,12 @@ void RP_move_to_floor::step()
           state_ = FACE_PERSON_ASK;
           graph_.add_edge(robot_id_, "say: Looking for a person", robot_id_);
         }else{
-          //Say funny speech
-          std::string current_funny_sentence = generateFunnySentence();
-          while(last_funny_sentence_ == current_funny_sentence){
-            current_funny_sentence = generateFunnySentence();
+          if (!funny_sentence_said_){
+            //Say funny speech
+            funny_sentence_said_ = true;
+            std::string funny_sentence = "say: " + generateFunnySentence();
+            graph_.add_edge(robot_id_, funny_sentence, robot_id_);
           }
-          std::string funny_sentence = "say: "+current_funny_sentence;
-          graph_.add_edge(robot_id_, funny_sentence, robot_id_);
-          last_funny_sentence_ = current_funny_sentence;
         }
       }
       break;
@@ -360,7 +369,12 @@ void RP_move_to_floor::step()
 
 std::string RP_move_to_floor::generateFunnySentence()
 {
-    return (funny_sentences_[std::rand() % sizeof(funny_sentences_) + 1]);
+  std::srand(time(0));
+  int r = static_cast<int>(std::rand() * funny_sentences_.size());
+  if (r < funny_sentences_.size())
+    return funny_sentences_[r];
+  else
+    return "";
 }
 
 int main(int argc, char** argv)
